@@ -11,6 +11,9 @@ load_dotenv()
 def get_embedding_model(model_name : str = "bge-m3")  -> OllamaEmbeddings:
     return OllamaEmbeddings(model=model_name, base_url = os.getenv("OLLAMA_BASE_URL"))
 
+def get_sparse_model(model_name : str = "Qdrant/bm25") -> FastEmbedSparse:
+    return FastEmbedSparse(model_name=model_name)
+
 def get_qdrant_client(url: str | None = None) -> QdrantClient:
     """
     Qdrant client from the environment unless a url is given.
@@ -21,16 +24,20 @@ def probe_vector_size(embedding_model : OllamaEmbeddings) -> int:
     return len(embedding_model.embed_query("Query for validate the dimensionality of the embeddings"))
 
 
-def ensure_collection(client : QdrantClient, collection_name : str, vector_name : str, vector_size : int) -> bool:
-    "Create collection (cosine distance) if doesnt not exist"
+def ensure_collection(client : QdrantClient, 
+                      collection_name : str, 
+                      vector_size : int,
+                      dense_vector_name : str = "dense",
+                      sparse_vector_name : str = "sparse") -> bool:
+    "Create Hybrid collection with (cosine distance and BM25) if doesnt not exist"
     if client.collection_exists(collection_name=collection_name):
         return False
     client.create_collection(
         collection_name=collection_name,
-        vectors_config=VectorParams(size=vector_size, distance=Distance.COSINE), #Cosine Distance
-        sparse_vectors_config={"sparse": SparseVectorParams(modifier=Modifier.IDF)} #BM25
+        vectors_config={dense_vector_name : VectorParams(size=vector_size, distance=Distance.COSINE)}, #Cosine Distance
+        sparse_vectors_config={sparse_vector_name : SparseVectorParams(modifier=Modifier.IDF)} #BM25
     )
-    print(f"Colección '{collection_name}' creada ({vector_name}, {vector_size} dims, cosine).")
+    print(f"Colección '{collection_name}' creada (dense='{dense_vector_name}' [{vector_size} dims], sparse='{sparse_vector_name}' [BM25]).")
     return True
 
 
@@ -38,10 +45,10 @@ def create_vector_qdrant(
     qdrant_client : QdrantClient,
     collection_name : str,
     embedding_model : OllamaEmbeddings,
-    sparse_embeddings: FastEmbedSparse = FastEmbedSparse(model_name="Qdrant/bm25"),
-    retrieval_mode = RetrievalMode.HYBRID,
-    vector_name : str = "",
-    sparse_vector_name : str = "",
+    sparse_embeddings: FastEmbedSparse ,
+    retrieval_mode : RetrievalMode = RetrievalMode.HYBRID,
+    vector_name : str = "dense",
+    sparse_vector_name : str = "sparse",
     
     ) -> QdrantVectorStore:
     
