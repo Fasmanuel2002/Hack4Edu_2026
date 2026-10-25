@@ -1,0 +1,8 @@
+<a class="skip-link" href="#main" (click)="skipToMain($event)">Skip to main content</a>
+<router-outlet />
+<!-- The one polite live region: one message per finished answer, never word by word. -->
+<div class="visually-hidden" aria-live="polite">
+  @for (message of announcer.messages(); track message.id) {
+    <p>{{ message.text }}</p>
+  }
+</div>

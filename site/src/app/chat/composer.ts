@@ -1,0 +1,243 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  computed,
+  inject,
+  signal,
+  viewChild,
+  viewChildren,
+} from '@angular/core';
+import { ChatStore } from '../core/chat-store';
+import { formatSize } from '../core/format';
+import { TONE_MARKS, insertAtCursor, looksYoruba } from '../core/yoruba';
+import { Icon } from '../shared/icon';
+
+export const ACCEPTED_EXTENSIONS = ['.pdf', '.csv', '.txt', '.md', '.png', '.jpg', '.jpeg', '.webp'];
+const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp'];
+export const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const MAX_HEIGHT_PX = 200;
+
+interface PendingFile {
+  readonly id: number;
+  readonly name: string;
+  readonly size: number;
+  readonly previewUrl: string | null;
+}
+
+function extensionOf(name: string): string {
+  const dot = name.lastIndexOf('.');
+  return dot >= 0 ? name.slice(dot).toLowerCase() : '';
+}
+
+function hasFiles(event: DragEvent): boolean {
+  return Array.from(event.dataTransfer?.types ?? []).includes('Files');
+}
+
+@Component({
+  selector: 'app-composer',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [Icon],
+  templateUrl: './composer.html',
+  styleUrl: './composer.css',
+  host: {
+    '(window:dragenter)': 'onDragEnter($event)',
+    '(window:dragover)': 'onDragOver($event)',
+    '(window:dragleave)': 'onDragLeave($event)',
+    '(window:drop)': 'onDrop($event)',
+  },
+})
+export class Composer {
+  protected readonly store = inject(ChatStore);
+  protected readonly marks = TONE_MARKS;
+  /** ẹ́ (e with dot below and high tone), shown on the tone bar toggle. */
+  protected readonly toneGlyph = '\u1EB9\u0301';
+  protected readonly accept = ACCEPTED_EXTENSIONS.join(',');
+  protected readonly formatSize = formatSize;
+
+  protected readonly text = signal('');
+  protected readonly files = signal<readonly PendingFile[]>([]);
+  /** Closed by default so the starter cards stay visible; one click opens it. */
+  protected readonly toneBarOpen = signal(false);
+  protected readonly toneIndex = signal(0);
+  protected readonly message = signal('');
+  protected readonly dragging = signal(false);
+  protected readonly canSend = computed(() => this.text().trim().length > 0);
+  protected readonly yoruba = computed(() => looksYoruba(this.text()));
+
+  private readonly input = viewChild.required<ElementRef<HTMLTextAreaElement>>('input');
+  private readonly toneKeys = viewChildren<ElementRef<HTMLButtonElement>>('toneKey');
+  private dragDepth = 0;
+  private nextFileId = 0;
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.revokePreviews(this.files()));
+  }
+
+  focus(): void {
+    this.input().nativeElement.focus();
+  }
+
+  protected onInput(): void {
+    this.text.set(this.input().nativeElement.value);
+    this.resize();
+  }
+
+  /** Enter sends; Shift + Enter adds a new line (that key combination never reaches here). */
+  protected onEnter(event: Event): void {
+    if ((event as KeyboardEvent).isComposing) {
+      return;
+    }
+    event.preventDefault();
+    this.send();
+  }
+
+  protected onSubmit(event: Event): void {
+    event.preventDefault();
+    this.send();
+  }
+
+  private send(): void {
+    if (!this.canSend() || this.store.generating()) {
+      return;
+    }
+    const attachments = this.files().map(({ name, size }) => ({ name, size }));
+    this.store.ask(this.text(), attachments);
+    this.setText('');
+    this.revokePreviews(this.files());
+    this.files.set([]);
+    this.message.set(
+      attachments.length
+        ? 'Question sent. The attachments were not sent: the backend cannot receive files yet.'
+        : '',
+    );
+  }
+
+  /** Inserts a tone-marked character (letter plus combining marks) at the cursor. */
+  protected insert(value: string, index: number): void {
+    const element = this.input().nativeElement;
+    const result = insertAtCursor(
+      element.value,
+      element.selectionStart ?? element.value.length,
+      element.selectionEnd ?? element.value.length,
+      value,
+    );
+    this.setText(result.value);
+    element.focus();
+    element.setSelectionRange(result.caret, result.caret);
+    this.toneIndex.set(index);
+  }
+
+  /** Arrow keys, Home and End move between the tone mark buttons (one tab stop for the bar). */
+  protected onToneKeydown(event: KeyboardEvent): void {
+    const count = this.marks.length;
+    const moves: Record<string, number> = {
+      ArrowRight: (this.toneIndex() + 1) % count,
+      ArrowLeft: (this.toneIndex() - 1 + count) % count,
+      Home: 0,
+      End: count - 1,
+    };
+    const next = moves[event.key];
+    if (next === undefined) {
+      return;
+    }
+    event.preventDefault();
+    this.toneIndex.set(next);
+    this.toneKeys()[next]?.nativeElement.focus();
+  }
+
+  protected onPick(event: Event): void {
+    const picker = event.target as HTMLInputElement;
+    this.addFiles(Array.from(picker.files ?? []));
+    picker.value = '';
+  }
+
+  protected removeFile(file: PendingFile): void {
+    this.revokePreviews([file]);
+    this.files.update((list) => list.filter((f) => f.id !== file.id));
+    this.message.set(`Removed ${file.name}.`);
+    this.focus();
+  }
+
+  addFiles(list: readonly File[]): void {
+    const notes: string[] = [];
+    const added: PendingFile[] = [];
+    for (const file of list) {
+      const extension = extensionOf(file.name);
+      if (!ACCEPTED_EXTENSIONS.includes(extension)) {
+        notes.push(`${file.name} was not added: use PDF, CSV, TXT, MD, PNG, JPG or WEBP files.`);
+      } else if (file.size > MAX_FILE_BYTES) {
+        notes.push(`${file.name} was not added: it is ${formatSize(file.size)}, and the limit is 10 MB.`);
+      } else {
+        added.push({
+          id: ++this.nextFileId,
+          name: file.name,
+          size: file.size,
+          previewUrl: IMAGE_EXTENSIONS.includes(extension) ? URL.createObjectURL(file) : null,
+        });
+      }
+    }
+    if (added.length) {
+      this.files.update((current) => [...current, ...added]);
+      notes.push(
+        `${added.length === 1 ? '1 file' : `${added.length} files`} attached. Attachments are not sent yet.`,
+      );
+    }
+    this.message.set(notes.join(' '));
+  }
+
+  protected onDragEnter(event: DragEvent): void {
+    if (hasFiles(event)) {
+      event.preventDefault();
+      this.dragDepth++;
+      this.dragging.set(true);
+    }
+  }
+
+  protected onDragOver(event: DragEvent): void {
+    if (hasFiles(event)) {
+      event.preventDefault();
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'copy';
+      }
+    }
+  }
+
+  protected onDragLeave(event: DragEvent): void {
+    if (hasFiles(event)) {
+      this.dragDepth = Math.max(0, this.dragDepth - 1);
+      this.dragging.set(this.dragDepth > 0);
+    }
+  }
+
+  protected onDrop(event: DragEvent): void {
+    if (hasFiles(event)) {
+      event.preventDefault();
+      this.dragDepth = 0;
+      this.dragging.set(false);
+      this.addFiles(Array.from(event.dataTransfer?.files ?? []));
+    }
+  }
+
+  private setText(value: string): void {
+    this.input().nativeElement.value = value;
+    this.text.set(value);
+    this.resize();
+  }
+
+  /** Grows with the text up to 200px, then scrolls inside. */
+  private resize(): void {
+    const element = this.input().nativeElement;
+    element.style.height = 'auto';
+    element.style.height = `${Math.min(element.scrollHeight, MAX_HEIGHT_PX)}px`;
+  }
+
+  private revokePreviews(files: readonly PendingFile[]): void {
+    for (const file of files) {
+      if (file.previewUrl) {
+        URL.revokeObjectURL(file.previewUrl);
+      }
+    }
+  }
+}

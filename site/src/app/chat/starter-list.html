@@ -1,0 +1,20 @@
+<section class="starters" aria-labelledby="starters-title">
+  <h2 id="starters-title" class="label">Try a question from the corpus</h2>
+  <ul>
+    @for (starter of starters; track starter.yo) {
+      <li>
+        <button type="button" class="starter" [title]="starter.subject" (click)="ask.emit(starter.yo)">
+          <app-icon [name]="starter.icon" />
+          <span class="text">
+            <span class="visually-hidden">{{ starter.subject }}: </span>
+            <span class="yo" lang="yo">{{ starter.yo }}</span>
+            <span class="en">{{ starter.en }}</span>
+          </span>
+        </button>
+      </li>
+    }
+  </ul>
+  @if (demo) {
+    <p class="demo"><span class="pill">Demo mode</span> No backend is connected. Answers are demo data built from real corpus rows.</p>
+  }
+</section>

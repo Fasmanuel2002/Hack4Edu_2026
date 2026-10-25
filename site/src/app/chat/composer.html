@@ -1,0 +1,130 @@
+<form class="composer" aria-label="Ask a question" (submit)="onSubmit($event)">
+  <div class="box">
+    @if (files().length) {
+      <div class="attachments">
+        <ul class="files" aria-label="Attachments, not sent">
+          @for (file of files(); track file.id) {
+            <li class="file">
+              @if (file.previewUrl) {
+                <img class="thumb" [src]="file.previewUrl" alt="" width="28" height="28" />
+              } @else {
+                <span class="thumb"><app-icon name="file" /></span>
+              }
+              <span class="file-text">
+                <span class="file-name">{{ file.name }}</span>
+                <span class="file-size">{{ formatSize(file.size) }}</span>
+              </span>
+              <button
+                type="button"
+                class="icon-btn file-remove"
+                [attr.aria-label]="'Remove ' + file.name"
+                title="Remove"
+                (click)="removeFile(file)"
+              >
+                <app-icon name="close" />
+              </button>
+            </li>
+          }
+        </ul>
+        <p class="not-sent">Attachments are not sent: the backend cannot receive files yet.</p>
+      </div>
+    }
+
+    <div
+      id="tone-bar"
+      class="tones"
+      role="toolbar"
+      aria-label="Yorùbá characters"
+      [hidden]="!toneBarOpen()"
+      (keydown)="onToneKeydown($event)"
+    >
+      @for (mark of marks; track mark.value; let i = $index) {
+        <button
+          #toneKey
+          type="button"
+          class="tone"
+          [attr.tabindex]="i === toneIndex() ? 0 : -1"
+          [attr.aria-label]="mark.value + ', ' + mark.name"
+          [title]="mark.name"
+          (mousedown)="$event.preventDefault()"
+          (click)="insert(mark.value, i)"
+        >
+          <span lang="yo" aria-hidden="true">{{ mark.value }}</span>
+        </button>
+      }
+    </div>
+
+    <div class="row">
+      <button
+        type="button"
+        class="icon-btn plus"
+        aria-label="Attach files"
+        title="Attach files (not sent yet)"
+        (click)="picker.click()"
+      >
+        <app-icon name="plus" />
+      </button>
+      <input
+        #picker
+        type="file"
+        class="visually-hidden"
+        multiple
+        tabindex="-1"
+        aria-hidden="true"
+        [accept]="accept"
+        (change)="onPick($event)"
+      />
+      <label class="visually-hidden" for="question">Ask a question in Yorùbá or English</label>
+      <textarea
+        #input
+        id="question"
+        rows="1"
+        placeholder="Ask in Yorùbá or English"
+        [attr.lang]="yoruba() ? 'yo' : null"
+        (input)="onInput()"
+        (keydown.enter)="onEnter($event)"
+      ></textarea>
+      <div class="tools">
+        <button
+          type="button"
+          class="chip"
+          title="Compare with plain Gemma"
+          [attr.aria-pressed]="store.compare()"
+          (click)="store.compare.set(!store.compare())"
+        >
+          <app-icon name="columns" />
+          <span>Compare</span><span class="visually-hidden"> with plain Gemma</span>
+        </button>
+        <button
+          type="button"
+          class="chip"
+          title="Yorùbá tone marks"
+          aria-controls="tone-bar"
+          [attr.aria-expanded]="toneBarOpen()"
+          (click)="toneBarOpen.set(!toneBarOpen())"
+        >
+          <span class="glyph" lang="yo">{{ toneGlyph }}</span>
+          <span class="chip-text">Tone marks</span>
+        </button>
+        @if (store.generating()) {
+          <button type="button" class="send stop" aria-label="Stop generating" title="Stop generating" (click)="store.stop()">
+            <app-icon name="stop" />
+          </button>
+        } @else {
+          <button type="submit" class="send" aria-label="Send question" title="Send" [disabled]="!canSend()">
+            <app-icon name="send" />
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <p class="message" aria-live="polite">{{ message() }}</p>
+  <p class="fineprint">Answers can be wrong: check them against the verified sources.</p>
+</form>
+
+@if (dragging()) {
+  <div class="drop" aria-hidden="true">
+    <p>Drop files to attach them. Attachments are not sent to the tutor yet.</p>
+  </div>
+}

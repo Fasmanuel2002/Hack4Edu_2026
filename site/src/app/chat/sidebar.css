@@ -1,0 +1,224 @@
+/* One scroll container for the whole sidebar: the wheel works anywhere over it. */
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--bg);
+}
+
+.head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0.4rem 0.5rem 0.4rem 0.6rem;
+  background: var(--bg);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.brand:hover {
+  background: var(--hover);
+}
+
+.name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.body {
+  flex: 1 0 auto;
+  padding: 0.25rem 0.5rem 1rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 2.375rem;
+  padding: 0.35rem 0.55rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.875rem;
+  text-align: start;
+}
+
+.row:hover {
+  background: var(--hover);
+}
+
+.row-text {
+  flex: 1;
+}
+
+kbd {
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.label {
+  margin: 1.1rem 0.55rem 0.2rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.group {
+  margin: 0.6rem 0.55rem 0.15rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.hint {
+  margin: 0.2rem 0.55rem 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  border-radius: 8px;
+}
+
+.item:hover {
+  background: var(--hover);
+}
+
+.item.active {
+  background: var(--selected);
+}
+
+.open {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.55rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+
+.tools {
+  display: flex;
+  opacity: 0;
+}
+
+.tools .icon-btn {
+  width: 2rem;
+  height: 2.125rem;
+  color: var(--text-muted);
+}
+
+.tools {
+  --icon-size: 1rem;
+}
+
+.item:hover .tools,
+.item:focus-within .tools,
+.item.active .tools {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .tools {
+    opacity: 1;
+  }
+}
+
+.edit {
+  display: grid;
+  gap: 0.45rem;
+  width: 100%;
+  padding: 0.45rem;
+  font-size: 0.875rem;
+}
+
+.edit input {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.foot {
+  position: sticky;
+  bottom: 0;
+  padding: 0.6rem 1.05rem 0.75rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
+.foot dl div {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.2rem;
+}
+
+.foot dt {
+  color: var(--text-muted);
+}
+
+.foot dd {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--text);
+}
+
+.dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.dot.demo,
+.dot.checking {
+  background: var(--text-muted);
+}
+
+.dot.offline {
+  border: 1.5px solid var(--text-muted);
+  background: transparent;
+}

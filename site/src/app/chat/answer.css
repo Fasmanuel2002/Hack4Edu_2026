@@ -1,0 +1,161 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--hover);
+  color: var(--text-muted);
+}
+
+.avatar svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.avatar line {
+  stroke: currentColor;
+  stroke-width: 3.6;
+  stroke-linecap: round;
+}
+
+.avatar circle {
+  fill: currentColor;
+}
+
+.avatar .ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+}
+
+/* The Twins for Change mark: two acute strokes over a dot below, sky on navy. */
+.avatar-rag {
+  background: var(--navy);
+  color: var(--sky);
+}
+
+/* A small plain label: the answers are told apart by this label and by position. */
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.time {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.pending {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2rem;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes pulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+.elapsed {
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.error {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  font-size: 0.9375rem;
+}
+
+.error-body {
+  display: grid;
+  gap: 0.55rem;
+  justify-items: start;
+}
+
+.note {
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.1rem;
+  margin: 0.4rem 0 0 -0.45rem;
+  color: var(--text-muted);
+}
+
+.foot .icon-btn {
+  width: 2rem;
+  height: 2rem;
+}
+
+.foot {
+  --icon-size: 1rem;
+}
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-inline-start: auto;
+  font-size: 0.75rem;
+}
+
+.legend-rule {
+  width: 2px;
+  height: 0.9rem;
+  background: var(--border-strong);
+}

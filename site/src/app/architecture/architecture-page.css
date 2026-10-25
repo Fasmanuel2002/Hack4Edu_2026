@@ -1,0 +1,251 @@
+:host {
+  display: block;
+}
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.page {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.page:focus-visible {
+  outline: none;
+}
+
+.eyebrow {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+h1 {
+  margin-top: 0.3rem;
+  font-size: 1.75rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.lead {
+  margin-top: 0.75rem;
+  color: var(--text-muted);
+}
+
+section {
+  margin-top: 2.5rem;
+}
+
+section section {
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* The pipeline: a numbered list with thin separators. */
+.steps {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.steps li {
+  display: flex;
+  gap: 0.9rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.n {
+  min-width: 1.25rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.steps p {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.sub {
+  margin-top: 1.5rem;
+}
+
+/* An ordered flow with arrows between the steps (arrows are hidden from screen readers). */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+
+.flow li + li::before {
+  content: '→';
+  content: '→' / '';
+  margin-inline-end: 0.4rem;
+  color: var(--text-muted);
+}
+
+.flow.vertical {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.flow.vertical li + li::before {
+  content: '↓';
+  content: '↓' / '';
+  display: block;
+  margin: 0 0 0.35rem;
+}
+
+.note {
+  margin-top: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.settings {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.settings div {
+  display: grid;
+  gap: 0.15rem 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings dt {
+  font-weight: 500;
+}
+
+.settings dd {
+  color: var(--text-muted);
+}
+
+.deploy {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.box {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.box h3 + * {
+  margin-top: 0.6rem;
+}
+
+.plain {
+  margin: 0.4rem 0 0;
+  padding-inline-start: 1.1rem;
+}
+
+.stats {
+  margin-top: 0.75rem;
+}
+
+.table-wrap {
+  margin-top: 0.75rem;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+caption {
+  padding: 0.6rem 0.8rem 0.2rem;
+  color: var(--text-muted);
+  text-align: start;
+}
+
+th,
+td {
+  padding: 0.55rem 0.8rem;
+  border-top: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+thead th {
+  border-top: 0;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+tbody th,
+tfoot th {
+  font-weight: 500;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+td .dataset {
+  margin: 0 0.25rem 0.25rem 0;
+}
+
+.notes {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.75rem 0 0;
+  padding-inline-start: 1.1rem;
+}
+
+section > p:not(.note):not(.stats) {
+  margin-top: 0.6rem;
+}
+
+.site-footer {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+@media (min-width: 48rem) {
+  .page {
+    padding-top: 2.5rem;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+  .settings div {
+    grid-template-columns: 11rem 1fr;
+  }
+  .deploy {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -1,0 +1,264 @@
+:host {
+  display: block;
+}
+
+/* Fixed to the viewport: the page itself never scrolls; only the thread and the sidebar do. */
+.shell {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+
+/* Below 768px the sidebar is an off-canvas drawer. */
+.sidebar {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 40;
+  width: min(18rem, 86vw);
+  border-inline-end: 1px solid var(--border);
+  background: var(--bg);
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition:
+    transform 0.22s var(--ease),
+    visibility 0s linear 0.22s;
+}
+
+.drawer-open .sidebar {
+  transform: none;
+  visibility: visible;
+  box-shadow: var(--shadow);
+  transition: transform 0.22s var(--ease);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgb(12 45 100 / 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.drawer-open .backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The one scroll container of the chat (top bar, thread, docked composer). */
+.workspace {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-top: 3.5rem;
+  scroll-padding-bottom: calc(var(--dock-height, 8rem) + 0.5rem);
+}
+
+/* The drawer locks the page behind it. */
+.drawer-open .workspace {
+  overflow: hidden;
+}
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.main {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+.main:focus-visible {
+  outline: none;
+}
+
+/* Empty chat: greeting, composer, and starters centred in the screen. */
+.main.empty {
+  justify-content: center;
+  padding: 1rem 0 6vh;
+}
+
+.thread {
+  container-type: inline-size;
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1rem 1rem 1.5rem;
+}
+
+.turn {
+  max-width: var(--content);
+  margin: 0 auto;
+}
+
+.turn.compare-turn {
+  max-width: 72rem;
+}
+
+.turn + .turn {
+  margin-top: 2rem;
+}
+
+.user {
+  display: grid;
+  justify-items: end;
+  gap: 0.3rem;
+  max-width: var(--content);
+  margin-inline: auto;
+}
+
+.user-msg {
+  max-width: min(36rem, 85%);
+  padding: 0.55rem 0.9rem;
+  border-radius: 18px;
+  background: var(--bubble);
+}
+
+.question {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.attachments {
+  margin-top: 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.avatar {
+  --icon-size: 0.85rem;
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: var(--hover);
+}
+
+.answers {
+  margin-top: 1rem;
+}
+
+/* Compare: two equal columns with one thin divider, stacked when the thread is narrow. */
+.answers.compare {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.answers.compare > app-answer + app-answer {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+@container (min-width: 40rem) {
+  .answers.compare {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0;
+  }
+  .answers.compare > app-answer:first-child {
+    padding-inline-end: 1.5rem;
+  }
+  .answers.compare > app-answer + app-answer {
+    padding-top: 0;
+    padding-inline-start: 1.5rem;
+    border-top: 0;
+    border-inline-start: 1px solid var(--border);
+  }
+}
+
+.dock {
+  position: relative;
+  padding: 0 1rem;
+}
+
+/* After the first message the composer docks at the bottom of the scroll area. */
+.dock.docked {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  padding: 0.5rem 1rem 0.75rem;
+  background: var(--bg);
+}
+
+.latest {
+  --icon-size: 1.05rem;
+  position: absolute;
+  top: -2.75rem;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  background: var(--raised);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transform: translateX(-50%);
+}
+
+.latest:hover {
+  background: var(--bg);
+}
+
+.offline {
+  max-width: var(--content);
+  margin: 0 auto 0.45rem;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+@media (min-width: 768px) {
+  .shell {
+    grid-template-columns: 16.5rem minmax(0, 1fr);
+  }
+  .shell.collapsed {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sidebar {
+    position: static;
+    width: auto;
+    min-height: 0;
+    transform: none;
+    visibility: visible;
+    transition: none;
+  }
+  .collapsed .sidebar,
+  .backdrop {
+    display: none;
+  }
+  .thread {
+    padding: 1.5rem 1.5rem 2rem;
+  }
+}

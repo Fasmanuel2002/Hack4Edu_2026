@@ -1,0 +1,65 @@
+:host {
+  display: block;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 3.25rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.brand:hover {
+  background: var(--hover);
+}
+
+.name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.topnav {
+  display: flex;
+  gap: 0.15rem;
+  margin-inline-start: auto;
+}
+
+.topnav a {
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.topnav a:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.topnav a.current {
+  background: var(--hover);
+  color: var(--text);
+  font-weight: 500;
+}
+
+@media (max-width: 389.98px) {
+  .name {
+    display: none;
+  }
+}

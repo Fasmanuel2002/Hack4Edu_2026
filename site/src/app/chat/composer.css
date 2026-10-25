@@ -1,0 +1,271 @@
+:host {
+  display: block;
+}
+
+.composer {
+  max-width: var(--content);
+  margin: 0 auto;
+}
+
+/* One rounded box. Its border is 3:1 or more against the page (input boundary). */
+.box {
+  container-type: inline-size;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.45rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 1.5rem;
+  background: var(--raised);
+  box-shadow: var(--shadow);
+}
+
+.box:has(textarea:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'plus input tools';
+  align-items: end;
+  gap: 0.25rem;
+}
+
+.plus {
+  grid-area: plus;
+  border-radius: 50%;
+}
+
+textarea {
+  grid-area: input;
+  min-width: 0;
+  min-height: 2.25rem;
+  max-height: 200px;
+  padding: 0.35rem 0.4rem;
+  border: 0;
+  background: transparent;
+  line-height: 1.6;
+  resize: none;
+  overflow-y: auto;
+}
+
+textarea:focus-visible {
+  outline: none;
+}
+
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.tools {
+  grid-area: tools;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.3rem;
+}
+
+/* Small chips, like ChatGPT's "Think": quiet until pressed or opened. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 2.125rem;
+  padding: 0 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.chip[aria-pressed='true'],
+.chip[aria-expanded='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.chip {
+  --icon-size: 1rem;
+}
+
+.glyph {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.send {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: none;
+  border: 0;
+  border-radius: 50%;
+  background: var(--action-bg);
+  color: var(--action-fg);
+}
+
+.send:disabled {
+  background: var(--hover);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.send.stop {
+  background: var(--stop-bg);
+  color: var(--stop-fg);
+}
+
+/* Narrow boxes: the text box on its own line, the controls under it. */
+@container (max-width: 34rem) {
+  .row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'input input input'
+      'plus . tools';
+  }
+  .chip-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+/* The tone mark bar: one slim row inside the box. */
+.tones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  padding: 0.1rem 0.25rem 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tones[hidden] {
+  display: none;
+}
+
+.tone {
+  min-width: 2rem;
+  height: 2.125rem;
+  padding: 0 0.25rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.tone:hover {
+  background: var(--hover);
+}
+
+.attachments {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.15rem 0.25rem 0.3rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.2rem 0.15rem 0.2rem 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.thumb {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--bubble);
+  color: var(--text-muted);
+}
+
+.file-text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.file-name {
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.file-size,
+.not-sent,
+.fineprint,
+.message {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.file-remove {
+  width: 1.875rem;
+  height: 1.875rem;
+}
+
+.message {
+  margin: 0.3rem 0.75rem 0;
+  color: var(--text);
+}
+
+.message:empty {
+  margin: 0;
+}
+
+.fineprint {
+  margin: 0.35rem 0.75rem 0;
+  text-align: center;
+}
+
+.drop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: rgb(12 45 100 / 0.82);
+  color: var(--white);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  text-align: center;
+  pointer-events: none;
+}
+
+.drop p {
+  padding: 1.25rem 1.75rem;
+  border: 1.5px dashed var(--pale);
+  border-radius: 14px;
+}

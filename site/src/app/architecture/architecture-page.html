@@ -1,0 +1,268 @@
+<app-top-bar class="bar" />
+
+<main id="main" class="page" tabindex="-1">
+  <div class="intro">
+    <p class="eyebrow">Architecture</p>
+    <h1>How Twins for Change works</h1>
+    <p class="lead">
+      Gemma 3 4B makes things up when it answers in Yorùbá. Twins for Change retrieves verified
+      bilingual examples with hybrid RAG and gives them to Gemma, so it answers from real data. The
+      demo compares plain Gemma with Gemma + RAG on the same question.
+    </p>
+  </div>
+
+  <section aria-labelledby="flow-title">
+    <h2 id="flow-title">From question to bilingual answer</h2>
+    <ol class="steps">
+      <li>
+        <span class="n" aria-hidden="true">1</span>
+        <div>
+          <h3>Question</h3>
+          <p>In Yorùbá or English. Each request carries one question and no chat history.</p>
+        </div>
+      </li>
+      <li>
+        <span class="n" aria-hidden="true">2</span>
+        <div>
+          <h3>Hybrid search</h3>
+          <p>bge-m3 + BM25 over the 15,791-row corpus, fused with RRF. Top 3 results.</p>
+        </div>
+      </li>
+      <li>
+        <span class="n" aria-hidden="true">3</span>
+        <div>
+          <h3>Tutor prompt</h3>
+          <p>The question plus the 3 retrieved <code>pedagogical_answer</code> texts.</p>
+        </div>
+      </li>
+      <li>
+        <span class="n" aria-hidden="true">4</span>
+        <div>
+          <h3>gemma3:4b</h3>
+          <p>Generates through Ollama with temperature 0.1.</p>
+        </div>
+      </li>
+      <li>
+        <span class="n" aria-hidden="true">5</span>
+        <div>
+          <h3>Bilingual answer</h3>
+          <p>Main explanation in Yorùbá, key terms and a summary in English, step by step.</p>
+        </div>
+      </li>
+    </ol>
+
+    <h3 class="sub">The baseline in compare mode</h3>
+    <ol class="flow">
+      <li>Question</li>
+      <li>gemma3:4b, no retrieved context</li>
+      <li>Plain answer</li>
+    </ol>
+    <p class="note">
+      <code>POST /ask/plain</code> sends the same question to Gemma with no context. In compare mode the
+      chat sends both requests at once and shows the answers side by side.
+    </p>
+  </section>
+
+  <section aria-labelledby="settings-title">
+    <h2 id="settings-title">Pipeline settings</h2>
+    <dl class="settings">
+      <div>
+        <dt>Vector database</dt>
+        <dd>Qdrant collection <code>hack4edu_collection</code> in hybrid mode</dd>
+      </div>
+      <div>
+        <dt>Dense vectors</dt>
+        <dd><code>bge-m3</code> through Ollama: 1024 dimensions, cosine distance</dd>
+      </div>
+      <div>
+        <dt>Sparse vectors</dt>
+        <dd><code>Qdrant/bm25</code> through FastEmbed, with the IDF modifier</dd>
+      </div>
+      <div>
+        <dt>Fusion</dt>
+        <dd>Reciprocal Rank Fusion (RRF) combines the two result lists</dd>
+      </div>
+      <div>
+        <dt>Results</dt>
+        <dd>Top 3 documents. <code>k=3</code> is the number of results, not an RRF parameter.</dd>
+      </div>
+      <div>
+        <dt>Search matches</dt>
+        <dd><code>search_context</code>: the question, written as Yorùbá | English</dd>
+      </div>
+      <div>
+        <dt>Gemma reads</dt>
+        <dd><code>pedagogical_answer</code>: the verified content and answer</dd>
+      </div>
+      <div>
+        <dt>Generation</dt>
+        <dd><code>gemma3:4b</code> through Ollama, <code>temperature=0.1</code>, <code>num_ctx=8192</code></dd>
+      </div>
+      <div>
+        <dt>Tutor prompt</dt>
+        <dd>
+          Main explanation in Yorùbá, key terms and a summary in English, step-by-step reasoning. When
+          nothing relevant was retrieved, Gemma is asked to say that the topic is not in the database yet.
+        </dd>
+      </div>
+    </dl>
+    <p class="note">Sources are shown by rank (1 to 3), never as a percentage: RRF scores are not probabilities.</p>
+  </section>
+
+  <section aria-labelledby="deploy-title">
+    <h2 id="deploy-title">Deployment</h2>
+    <div class="deploy">
+      <section class="box" aria-labelledby="cloud-title">
+        <h3 id="cloud-title">Cloud demo</h3>
+        <ol class="flow vertical">
+          <li><strong>Vercel</strong>: Angular frontend, static files</li>
+          <li><strong>RunPod GPU pod</strong>: FastAPI with the REST API and RAG logic, reached over HTTPS</li>
+          <li><strong>Ollama</strong> for LLM inference and <strong>Qdrant</strong> as the vector database, on the same pod</li>
+        </ol>
+      </section>
+      <section class="box" aria-labelledby="local-title">
+        <h3 id="local-title">Local mode for schools</h3>
+        <p>One machine, no internet needed after setup:</p>
+        <ul class="plain">
+          <li><strong>Angular</strong> frontend</li>
+          <li><strong>FastAPI</strong> backend on port 8000</li>
+          <li><strong>Ollama</strong> with gemma3:4b and bge-m3</li>
+          <li><strong>Qdrant</strong> in Docker on port 6333</li>
+        </ul>
+        <p class="note">
+          Internet is needed only once, to download the Ollama models, the Qdrant Docker image, and the
+          BM25 model. The first start embeds all 15,791 rows before it accepts requests.
+        </p>
+      </section>
+    </div>
+  </section>
+
+  <section aria-labelledby="corpus-title">
+    <h2 id="corpus-title">The corpus</h2>
+    <p class="stats">
+      <strong>15,791</strong> rows in <code>dataset_rag.csv</code>: <strong>8,318</strong> Yorùbá
+      (<code>yor</code>) and <strong>7,473</strong> English (<code>eng</code>, all GSM8K).
+    </p>
+    <div class="table-wrap" role="region" aria-labelledby="corpus-caption" tabindex="0">
+      <table>
+        <caption id="corpus-caption">Rows by subject and source dataset</caption>
+        <thead>
+          <tr>
+            <th scope="col">Subject</th>
+            <th scope="col"><code>source_dataset</code></th>
+            <th scope="col">Rows</th>
+            <th scope="col">Languages</th>
+            <th scope="col">Content</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of corpus; track $index) {
+            <tr>
+              <th scope="row">{{ row.subject }}</th>
+              <td>
+                @for (dataset of row.datasets; track dataset) {
+                  <code class="dataset">{{ dataset }}</code>
+                }
+              </td>
+              <td class="num">{{ row.rows }}</td>
+              <td>{{ row.languages }}</td>
+              <td>{{ row.content }}</td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row">Total</th>
+            <td></td>
+            <td class="num">15,791</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="api-title">
+    <h2 id="api-title">API</h2>
+    <div class="table-wrap" role="region" aria-labelledby="api-caption" tabindex="0">
+      <table>
+        <caption id="api-caption">
+          FastAPI endpoints: port 8000 on a local machine, the RunPod HTTPS address in the cloud
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Method</th>
+            <th scope="col">Path</th>
+            <th scope="col">Request body</th>
+            <th scope="col">Response</th>
+            <th scope="col">Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>POST</td>
+            <th scope="row"><code>/ask/rag</code></th>
+            <td><code>{{ askBody }}</code></td>
+            <td><code>{{ answerBody }}</code></td>
+            <td>Twins for Change: Gemma + RAG</td>
+          </tr>
+          <tr>
+            <td>POST</td>
+            <th scope="row"><code>/ask/plain</code></th>
+            <td><code>{{ askBody }}</code></td>
+            <td><code>{{ answerBody }}</code></td>
+            <td>Plain Gemma with no context (A/B baseline)</td>
+          </tr>
+          <tr>
+            <td>GET</td>
+            <th scope="row"><code>/health/health</code></th>
+            <td>none</td>
+            <td><code>{{ healthBody }}</code> (spelled as the backend returns it)</td>
+            <td>The API process is up</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="notes">
+      <li>The answer is Markdown written by Gemma; the chat renders it as sanitized Markdown.</li>
+      <li>The full answer arrives in one response. The chat reveals it word by word in the browser.</li>
+      <li>
+        An answer can take a few seconds on a GPU and much longer on a laptop CPU, so the chat waits up
+        to 5 minutes. The RunPod proxy closes requests after about 100 seconds.
+      </li>
+      <li>
+        Errors: 422 for an invalid body, 500 when Ollama or Qdrant is unavailable. The chat shows a
+        message with a retry action.
+      </li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="demo-title">
+    <h2 id="demo-title">What the backend does not do yet</h2>
+    <p>The interface is ready for these features. Until the backend supports them, the chat handles them like this:</p>
+    <ul class="notes">
+      <li>
+        <strong>Retrieved sources.</strong> The API returns only the answer. In demo mode the sources
+        drawer shows real corpus rows, labelled “Demo data”.
+      </li>
+      <li><strong>Token streaming.</strong> There is none: the chat reveals the full answer word by word.</li>
+      <li><strong>File uploads.</strong> There is no upload endpoint: attachments are listed but not sent.</li>
+      <li>
+        <strong>Health of Ollama and Qdrant.</strong> The health check only shows that the API process is
+        running.
+      </li>
+      <li>
+        <strong>Demo mode.</strong> With no backend connected, answers to the four starter questions are
+        built from their corpus rows and labelled “Demo data”. No model runs.
+      </li>
+    </ul>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>
+    Twins for Change · Hack4Edu 2026 · Reto 06 (<span lang="es">La escuela habla tu idioma</span>) and
+    Reto 02 (<span lang="es">Aprender sin conexión</span>)
+  </p>
+  <p>This version supports Yorùbá and English. More languages are planned.</p>
+</footer>

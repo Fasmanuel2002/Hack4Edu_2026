@@ -1,0 +1,144 @@
+.sources {
+  margin-top: 0.4rem;
+}
+
+.toggle {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  margin-inline-start: -0.5rem;
+  padding: 0.25rem 0.6rem 0.25rem 0.45rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: start;
+}
+
+.toggle:hover {
+  background: var(--hover);
+}
+
+.chevron {
+  color: var(--text-muted);
+  transition: transform 0.2s var(--ease);
+}
+
+.toggle[aria-expanded='true'] .chevron {
+  transform: rotate(90deg);
+}
+
+/* Opens by animating the grid row from 0fr to 1fr: quick, smooth, and height stays auto. */
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows 0.2s var(--ease),
+    visibility 0s linear 0.2s;
+}
+
+.panel.open {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition:
+    grid-template-rows 0.2s var(--ease),
+    visibility 0s;
+}
+
+.panel-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.explain {
+  padding: 0.35rem 0 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.source {
+  padding: 0.85rem 0 0.9rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.9375rem;
+}
+
+.source-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.rank {
+  min-width: 1.1rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.subject {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.field {
+  margin-top: 0.6rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.context + .context {
+  margin-top: 0.1rem;
+}
+
+.secondary {
+  color: var(--text-muted);
+}
+
+.answer {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.15rem;
+}
+
+/* Corpus section labels such as [Verified Answer (Yorùbá)]. */
+.seg-label {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.answer p {
+  white-space: pre-wrap;
+}
+
+.yo {
+  line-height: 1.75;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.4rem;
+  margin: 0.1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.options li {
+  padding: 0 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}

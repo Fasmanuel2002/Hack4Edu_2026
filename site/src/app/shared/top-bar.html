@@ -1,0 +1,35 @@
+<header class="topbar">
+  @if (menu(); as state) {
+    <button
+      type="button"
+      class="icon-btn"
+      aria-controls="sidebar"
+      [attr.aria-label]="state.label"
+      [attr.aria-expanded]="state.expanded"
+      [title]="state.label"
+      (click)="menuToggle.emit()"
+    >
+      <app-icon name="panel" />
+    </button>
+  }
+  @if (showBrand()) {
+    <a class="brand" routerLink="/chat">
+      <app-logo [width]="26" />
+      <span class="name" aria-hidden="true">Twins for Change</span>
+    </a>
+  }
+  <nav class="topnav" aria-label="Main">
+    <a routerLink="/chat" routerLinkActive="current" ariaCurrentWhenActive="page">Chat</a>
+    <a routerLink="/architecture" routerLinkActive="current" ariaCurrentWhenActive="page">How it works</a>
+  </nav>
+  <button
+    type="button"
+    class="icon-btn"
+    aria-label="Dark theme"
+    title="Dark theme"
+    [attr.aria-pressed]="theme.theme() === 'dark'"
+    (click)="theme.toggle()"
+  >
+    <app-icon [name]="theme.theme() === 'dark' ? 'moon' : 'sun'" />
+  </button>
+</header>

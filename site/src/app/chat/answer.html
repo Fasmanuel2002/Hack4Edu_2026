@@ -1,0 +1,89 @@
+<section
+  class="answer"
+  [attr.aria-labelledby]="'label-' + key()"
+  [attr.aria-busy]="slot().status === 'pending' || revealing()"
+>
+  <header class="head">
+    <span class="avatar" [class.avatar-rag]="kind() === 'rag'" aria-hidden="true">
+      @if (kind() === 'rag') {
+        <svg viewBox="0 0 32 32" focusable="false">
+          <line x1="8.5" y1="17" x2="14" y2="9" />
+          <line x1="17.5" y1="17" x2="23" y2="9" />
+          <circle cx="16" cy="23.5" r="2.6" />
+        </svg>
+      } @else {
+        <svg viewBox="0 0 32 32" focusable="false"><circle class="ring" cx="16" cy="16" r="7" /></svg>
+      }
+    </span>
+    <h2 class="label" [id]="'label-' + key()">{{ label() }}</h2>
+    @if (slot().demo) {
+      <span class="pill">Demo data</span>
+    }
+    @if (slot().receivedAt; as at) {
+      <time class="time" [attr.datetime]="isoTime(at)">{{ clockTime(at) }}</time>
+    }
+  </header>
+
+  @switch (slot().status) {
+    @case ('pending') {
+      <p class="pending">
+        <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        Waiting for the answer
+        <span class="elapsed">{{ elapsed() }} s</span>
+      </p>
+    }
+    @case ('error') {
+      <div class="error">
+        <app-icon name="warning" />
+        <div class="error-body">
+          <p><strong>Could not get an answer.</strong> {{ slot().error }}</p>
+          <button type="button" class="btn btn-quiet" [disabled]="store.generating()" (click)="regenerate()">
+            <app-icon name="regenerate" />
+            Retry
+          </button>
+        </div>
+      </div>
+    }
+    @default {
+      <div class="md" [class.revealing]="revealing()" [innerHTML]="html()"></div>
+      @if (slot().status === 'stopped') {
+        <p class="note">
+          {{ slot().text ? 'Stopped. The answer above is incomplete.' : 'Stopped before an answer arrived.' }}
+        </p>
+      }
+      @if (!revealing()) {
+        <div class="foot">
+          @if (slot().text) {
+            <button
+              type="button"
+              class="icon-btn"
+              [attr.aria-label]="copied() ? 'Copied' : 'Copy'"
+              [attr.aria-describedby]="'label-' + key()"
+              [title]="copied() ? 'Copied' : 'Copy'"
+              (click)="copy()"
+            >
+              <app-icon [name]="copied() ? 'check' : 'copy'" />
+            </button>
+          }
+          <button
+            type="button"
+            class="icon-btn"
+            aria-label="Regenerate"
+            title="Regenerate"
+            [attr.aria-describedby]="'label-' + key()"
+            [disabled]="store.generating()"
+            (click)="regenerate()"
+          >
+            <app-icon name="regenerate" />
+          </button>
+          @if (hasYoruba()) {
+            <span class="legend"><span class="legend-rule" aria-hidden="true"></span>Yorùbá text</span>
+          }
+        </div>
+        @if (kind() === 'rag' && slot().status === 'done') {
+          <app-sources [sources]="slot().sources" [demo]="slot().demo" [panelId]="'sources-' + key()" />
+        }
+      }
+    }
+  }
+</section>

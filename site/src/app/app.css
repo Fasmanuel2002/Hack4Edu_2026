@@ -1,0 +1,4 @@
+/* The shell styles live in src/styles.css (tokens, skip link, live region). */
+:host {
+  display: block;
+}
