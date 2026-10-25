@@ -4,9 +4,10 @@ from langchain_core.documents import Document
 
 
 def format_documents(docs: list[Document]) -> str:
-    return "\n".join(
-        f"[Source: {doc.metadata["pedagogical_answer"]}\n"
-        f" {(doc.metadata["source_dataset"])}"
+    return "\n---\n".join(
+        f"[Source: {doc.metadata['source_dataset']}]\n"
+        f"[Question]: {doc.page_content}\n"
+        f"{doc.metadata['pedagogical_answer']}"
         for doc in docs
     )
 

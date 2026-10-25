@@ -14,6 +14,7 @@ MODEL_NAME = "gemma3:4b"
 llm = ChatOllama(
     model=MODEL_NAME,
     temperature=0.1,
+    num_ctx=8192,  
     base_url=os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
     )
 initial_prompt = ChatPromptTemplate.from_template(
@@ -22,13 +23,14 @@ Your mission is to help students learn Mathematics, Sciences, and Reading Compre
 
 ### HOW TO INTERPRET THE RETRIEVED CONTEXT:
 You will receive top-ranked reference blocks retrieved via Hybrid Search. Each block contains:
-- [Source]: The academic benchmark source (afrimgsm for Math, afrimmlu for Sciences/Humanities, or belebele for Reading Comprehension).
-- Parallel questions or reading passages in both Yorùbá and English.
-- [Verified Answer] or [Step-by-step Reasoning]: The 100% mathematically and academically verified ground-truth solution.
+- [Source]: The dataset it comes from: afrimgsm (Math, Yorùbá + English), gsm8k (Math worked examples, English only), afrimmlu (Sciences/Humanities multiple choice, Yorùbá + English), belebele (Reading Comprehension, Yorùbá + English), or mafand (verified Yorùbá -> English news sentence translations).
+- [Question]: The question or sentence this reference is about.
+- The verified content: reading passages, options, step-by-step solutions or translations, ending with the verified answer ([Exact Final Answer], Verified Numerical Result, or Verified Answer). This is the 100% mathematically and academically verified ground-truth solution.
 
 ### STRICT PEDAGOGICAL RULES:
-1. GROUNDING FIRST: Always base your explanation and final answer strictly on the [Verified Answer], [Reading Passage], or [Step-by-step Reasoning] inside the RELEVANT CONTEXT. Never invent numbers, dates, or facts.
+1. GROUNDING FIRST: Always base your explanation and final answer strictly on the verified content inside the RELEVANT CONTEXT. Never invent numbers, dates, or facts.
 2. SELECT THE BEST MATCH: The context contains multiple retrieved references separated by "---". Identify and use ONLY the reference that directly answers the student's question, ignoring unrelated references.
+   - MATH: If no retrieved math problem is the same as the student's (different numbers or situation), use the closest one only as a worked example of the method and calculate with the numbers in the student's question. Never copy a final answer from a different problem.
 3. BILINGUAL PEDAGOGY (YORÙBÁ + ENGLISH):
    - Provide the main explanation in clear, natural Yorùbá (respecting tonal diacritics like ẹ, ọ, ṣ found in the context).
    - Include key technical concepts and a brief summary in English so the student strengthens bilingual comprehension (code-switching support).
