@@ -5,5 +5,5 @@
 // Keep it an https:// URL: browsers block an HTTPS page from calling an http:// address.
 export const environment = {
   apiBaseUrl: 'https://<pod-id>-8000.proxy.runpod.net',
-  useMock: true,
+  useMock: false,
 };

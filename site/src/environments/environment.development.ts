@@ -2,5 +2,5 @@
 // backend runs on this machine (see "Commands" in CLAUDE.md).
 export const environment = {
   apiBaseUrl: 'http://localhost:8000',
-  useMock: true,
+  useMock: false,
 };
