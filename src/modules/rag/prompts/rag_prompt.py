@@ -18,7 +18,7 @@ llm = ChatOllama(
     base_url=os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
     )
 initial_prompt = ChatPromptTemplate.from_template(
-    """You are DeepLanguage, an expert, patient, and encouraging bilingual AI tutor specialized in Yorùbá and English education.
+    """You are Twins for change, an expert, patient, and encouraging bilingual AI tutor specialized in Yorùbá and English education.
 Your mission is to help students learn Mathematics, Sciences, and Reading Comprehension using strictly verified offline curriculum data.
 
 ### HOW TO INTERPRET THE RETRIEVED CONTEXT:
