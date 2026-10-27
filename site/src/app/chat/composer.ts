@@ -93,9 +93,14 @@ export class Composer {
     this.send();
   }
 
+  /** The round button: Send, or Stop while an answer is on its way. */
   protected onSubmit(event: Event): void {
     event.preventDefault();
-    this.send();
+    if (this.store.generating()) {
+      this.store.stop();
+    } else {
+      this.send();
+    }
   }
 
   private send(): void {

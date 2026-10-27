@@ -34,7 +34,7 @@ export class Sources {
   protected readonly open = signal(false);
   private readonly media = inject(MediaQueries);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-  private readonly panel = viewChild.required<ElementRef<HTMLElement>>('panel');
+  private readonly panel = viewChild<ElementRef<HTMLElement>>('panel');
 
   protected readonly items = computed(() =>
     this.sources().map((source) => ({
@@ -52,15 +52,15 @@ export class Sources {
       return;
     }
     this.host.nativeElement.dispatchEvent(new CustomEvent(SOURCES_OPEN_EVENT, { bubbles: true }));
-    // After the 0.2s opening transition, bring as much of the drawer into view as fits.
+    // After the opening transition, bring as much of the drawer into view as fits.
     const reduced = this.media.reducedMotion();
     setTimeout(
       () =>
-        this.panel().nativeElement.scrollIntoView({
+        this.panel()?.nativeElement.scrollIntoView({
           block: 'nearest',
           behavior: reduced ? 'auto' : 'smooth',
         }),
-      reduced ? 0 : 220,
+      reduced ? 0 : 280,
     );
   }
 }

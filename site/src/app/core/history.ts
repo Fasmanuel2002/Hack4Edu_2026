@@ -1,6 +1,7 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { AnswerSlot, Conversation, Turn } from './models';
+import { browserStorage } from './browser';
+import { AnswerSlot, Conversation, CorpusSource, Turn } from './models';
 
 /** localStorage key. History lives only in this browser; the backend never sees it. */
 export const HISTORY_KEY = 'tfc.chats.v1';
@@ -21,14 +22,6 @@ export class HistoryStorage {
     } catch {
       // Storage full or blocked (private mode): the chat keeps working in memory.
     }
-  }
-}
-
-function browserStorage(): Storage | null {
-  try {
-    return window.localStorage;
-  } catch {
-    return null;
   }
 }
 
@@ -83,10 +76,25 @@ function isSlot(value: unknown): value is AnswerSlot {
   return typeof s?.text === 'string' && typeof s.status === 'string' && Array.isArray(s.sources);
 }
 
-/** A request cannot survive a reload: show it as an error with a retry action. */
+function isSource(value: unknown): value is CorpusSource {
+  const s = value as CorpusSource | null;
+  return (
+    typeof s?.rank === 'number' &&
+    typeof s.source_dataset === 'string' &&
+    typeof s.search_context === 'string' &&
+    typeof s.pedagogical_answer === 'string'
+  );
+}
+
+/**
+ * A request cannot survive a reload: show it as an error with a retry action. Saved sources that
+ * are malformed are dropped, so they can never break the sources drawer.
+ */
 function settleTurn(turn: Turn): Turn {
-  const settle = (slot: AnswerSlot): AnswerSlot =>
-    slot.status === 'pending' ? { ...slot, status: 'error', error: RELOADED } : slot;
+  const settle = (slot: AnswerSlot): AnswerSlot => {
+    const clean = { ...slot, sources: slot.sources.filter(isSource) };
+    return slot.status === 'pending' ? { ...clean, status: 'error', error: RELOADED } : clean;
+  };
   return { ...turn, rag: settle(turn.rag), plain: turn.plain ? settle(turn.plain) : null };
 }
 

@@ -102,13 +102,24 @@ Logo:
   never directly on navy. Use the alt text "Twins for Change".
 - Use the mark as the favicon as well.
 
+Product feel (author, 2026-10-27): it must look like a real, shipped product,
+not a hackathon demo. Follow ChatGPT's layout and restraint, but give it its own
+identity through type, one committed color story, and a few well-made motion
+moments. No gamification of any kind.
+
 Typography:
-- Use system font stacks only (CLAUDE.md forbids external fonts). Keep the type
-  scale small and calm: one modest heading size, body text around 16px, and
-  muted secondary text.
-- Check that the chosen stack renders Yorùbá correctly, with a dot below and a
-  tone mark on the same letter (ẹ́, ọ̀) and ń/ǹ. Use the four starter questions
-  as test strings.
+- Self-hosted fonts only (woff2 in site/public/fonts/, @font-face with
+  font-display: swap, preload the body face). No Inter, Roboto, Arial, Space
+  Grotesk, or a system stack as the main face. System fonts are fallbacks only.
+- Yorùbá correctness decides the choice: a tone mark centered over a dot-below
+  letter (ẹ́, ọ̀), ṣ, and ń/ǹ, in both NFC and NFD. Ship each font as ONE file
+  per style that contains Latin, Latin Extended, Latin Extended Additional
+  (U+1E00–1EFF) and combining marks (U+0300–036F) with its layout features,
+  never split into unicode-range subsets: a base letter and its combining mark
+  must be shaped by the same file. Verify with screenshots of the four starter
+  questions before reporting.
+- Keep the type scale calm: one display size for the greeting and page titles,
+  body text around 16px, muted secondary text.
 - Use a line height of at least 1.6 for Yorùbá text, so marks above and below
   the letters do not collide or get clipped. Never put Yorùbá text in a
   fixed-height box with hidden overflow.
@@ -116,8 +127,8 @@ Typography:
 
 Color and theme:
 - Use the Twins for Change brand palette, taken from the team's website. Define
-  it with CSS variables and do not add other hues. Light tints of these colors,
-  such as a very light gray-blue for hover, are fine:
+  it with CSS variables and do not add other hues. Tints and shades of these
+  colors are fine:
   - Navy #0C2D64: text in the light theme, and the background in the dark theme.
   - Light navy #12397A: borders, chips, hover states, and the composer surface
     on navy.
@@ -125,10 +136,9 @@ Color and theme:
   - Sky blue #78DCFE: the accent on navy, used sparingly.
   - Pale blue #BCEBFF: secondary text and chip labels on navy.
   - White #FFFFFF, and gray-blue #D6DEEA for borders on white.
-- Light theme: white background and white sidebar with gray-blue borders, navy
-  text, and brand blue only for actions. Dark theme: flat navy background,
-  white text, and sky blue accents.
-- Use color sparingly. No colored heading highlights and no large colored areas.
+- Commit to it: navy (think Yorùbá adire indigo cloth) is the dominant color and
+  sky blue is the one sharp accent. Light theme: white canvas, navy text, brand
+  blue for actions. Dark theme: navy canvas, white text, sky accents.
 - Measured contrast: white, sky blue, and pale blue on navy pass (13.3, 8.6, and
   10.5:1). Navy and brand blue on white pass (13.3 and 6.5:1), and so does white
   on brand blue (6.5:1). Sky blue on white (1.6:1) and brand blue on navy
@@ -138,17 +148,16 @@ Color and theme:
   color alone.
 
 Motion:
-- The progressive answer display and the sources drawer are the main motion.
-  Keep them smooth and quick.
-- No decorative animation or scattered micro-interactions. At most a short fade
-  on the welcome screen.
-- CSS-only where possible. With prefers-reduced-motion, disable non-essential
-  animation and show answers in full at once.
+- CSS only. Focus on a few high-impact moments rather than scattered effects:
+  one orchestrated load of the welcome screen with staggered reveals
+  (animation-delay), new messages easing in, the progressive answer with its
+  cursor, and the sources drawer opening smoothly.
+- With prefers-reduced-motion, nothing moves and answers show in full at once.
 
 Backgrounds and depth:
-- Flat backgrounds everywhere, including the welcome screen and the sidebar. No
-  gradients, patterns, or textures. At most a very soft shadow on the composer
-  and on menus.
+- No gradients, patterns, textures, or glows (the author called them gross).
+  Color comes from solid brand surfaces and type, not from decoration. At most a
+  soft shadow on the composer and on menus.
 - Keep the message thread quiet and plain. Contrast and readability come first.
 
 Before reporting completion, check your output against every rule above and

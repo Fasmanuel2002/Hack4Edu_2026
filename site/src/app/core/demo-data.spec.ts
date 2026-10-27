@@ -1,4 +1,5 @@
 import { DEMO_ANSWERS } from './demo-data';
+import { renderMarkdown } from './markdown';
 import { parsePedagogicalAnswer, splitSearchContext } from './pedagogical';
 import { STARTERS } from './starters';
 
@@ -17,6 +18,18 @@ describe('demo data', () => {
         demo.sources[0].pedagogical_answer,
       );
     });
+  });
+
+  it('render like a real answer: two language blocks, each ending with its final-answer callout', () => {
+    for (const demo of DEMO_ANSWERS) {
+      const root = document.createElement('div');
+      root.innerHTML = renderMarkdown(demo.answer);
+      const blocks = Array.from(root.querySelectorAll('.lang-block'));
+      expect(blocks.map((block) => block.getAttribute('lang'))).toEqual(['yo', 'en']);
+      for (const block of blocks) {
+        expect(block.lastElementChild?.classList.contains('final-answer')).toBe(true);
+      }
+    }
   });
 
   it('keeps the verified answers from CLAUDE.md', () => {
@@ -68,6 +81,18 @@ describe('splitSearchContext', () => {
     expect(parts.map((p) => p.lang)).toEqual(['yo', 'en', null]);
     expect(parts[0].text).toBe(STARTERS[1].yo);
     expect(parts[2]).toMatchObject({ text: 'elementary_mathematics', isSubject: true });
+  });
+
+  it('keeps a row whole when its own text contains " | " (3 MAFAND rows)', () => {
+    const text = 'Title one | Caption one | Title two | Caption two';
+    expect(splitSearchContext(text, 'mafand_train')).toEqual([{ text, lang: null, isSubject: false }]);
+  });
+
+  it('splits only on a spaced pipe, as the corpus writes it', () => {
+    const parts = splitSearchContext(DEMO_ANSWERS[0].sources[0].search_context, 'afrimgsm_train');
+    expect(parts.map((p) => p.lang)).toEqual(['yo', 'en']);
+    expect(parts[1].text.startsWith('Question: Roger has 5 tennis balls.')).toBe(true);
+    expect(splitSearchContext('a|b | c', 'mafand_train').map((p) => p.text)).toEqual(['a|b', 'c']);
   });
 
   it('keeps an English-only GSM8K question whole', () => {

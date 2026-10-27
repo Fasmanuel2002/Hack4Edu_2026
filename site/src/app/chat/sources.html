@@ -1,27 +1,28 @@
-<div class="sources">
-  <button
-    type="button"
-    class="toggle"
-    [attr.aria-expanded]="open()"
-    [attr.aria-controls]="panelId()"
-    (click)="toggle()"
-  >
-    <app-icon name="chevron" class="chevron" />
-    <span>Verified sources (top 3)</span>
-    @if (demo()) {
-      <span class="pill">Demo data</span>
-    }
-  </button>
+@if (items().length) {
+  <div class="sources">
+    <button
+      type="button"
+      class="toggle"
+      [attr.aria-expanded]="open()"
+      [attr.aria-controls]="panelId()"
+      (click)="toggle()"
+    >
+      <app-icon name="chevron" class="chevron" />
+      <span>Verified sources (top 3)</span>
+      @if (demo()) {
+        <span class="pill">Demo data</span>
+      }
+    </button>
 
-  <div #panel class="panel" [id]="panelId()" [class.open]="open()" [attr.inert]="open() ? null : ''">
-    <div class="panel-inner">
-      @if (items().length) {
-        @if (demo()) {
-          <p class="explain">
-            Demo data: real rows copied from <code>dataset_rag.csv</code>. In demo mode no search runs,
-            so these are examples of what hybrid search returns, not live results.
-          </p>
-        }
+    <div #panel class="panel" [id]="panelId()" [class.open]="open()" [attr.inert]="open() ? null : ''">
+      <div class="panel-inner">
+        <p class="explain">
+          @if (demo()) {
+            Demo data: real rows copied from <code>dataset_rag.csv</code> and picked by hand. No search runs in demo mode.
+          } @else {
+            Found by hybrid search over the corpus, best match first.
+          }
+        </p>
         <ol class="list">
           @for (item of items(); track item.rank) {
             <li class="source">
@@ -33,7 +34,7 @@
                 }
               </p>
 
-              <p class="field">Matched <code>search_context</code></p>
+              <p class="field">Matched text</p>
               @for (part of item.context; track $index) {
                 @if (part.isSubject) {
                   <p class="context"><code class="dataset">{{ part.text }}</code></p>
@@ -44,8 +45,8 @@
                 }
               }
 
-              <p class="field"><code>pedagogical_answer</code></p>
-              <div class="answer">
+              <p class="field">Verified content</p>
+              <div class="content">
                 @for (segment of item.segments; track $index) {
                   <div class="segment">
                     @if (segment.label) {
@@ -58,7 +59,7 @@
                         }
                       </ul>
                     } @else if (segment.text) {
-                      <p [attr.lang]="segment.lang" [class.yo]="segment.lang === 'yo'">{{ segment.text }}</p>
+                      <p [attr.lang]="segment.lang">{{ segment.text }}</p>
                     }
                   </div>
                 }
@@ -66,11 +67,16 @@
             </li>
           }
         </ol>
-      } @else if (demo()) {
-        <p class="explain">No demo sources for this question. Demo sources exist only for the four starter questions.</p>
-      } @else {
-        <p class="explain">The API does not return the retrieved sources yet, so they cannot be shown for this answer.</p>
-      }
+      </div>
     </div>
   </div>
-</div>
+} @else {
+  <!-- An older backend returns no sources (or none matched): say so in one quiet line. -->
+  <p class="none">
+    @if (demo()) {
+      No demo sources for this question: demo data covers only the four starter questions.
+    } @else {
+      No sources came back with this answer.
+    }
+  </p>
+}

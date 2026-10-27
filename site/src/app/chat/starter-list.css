@@ -5,20 +5,12 @@
 .starters {
   max-width: var(--content);
   margin: 0 auto;
-  padding: 1.25rem 1rem 1.5rem;
-  animation: fade 0.3s ease both;
-}
-
-.label {
-  margin: 0 0.75rem 0.35rem;
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-  font-weight: 400;
+  padding: 0.75rem 1rem 1.5rem;
 }
 
 ul {
   display: grid;
-  gap: 0.15rem;
+  gap: 0.125rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -28,14 +20,15 @@ ul {
 .starter {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: 0.875rem;
   width: 100%;
-  padding: 0.6rem 0.75rem;
+  padding: 0.65rem 0.875rem;
   border: 0;
-  border-radius: 10px;
+  border-radius: 12px;
   background: transparent;
   color: var(--text);
   text-align: start;
+  transition: background-color 0.15s ease;
 }
 
 .starter:hover {
@@ -54,7 +47,7 @@ ul {
 }
 
 .yo {
-  font-size: 0.9375rem;
+  font-size: 1rem;
   line-height: 1.7;
 }
 
@@ -74,10 +67,4 @@ ul {
   color: var(--text-muted);
   font-size: 0.8125rem;
   text-align: center;
-}
-
-@keyframes fade {
-  from {
-    opacity: 0;
-  }
 }

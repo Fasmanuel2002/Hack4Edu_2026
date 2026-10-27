@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { ApiError, ApiService } from './api.service';
 import { Announcer, MediaQueries } from './browser';
-import { ANSWER_LABELS } from './corpus';
+import { answerLabel } from './corpus';
 import { HistoryStorage, groupConversations } from './history';
 import { AnswerKind, AnswerSlot, AttachmentInfo, Conversation, Turn } from './models';
 import { shortenAtWord } from './yoruba';
@@ -81,6 +81,8 @@ export class ChatStore {
   private revealTimer: ReturnType<typeof setInterval> | null = null;
   private clockTimer: ReturnType<typeof setInterval> | null = null;
   private loaded = false;
+  /** A question to ask in a new chat when /chat opens ("Ask Twins for Change to explain"). */
+  private queued: string | null = null;
 
   /** Reads saved history once, in the browser. */
   load(): void {
@@ -92,6 +94,17 @@ export class ChatStore {
 
   newChat(): void {
     this.activeId.set(null);
+  }
+
+  queueQuestion(question: string): void {
+    this.queued = question;
+  }
+
+  /** The queued question, once: the chat page asks it in a new chat. */
+  takeQueuedQuestion(): string | null {
+    const question = this.queued;
+    this.queued = null;
+    return question;
   }
 
   select(id: string): void {
@@ -154,9 +167,10 @@ export class ChatStore {
       this.activeId.set(conversation.id);
     }
     this.persist();
-    void this.run(conversation.id, turn.id, 'rag', text);
-    if (turn.plain) {
-      void this.run(conversation.id, turn.id, 'plain', text);
+    const compare = turn.plain !== null;
+    void this.run(conversation.id, turn.id, 'rag', text, compare);
+    if (compare) {
+      void this.run(conversation.id, turn.id, 'plain', text, compare);
     }
   }
 
@@ -171,7 +185,7 @@ export class ChatStore {
     this.updateSlot(conversationId, turnId, kind, () => pendingSlot(kind));
     this.updateConversation(conversationId, (c) => ({ ...c, updatedAt: Date.now() }));
     this.persist();
-    void this.run(conversationId, turnId, kind, turn.question);
+    void this.run(conversationId, turnId, kind, turn.question, turn.plain !== null);
   }
 
   /** Stop generating: cancels requests (AbortController) and freezes answers being revealed. */
@@ -204,6 +218,7 @@ export class ChatStore {
     turnId: string,
     kind: AnswerKind,
     question: string,
+    compare: boolean,
   ): Promise<void> {
     const key = slotKey(conversationId, turnId, kind);
     const controller = new AbortController();
@@ -220,10 +235,12 @@ export class ChatStore {
         receivedAt: Date.now(),
       }));
       this.persist();
+      // Announced once, when the answer is fully shown (never word by word).
+      const finish = () => this.announceDone(kind, compare, result.demo);
       if (this.media.reducedMotion() || !result.answer) {
-        this.announceDone(kind, result.demo);
+        finish();
       } else {
-        this.startReveal(key, result.answer, kind, result.demo);
+        this.startReveal(key, result.answer, finish);
       }
     } catch (error) {
       if (error instanceof ApiError && error.kind === 'aborted') {
@@ -236,7 +253,7 @@ export class ChatStore {
           status: 'error',
           error: message,
         }));
-        this.announcer.announce(`${ANSWER_LABELS[kind]} could not answer. ${message}`);
+        this.announcer.announce(`${answerLabel(kind, compare)} could not answer. ${message}`);
       }
       this.persist();
     } finally {
@@ -248,11 +265,10 @@ export class ChatStore {
     }
   }
 
-  private startReveal(key: string, text: string, kind: AnswerKind, demo: boolean): void {
+  private startReveal(key: string, text: string, onDone: () => void): void {
     const ends = wordEnds(text);
     const duration = Math.min(Math.max(ends.length * 28, 700), 4000);
     const step = Math.max(1, Math.ceil(ends.length / Math.max(1, duration / TICK_MS)));
-    const onDone = () => this.announceDone(kind, demo);
     this.revealing.set(key, { ends, step, onDone, index: 0 });
     this.reveals.update((map) => new Map(map).set(key, 0));
     this.revealTimer ??= setInterval(() => this.tick(), TICK_MS);
@@ -286,8 +302,8 @@ export class ChatStore {
     this.reveals.set(next);
   }
 
-  private announceDone(kind: AnswerKind, demo: boolean): void {
-    this.announcer.announce(`Answer ready: ${ANSWER_LABELS[kind]}.${demo ? ' Demo data.' : ''}`);
+  private announceDone(kind: AnswerKind, compare: boolean, demo: boolean): void {
+    this.announcer.announce(`Answer ready: ${answerLabel(kind, compare)}.${demo ? ' Demo data.' : ''}`);
   }
 
   private startClock(): void {

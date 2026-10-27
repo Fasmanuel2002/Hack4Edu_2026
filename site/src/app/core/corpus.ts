@@ -66,7 +66,12 @@ export function subjectOf(sourceDataset: string): string {
   return '';
 }
 
+/** The compare-mode labels from CLAUDE.md. Outside compare mode the tutor is just "Twins for Change". */
 export const ANSWER_LABELS = {
   rag: 'Twins for Change (Gemma + RAG)',
   plain: 'Plain Gemma (no RAG)',
 } as const;
+
+export function answerLabel(kind: keyof typeof ANSWER_LABELS, compare: boolean): string {
+  return compare ? ANSWER_LABELS[kind] : 'Twins for Change';
+}

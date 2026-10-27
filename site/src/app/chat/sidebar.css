@@ -1,4 +1,8 @@
-/* One scroll container for the whole sidebar: the wheel works anywhere over it. */
+/*
+ * The sidebar sits on a solid navy surface in both themes (.surface-navy on the <aside>): white
+ * and pale blue text, sky blue for the active chat and focus rings.
+ * One scroll container for the whole sidebar: the wheel works anywhere over it.
+ */
 :host {
   display: flex;
   flex-direction: column;
@@ -16,19 +20,20 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  min-height: 3.25rem;
-  padding: 0.4rem 0.5rem 0.4rem 0.6rem;
+  min-height: 3.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.625rem;
   background: var(--bg);
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.2rem 0.35rem;
-  border-radius: 8px;
+  gap: 0.625rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+  border-radius: 10px;
   color: var(--text);
   text-decoration: none;
+  transition: background-color 0.15s ease;
 }
 
 .brand:hover {
@@ -36,31 +41,35 @@
 }
 
 .name {
-  font-size: 0.9375rem;
-  font-weight: 500;
+  font-size: 1rem;
 }
 
 .body {
   flex: 1 0 auto;
-  padding: 0.25rem 0.5rem 1rem;
+  padding: 0.5rem 0.625rem 1rem;
 }
 
+/* New chat: the one action of the sidebar, a quiet outlined row. */
 .row {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.65rem;
   width: 100%;
-  min-height: 2.375rem;
-  padding: 0.35rem 0.55rem;
-  border: 0;
-  border-radius: 8px;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
   background: transparent;
   color: var(--text);
   font-size: 0.875rem;
   text-align: start;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .row:hover {
+  border-color: var(--border-strong);
   background: var(--hover);
 }
 
@@ -76,27 +85,30 @@ kbd {
 }
 
 .label {
-  margin: 1.1rem 0.55rem 0.2rem;
+  margin: 1.5rem 0.6rem 0.25rem;
   color: var(--text-muted);
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
 .group {
-  margin: 0.6rem 0.55rem 0.15rem;
+  margin: 0.85rem 0.6rem 0.2rem;
   color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 400;
 }
 
 .hint {
-  margin: 0.2rem 0.55rem 0;
+  margin: 0.25rem 0.6rem 0;
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
 .items {
+  display: grid;
+  gap: 1px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -106,33 +118,42 @@ kbd {
   display: flex;
   align-items: flex-start;
   border-radius: 8px;
+  transition: background-color 0.15s ease;
 }
 
 .item:hover {
   background: var(--hover);
 }
 
+/* The open chat: a lighter navy row with a sky blue edge (the accent, never colour alone). */
 .item.active {
   background: var(--selected);
+  box-shadow: inset 2px 0 0 var(--accent);
 }
 
 .open {
   flex: 1;
   min-width: 0;
-  padding: 0.45rem 0.55rem;
+  padding: 0.45rem 0.6rem;
   border: 0;
   border-radius: 8px;
   background: transparent;
   color: var(--text);
   font-size: 0.875rem;
-  line-height: 1.5;
+  line-height: 1.55;
   text-align: start;
   overflow-wrap: anywhere;
 }
 
+.open [lang='yo'] {
+  line-height: 1.7;
+}
+
 .tools {
+  --icon-size: 1rem;
   display: flex;
   opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
 .tools .icon-btn {
@@ -141,8 +162,8 @@ kbd {
   color: var(--text-muted);
 }
 
-.tools {
-  --icon-size: 1rem;
+.tools .icon-btn:hover {
+  color: var(--text);
 }
 
 .item:hover .tools,
@@ -159,56 +180,110 @@ kbd {
 
 .edit {
   display: grid;
-  gap: 0.45rem;
+  gap: 0.5rem;
   width: 100%;
-  padding: 0.45rem;
+  padding: 0.5rem;
   font-size: 0.875rem;
 }
 
 .edit input {
   width: 100%;
-  padding: 0.35rem 0.5rem;
+  padding: 0.4rem 0.55rem;
   border: 1px solid var(--border-strong);
-  border-radius: 6px;
-  background: var(--bg);
+  border-radius: 8px;
+  background: var(--raised);
 }
 
 .edit-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
+/* The status footer: one quiet two-line row that opens to the four facts CLAUDE.md lists. */
 .foot {
   position: sticky;
   bottom: 0;
-  padding: 0.6rem 1.05rem 0.75rem;
+  padding: 0.5rem 0.625rem 0.625rem;
   border-top: 1px solid var(--border);
   background: var(--bg);
   font-size: 0.75rem;
-  line-height: 1.55;
+  line-height: 1.5;
 }
 
-.foot dl div {
+.status summary {
   display: flex;
-  flex-wrap: wrap;
-  column-gap: 0.2rem;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 10px;
+  list-style: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
-.foot dt {
+.status summary::-webkit-details-marker {
+  display: none;
+}
+
+.status summary:hover {
+  background: var(--hover);
+}
+
+.summary-text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.summary-main {
+  color: var(--text);
+  font-size: 0.8125rem;
+}
+
+.summary-sub {
   color: var(--text-muted);
 }
 
-.foot dd {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
+/* The footer grows upwards when opened: the chevron points up, then down to close. */
+.chev {
+  --icon-size: 0.9rem;
+  color: var(--text-muted);
+  transform: rotate(-90deg);
+  transition: transform 0.2s var(--ease);
+}
+
+.status[open] .chev {
+  transform: rotate(90deg);
+}
+
+.status dl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.3rem 0.65rem;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0.6rem 0.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.status dl div {
+  display: contents;
+}
+
+.status dt {
+  color: var(--text-muted);
+}
+
+.status dd {
   color: var(--text);
 }
 
+/* The state is in the words next to it; the dot only repeats it. */
 .dot {
-  width: 0.45rem;
-  height: 0.45rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
   border-radius: 50%;
   background: var(--accent);
 }

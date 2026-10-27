@@ -29,6 +29,15 @@ function mediaQuery(query: string): MediaQueryList | null {
   return typeof window.matchMedia === 'function' ? window.matchMedia(query) : null;
 }
 
+/** localStorage, or null where it is blocked (some private modes throw on access). */
+export function browserStorage(): Storage | null {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
 export type Theme = 'light' | 'dark';
 export const THEME_KEY = 'tfc.theme';
 

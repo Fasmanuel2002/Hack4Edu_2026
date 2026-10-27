@@ -66,18 +66,22 @@ export interface ContextPart {
   readonly isSubject: boolean;
 }
 
-/** Splits a search_context ("Yorùbá | English", plus a subject for AfriMMLU) into its parts. */
+/**
+ * Splits a search_context ("Yorùbá | English", plus a subject for AfriMMLU) into its parts. A row
+ * whose own text contains " | " (3 MAFAND news sentences) cannot be split safely: it stays whole.
+ */
 export function splitSearchContext(searchContext: string, sourceDataset: string): ContextPart[] {
+  const whole = searchContext.trim();
   if (sourceDataset.startsWith('gsm8k')) {
-    return [{ text: searchContext.trim(), lang: 'en', isSubject: false }];
+    return [{ text: whole, lang: 'en', isSubject: false }];
   }
-  return searchContext
-    .split('|')
-    .map((part) => part.trim())
-    .filter((part) => part.length > 0)
-    .map((text, index) => ({
-      text,
-      lang: index === 0 ? 'yo' : index === 1 ? 'en' : null,
-      isSubject: index > 1,
-    }));
+  const parts = whole.split(/\s+\|\s+/);
+  if (parts.length !== (sourceDataset.startsWith('afrimmlu') ? 3 : 2)) {
+    return [{ text: whole, lang: null, isSubject: false }];
+  }
+  return parts.map((text, index) => ({
+    text,
+    lang: index === 0 ? 'yo' : index === 1 ? 'en' : null,
+    isSubject: index === 2,
+  }));
 }

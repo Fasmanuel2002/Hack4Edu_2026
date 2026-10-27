@@ -23,6 +23,7 @@ const types = {
   '.png': 'image/png',
   '.webp': 'image/webp',
   '.ico': 'image/x-icon',
+  '.woff2': 'font/woff2',
 };
 const compressible = new Set(['.html', '.js', '.mjs', '.css', '.json', '.txt', '.svg']);
 const cache = new Map();

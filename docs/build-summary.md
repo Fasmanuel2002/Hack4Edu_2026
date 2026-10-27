@@ -1,240 +1,381 @@
 # Build summary: Twins for Change frontend
 
-Step 1 (developer build) and the redesign pass requested by the author, 2026-10-25. The app lives
-in `site/`. It runs in mock mode by default (`useMock: true` in both environment files) and works
-with no backend and no internet.
+Passes so far: the first build and the redesign (2026-10-25), the quality-and-gamification pass
+(2026-10-26), and this **product pass (2026-10-27)**: the gamification is gone, the sources drawer
+shows the real sources that `POST /ask/rag` now returns, and the interface got its own identity
+(self-hosted fonts, a navy colour story, a few deliberate motion moments). The app lives in `site/`.
+
+Both environment files have `useMock: false`, set by the author on purpose; this pass did not
+touch them. Mock mode still exists, is covered by the unit tests, and comes back by setting
+`useMock: true` (see needs_review item 10).
 
 ## External packages and assets
 
-Nothing loads from the internet at runtime: no CDN, web fonts, analytics, remote images, UI
-component library, icon library, or third-party script. The only network calls go to
-`apiBaseUrl`, and only when `useMock` is `false`.
+Nothing loads from the internet at runtime: no CDN, remote fonts, analytics, remote images, UI
+component library, icon library or third-party script. Fonts are files in `site/public/fonts/`,
+served by the app itself. The only network calls go to `apiBaseUrl`, and only when `useMock` is
+`false`. **This pass added three font files and their two licence texts, and no npm package.**
 
-### npm packages (`site/package.json`)
+### Fonts (new in this pass)
+
+| File | Font | Licence | Why |
+|---|---|---|---|
+| `fonts/twins-sans-regular.woff2` (74.8 KB), `fonts/twins-sans-bold.woff2` (74.3 KB) | **Andika 6.101** by SIL International, subset and renamed **"Twins Sans"** (see needs_review item 5) | SIL Open Font License 1.1, `fonts/OFL-Andika.txt` | Body and UI text, Yorùbá included. SIL designed Andika for literacy and for African-language diacritics: clear letter shapes for readers, and mark positioning (`mark`, `mkmk`) that centres a tone mark over a dot-below letter. It is rarely seen, so it gives the product a voice that is not Inter, Roboto or a system font. |
+| `fonts/literata-display.woff2` (41.1 KB) | **Literata 3.103** (The Literata Project Authors, designed by TypeTogether), the variable font instanced at optical size 72 and weight 400, then subset | SIL Open Font License 1.1, `fonts/OFL-Literata.txt` (no Reserved Font Name) | The one display face: the welcome greeting and each page title. At its largest optical size it is a characterful book serif that echoes the open book of the logo. English display text only (see item 6). |
+
+How the files were made (fontTools 4.68.0, from the TTFs in `google/fonts` `ofl/andika/` and
+`ofl/literata/`, downloaded once outside the repository):
+
+```bash
+U='U+0000-024F,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A6,U+20AC,U+2190-21FF,U+2212,U+2022,U+2026'
+# Literata: pin the optical size and weight, then subset like the others.
+fonttools varLib.instancer 'Literata[opsz,wght].ttf' opsz=72 wght=400 -o literata-72.ttf
+# One woff2 per style, never unicode-range splits: a letter and its combining marks are always
+# shaped by the same file. All layout features and all name records are kept.
+pyftsubset Andika-Regular.ttf --flavor=woff2 --layout-features='*' --name-IDs='*' --notdef-outline \
+  --unicodes="$U" --output-file=twins-sans-regular.woff2      # same for Bold and literata-72.ttf
+# Andika only: name IDs 1, 2, 3, 4 and 6 become "Twins Sans", "Regular"/"Bold",
+# "TwinsSans-Regular;Twins for Change", "Twins Sans [Bold]", "TwinsSans-Regular"; IDs 16, 17, 21
+# and 22 are removed; ID 10 says: "Subset of Andika 6.101 by SIL International, made for Twins for
+# Change. A Modified Version under the SIL Open Font License 1.1, renamed because "Andika" and "SIL"
+# are Reserved Font Names." Copyright (0), trademark (7) and licence (13, 14) records are unchanged.
+```
+
+A self-check in the build script asserted, for each file: ẹ, ọ, ṣ, ń, ǹ, the combining grave,
+acute and dot below, á, ×, ÷ and ₦ are present, the `mark` feature exists (and `mkmk` for
+Andika), and the Andika files carry no "Andika" in their names. U+20A6 (₦) was added to the
+range the author gave, because Gemma's arithmetic can use naira amounts.
+
+`styles.css` declares them with `@font-face` and `font-display: swap`, and `index.html` preloads
+the regular body face and the display face (same URLs, `crossorigin`). System fonts remain as
+fallbacks: `'Twins Sans', 'Helvetica Neue', 'Segoe UI', 'Noto Sans', Roboto, Ubuntu, Arial,
+sans-serif` and `'Literata Display', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif`.
+The monospace stack is unchanged (code, `source_dataset` badges, the YO/EN tags, ranks).
+
+### npm packages (`site/package.json`, unchanged in this pass)
 
 | Package | Version | Shipped to the browser? | Why |
 |---|---|---|---|
 | `@angular/core`, `common`, `compiler`, `platform-browser`, `router` | 22.2.3 | Yes | The framework required by CLAUDE.md (latest stable Angular, standalone components, Signals). |
 | `rxjs` | 7.8.2 | Yes (via Angular) | Required peer dependency of Angular. The app code does not use it directly. |
 | `tslib` | 2.8.1 | Yes | TypeScript runtime helpers (Angular CLI default). |
-| `marked` | 18.1.1 | Yes, only in the lazy `/chat` chunk | The small Markdown renderer CLAUDE.md allows, for Gemma's answers. Raw HTML is shown as text, images are never rendered (no remote loads), only `http(s):`/`mailto:` links are kept (with `rel="noopener noreferrer"`), and Angular's sanitizer runs on the result (`[innerHTML]`). |
-| `@angular/ssr`, `@angular/platform-server` | 22.2.4, 22.2.3 | No (build time only) | Prerender `/architecture` to static HTML (`outputMode: "static"`). No Node server at runtime, no Express. |
+| `marked` | 18.1.1 | Yes, in the chat code | The small Markdown renderer CLAUDE.md allows, for Gemma's answers. Raw HTML is shown as text, images are never rendered (no remote loads), only `http(s):`/`mailto:` links are kept (with `rel="noopener noreferrer"`), and Angular's sanitizer runs on the result (`[innerHTML]`). |
+| `@angular/ssr`, `@angular/platform-server` | 22.2.4, 22.2.3 | No (build time only) | Prerender `/architecture` to static HTML (`outputMode: "static"`). No Node server at runtime. |
 | `@angular/build`, `@angular/cli`, `@angular/compiler-cli`, `typescript` | 22.2.4, 22.2.4, 22.2.3, 6.0.3 | No | Build toolchain. |
 | `vitest`, `jsdom` | 5.0.5, 30.1.3 | No | Unit tests (Angular 22's default runner and DOM environment). |
 | `prettier` | 3.9.10 | No | Formatter from the Angular CLI template; not used by the build. |
 
-`@angular/forms` came with the CLI template; it was unused, so I uninstalled it.
-
-### Assets (`site/public/`)
+### Other assets (`site/public/`)
 
 | Asset | Why |
 |---|---|
-| `brand/twins-for-change-mark.png` | The logo's mark only (the two figures and the open book), cropped from `assets/brand/twins-for-change-logo.png` as CLAUDE.md now requires: a 558 × 449 crop at offset (6, 4), which keeps a 20 px margin of the original's own white background. Nothing was redrawn, recolored or stretched, and the original in `assets/` is unchanged (checksum verified). Used as the fallback image. |
-| `brand/twins-for-change-mark-96.webp`, `-256.webp` | The same crop downscaled proportionally (`cwebp`, quality 92; 3 and 8 KB), served through `<picture>`/`srcset`. |
-| `favicon.ico` | The mark, padded with white to a square, at 64, 48, 32 and 16 px. It replaces the custom favicon from the first build. |
+| `brand/twins-for-change-mark.png` | The logo's mark only (the two figures and the open book), cropped from `assets/brand/twins-for-change-logo.png`: a 558 × 449 crop at offset (6, 4) that keeps a 20 px margin of the original's own white background. Nothing redrawn, recoloured or stretched; the original in `assets/` is unchanged. Fallback image. |
+| `brand/twins-for-change-mark-96.webp`, `-256.webp` | The same crop downscaled proportionally (3 and 8 KB), served through `<picture>`/`srcset`. |
+| `favicon.ico` | The mark, padded with white to a square. **Changed in this pass:** now only the 32 and 16 px frames (2.9 KB), downscaled from the previous file's own 64 px frame; it was 32 KB with 48 and 64 px frames, which sat in the critical path of a mobile first load (item 9). |
 
-Now unused (kept, not deleted, as instructed): `brand/twins-for-change-logo.png` and its six
-downscaled copies `brand/twins-for-change-logo-{320,480,960}.{png,webp}` (the full logo with the
-wordmark, no longer shown), and `favicon.svg` (the first build's custom mark). They are still
-copied into `dist/` but nothing references them. The author can delete them.
+Unused (kept, not deleted): `brand/twins-for-change-logo.png` and its six downscaled copies
+(`twins-for-change-logo-{320,480,960}.{png,webp}`, the full logo with the wordmark), and
+`favicon.svg` (the first build's custom mark). They are copied into `dist/` but nothing references
+them. The author can delete them.
 
 ### Other files
 
 | File | Why |
 |---|---|
-| `site/vercel.json` | Needed for routing: in static output mode `/chat` has no HTML file, so a direct visit or reload would 404 on Vercel. The rules send `/architecture` to its prerendered page and every other path that is not a real file to the app shell `index.csr.html`. Vercel serves existing files before rewrites. |
-| `site/scripts/serve-dist.mjs` | Local preview of the production build with the same fallback rules and brotli/gzip compression like Vercel. Node built-ins only, works offline. |
-| `site/scripts/generate-demo-data.py` | Python standard library only. Regenerates `src/app/core/starters.ts` and `src/app/core/demo-data.ts` from `CLAUDE.md` and `dataset_rag.csv` (read only), so Yorùbá text is copied, never retyped. |
+| `site/vercel.json` | Needed for routing: in static output mode `/chat` and `/practice` have no HTML file, so a direct visit or reload would 404 on Vercel. The rules send `/architecture` to its prerendered page and every other path that is not a real file to the app shell `index.csr.html`. Vercel serves existing files (including `/fonts/*`) before rewrites. Unchanged. |
+| `site/scripts/serve-dist.mjs` | Local preview of the production build with the same fallback rules and brotli/gzip compression as Vercel. Node built-ins only, offline. **This pass** added the `font/woff2` content type. |
+| `site/scripts/generate-demo-data.py` | Python standard library only. Regenerates `starters.ts`, `demo-data.ts` and `quiz-bank.ts` (in `src/app/core/`) from `CLAUDE.md` and `dataset_rag.csv` (read only), so Yorùbá text is copied, never retyped. Unchanged in this pass. |
 
-Tools used only for my own checks, installed in a temporary folder outside the repository:
-Playwright 1.64 (with the installed Chrome), Lighthouse 13.5, axe-core.
+Tools used only for checks, outside the repository: headless Chrome over the DevTools protocol (a
+copy of the coordinator's `cdp.mjs` whose fake `/ask/rag` now also returns `sources`, copied
+from real `dataset_rag.csv` rows), Lighthouse 12.8.2 (through `npx`), fontTools 4.68.0 (through
+`uv`) and Pillow (screenshot montages, the favicon downscale).
 
 ## needs_review
 
-### Backend gaps and removed features
+### Backend gaps (CLAUDE.md, "Not supported by the backend yet")
 
 1. **Token streaming.** The backend returns the full answer at once; the UI reveals it word by
-   word on the client, with a blinking cursor and a Stop button.
-2. **Retrieved sources.** `/ask/rag` returns only `{"answer"}`. In mock mode the "Verified sources
-   (top 3)" drawer shows real corpus rows labelled "Demo data"; with the real backend it says the
-   API does not return sources yet. Suggested backend change (backend team's call): also return
-   `sources: [{source_dataset, search_context, pedagogical_answer}]` in rank order. If scores are
-   added, keep showing ranks, not percentages.
-3. **Subject filter: removed.** At the author's request the "Subjects" section (heading, five
-   pills, "Preview only" note, its state and CSS) was removed from the sidebar, and the corpus
-   counts it used were dropped from the code. Search always covered all 15,791 rows anyway. It
-   could come back once the backend supports filtering, for example a `source_dataset` filter on
-   `/ask/rag`.
-4. **File uploads.** No upload endpoint. Attachments get chips, validation messages and a "not
-   sent" notice; the sent question records them as "Not sent". My choices: a 10 MB limit per file,
-   and `.jpeg` accepted along with `.jpg`.
-5. **Health of Ollama and Qdrant.** `/health/health` only shows that the API process is up.
+   word with a blinking cursor and a Stop button.
+2. **Subject filter: removed** at the author's request. It could come back once the backend
+   supports filtering, for example a `source_dataset` filter on `/ask/rag`.
+3. **File uploads.** No upload endpoint. Attachments get chips, validation messages and a "not
+   sent" notice. My choices: a 10 MB limit per file, and `.jpeg` accepted along with `.jpg`.
+4. **Health of Ollama and Qdrant.** `/health/health` only shows that the API process is up.
+
+"Retrieved sources" is no longer a gap: the drawer shows the backend's `sources` (see "What
+changed").
+
+### Fonts and licences
+
+5. **Andika's licence reserves its name.** The OFL lists "Andika" and "SIL" as Reserved Font
+   Names, and the OFL FAQ (2.5) and its page "Webfonts and Reserved Font Names" say a subset is a
+   Modified Version that must not use them. So the subset files, their internal names and the CSS
+   family are **"Twins Sans"**, with the origin stated in the font's description record and the
+   full licence in `fonts/OFL-Andika.txt`. Options if you prefer the real name: ask SIL for an RFN
+   permission, or ship SIL's own unmodified WOFF2 files (no rename needed, but the full character
+   set makes them several times larger, which would cost the mobile Lighthouse score).
+6. **Literata has no precomposed ǹ (U+01F9)** and no mark-to-mark feature. Chrome and Firefox
+   still draw ǹ correctly by decomposing it, but Safari may fall back to another font for that
+   letter. So Literata is used only for English display text: the greeting (its Yorùbá part is
+   "Báwo ni!", plain Latin-1) and the page titles. Every Yorùbá text, including the
+   "Àlàyé ní Èdè Yorùbá" heading inside answers, is set in Twins Sans. A future page title in
+   Yorùbá should use Twins Sans too.
+7. **No italic file.** Nothing in the interface uses italics; Markdown emphasis from Gemma gets the
+   browser's synthesized oblique. Andika Italic would add 79 KB.
+8. **Hinting kept.** Dropping TrueType hinting saves 18 KB per Andika file, but it did not move the
+   Lighthouse score, and hinting helps on Windows school PCs.
+
+### Performance decisions (mobile Lighthouse)
+
+9. With the three fonts, `/chat` first scored **77 to 85** for mobile performance (accessibility
+   and best practices 100). I measured each possible cause on a copy of the build (two Lighthouse
+   runs each) and kept the changes that helped without hurting the design:
+   - **`/chat` is in the main bundle** (it is the default route), which removes one network round
+     trip before the first paint: +3 to 4 points. The initial bundle is now 440 kB raw (120 kB
+     transferred; the warning budget is 500 kB). `/practice` and `/architecture` stay lazy.
+   - **The welcome screen needs no bold face.** The sidebar and top bar use regular weight, like
+     ChatGPT, with hierarchy from surface, colour and size; visually hidden headings are regular
+     too (hidden text still makes the browser download a font). The bold file loads with the first
+     answer; on a cold load, bold words show a synthesized bold for a moment, then swap.
+   - **The favicon** shrank from 32 KB to 2.9 KB.
+   - **Literata is preloaded** with the body face, so the greeting never swaps fonts after the
+     first paint (score neutral, but no visible flash).
+   - Tested and not kept: removing the welcome stagger (no change), dropping hinting (no change),
+     preloading the bold face too (worse: it competes with the JavaScript).
+
+   Result: `/chat` 93 to 94, `/practice` 93, `/architecture` 91 to 93 on mobile; 100 for all three
+   on desktop; accessibility and best practices 100 everywhere (table under "Verification").
+   Without any web font, `/chat` mobile measured 92 to 94, so the type now costs almost nothing.
 
 ### Deployment and configuration
 
-6. **RunPod URL missing.** `site/src/environments/environment.ts` uses the marked placeholder
-   `https://<pod-id>-8000.proxy.runpod.net` with `useMock: true`, so the Vercel build runs in demo
-   mode. Replace `<pod-id>` and set `useMock: false` once the pod exists (always `https://`).
-7. **`.gitignore` and `site/`.** When this build started, line 170 of the repository's
-   `.gitignore` (`/site`, from the mkdocs part of the Python template) excluded the Angular project
-   from Git, so Vercel would not have seen it. During the build that line was removed from outside
-   this task (I never edited the file). `site/` is now visible to Git as untracked; please confirm
-   that change. `site/.gitignore` still keeps `node_modules/`, `dist/` and `.angular/cache/` out.
-8. **Angular 22 with a global CLI 21.** Built with Angular 22.2 (latest stable on npm). Inside
-   `site/` the global `ng` delegates to the local CLI 22. Angular 22 needs Node ^22.22.3, ^24.15.0
-   or >= 26: choose Node 22.x or 24.x in Vercel.
-9. npm 11 on this laptop skipped the install scripts of `fsevents`, `lmdb` and `msgpackr-extract`
-   (optional native helpers). The build and the tests work without them.
+10. **Mock mode is off in both environment files (author's change).** `environment.ts` (the Vercel
+    build) still has the placeholder `https://<pod-id>-8000.proxy.runpod.net` with
+    `useMock: false`: every question fails with "Could not reach the API at …" (with Retry), and
+    the status shows "API offline". CLAUDE.md (Deployment) says the production build should stay in
+    mock mode until the RunPod URL exists. Decide before deploying: put the real pod URL there
+    (always `https://`), or set `useMock: true` for the Vercel build until the pod exists.
+11. **Angular 22 with a global CLI 21.** Inside `site/` the global `ng` delegates to the local CLI
+    22. Angular 22 needs Node ^22.22.3, ^24.15.0 or >= 26: choose Node 22.x or 24.x in Vercel.
+12. npm 11 on this laptop skipped the install scripts of `fsevents`, `lmdb` and
+    `msgpackr-extract` (optional native helpers). The build and the tests work without them.
 
 ### Backend code compared with CLAUDE.md
 
-The API contract matches (`POST /ask/rag` and `/ask/plain` with `{"question": string}` →
-`{"answer": string}`; `GET /health/health` → `{"status": "healty"}`; CORS allows all origins). The
-frontend accepts "healty" and "healthy". Observations, none changed:
+13. **The contract matches**, including the new field: `POST /ask/rag` returns
+    `{"answer": string, "sources": [{"source_dataset", "search_context", "pedagogical_answer"}]}`,
+    best first, no scores (`src/modules/app/src/ask_rag.py`; `search_context` is the Qdrant
+    `page_content`, which is the CSV's `search_context` column). `/ask/plain` returns
+    `{"answer": string}`; `GET /health/health` returns `{"status": "healty"}`; CORS allows all
+    origins. The frontend validates `sources`: a missing or malformed list counts as none, and a
+    malformed item is skipped without shifting the other ranks.
+14. **Three MAFAND rows contain " | " inside their own text** (data rows 2000, 3121 and 4916,
+    counted from 0 as pandas does), so their `search_context` cannot be split into Yorùbá and
+    English safely; the drawer shows them whole. Every other row splits as expected (AfriMMLU into
+    3 parts with the subject, GSM8K not at all). Row 3343 has "tẹ́|ẹ̀rí" without spaces and
+    splits correctly.
+15. Root `main.py` starts uvicorn on `127.0.0.1:8502` unless `PORT` is set; `docker-compose.yml`
+    sets `PORT=8000`, which matches CLAUDE.md and the development `apiBaseUrl`.
+16. The tutor prompt tells Gemma that verified answers are always correct; the UI never makes an
+    accuracy claim (the composer says "Twins for Change can make mistakes. Check the verified
+    sources.").
+17. 668 of the 15,791 corpus rows are not in Unicode NFC. The UI shows rows exactly as stored.
+18. **The answer polish depends on the tutor prompt's shape** (`src/modules/rag/prompts/
+    rag_prompt.py`): section headings that contain "Yorùbá" or "English", final lines that start
+    with `**Ìdáhùn` or `**Answer`, and the fallback sentence "…not in our verified database yet."
+    If the prompt changes these, answers still render as normal Markdown, only without the language
+    blocks, the answer callout or the calm note.
 
-10. Root `main.py` starts uvicorn on `127.0.0.1:8502` by default, while CLAUDE.md's command and the
-    development `apiBaseUrl` use port 8000.
-11. The backend prompt calls the context "100% ... verified"; the UI never makes that claim.
-12. `docker-compose.yml` at the repository root contains agent instructions for a different
-    project, not a Compose file.
-13. 668 of the 15,791 corpus rows are not in Unicode NFC (for example a Belebele row used as a demo
-    source). The UI shows rows exactly as stored; BM25 matching on them may suffer.
+### Gamification removal and Practice
 
-### Demo data and other decisions for the author
+19. **Gone completely** (XP, levels, streak, badges, daily challenge, header chip, XP chips, badge
+    toast, celebration, Reset progress); `core/progress.ts`, `core/progress.spec.ts` and
+    `shared/toast.ts` were deleted with the author's approval. Browsers that ran the previous build
+    still hold the `localStorage` key `tfc.progress.v1`; nothing reads or writes it any more. It is
+    harmless; clearing it would take one line if you want that.
+20. **Practice** starts at question 1 of the 25 every visit and stores nothing. The quiz bank, its
+    generator and its tests are unchanged.
 
-14. **Demo answers** for the four starters are composed from their corpus rows (Yorùbá copied by
-    the generator; English headings, the row's English summary and simple arithmetic added). They
-    are not Gemma output and are labelled "Demo data".
-15. **Plain Gemma in demo mode** shows a labelled placeholder instead of an invented answer.
-    Suggestion: capture real `/ask/rag` and `/ask/plain` answers for the four starters on the RTX
-    4090 run and add them to the generator.
-16. **Demo sources 2 and 3** are real rows I picked by topic, not hybrid-search results; the drawer
-    says so. Other questions in demo mode get a labelled "No demo answer" message.
-17. **Fonts.** Helvetica Neue comes first: on Apple devices the default system font (SF Pro) places
-    the acute and grave off-centre over ẹ and ọ (checked in screenshots). Then Segoe UI, Noto Sans,
-    Roboto.
-18. **URL strings in the bundle that are never requested:** XML namespaces (`www.w3.org`), Angular's
-    router URL-parsing base `http://fake`, Angular's sanitizer documentation link, marked's "please
-    report" GitHub link, the `http://` prefix marked adds to bare `www.` links, and the `apiBaseUrl`
-    placeholder. In the browser no request goes to any host except the local server.
-19. **Timeouts.** The client waits up to 5 minutes per answer (minimum required: 120 s). For a
+### Demo data and other decisions
+
+21. **Demo answers** (mock mode) follow the real prompt's shape; headings and final-answer labels
+    are copied by the generator from CLAUDE.md, the Yorùbá body from the starter's own corpus row.
+    They are not Gemma output and stay labelled "Demo data". **Plain Gemma in demo mode** shows a
+    labelled placeholder instead of an invented answer. Suggestion: capture real `/ask/rag` and
+    `/ask/plain` answers for the four starters on the RTX 4090 run and add them to the generator.
+22. **Demo sources 2 and 3** are real rows picked by topic, not hybrid-search results; the drawer
+    says so ("picked by hand. No search runs in demo mode.").
+23. **URL strings in the build output that are never requested:** XML namespaces (`www.w3.org`),
+    Angular's router URL-parsing base `http://fake`, Angular's sanitizer documentation link,
+    marked's "please report" GitHub link, the `apiBaseUrl` placeholder, and, new, the URLs inside
+    the two licence texts `fonts/OFL-*.txt`.
+24. **Timeouts.** The client waits up to 5 minutes per answer (minimum required: 120 s). For a
     non-local API, a dropped connection after 90 s or more, or HTTP 504/524, is reported as the
-    RunPod proxy timeout (about 100 s).
-20. **Compare columns** sit side by side when the thread is at least 640 px wide and stack below
-    that (always below 768 px; also at 768 px while the sidebar is open, where each column would be
-    under 240 px wide). Hiding the sidebar shows them side by side at 768 px.
-21. Compare mode resets on reload; theme and chat history are saved.
-22. Copy falls back to `execCommand('copy')` where the Clipboard API is unavailable (plain-http
-    school LANs).
-23. **The author's feedback overrides the first build's visual rules.** The atmosphere rules of the
-    first `.claude/agents/developer.md` (layered gradients, patterns, textures, sky-blue heading
-    highlight) were replaced by the minimal direction; developer.md, CLAUDE.md (Brand: mark only)
-    and the reviewer file were updated by the coordinator to match.
+    RunPod proxy timeout.
+25. **Compare columns** sit side by side when the thread is at least 640 px wide and stack below
+    that (always below 768 px; also at 768 px while the sidebar is open).
+26. Copy falls back to `execCommand('copy')` where the Clipboard API is unavailable.
+27. Left as they were (not mine to remove): the unused `image` icon in `shared/icon.ts` and the
+    unused brand files listed above.
+
+### Open review findings (2026-10-27, all low; see docs/qa-report.md)
+
+QA and the a11y/design review found no high or medium issues, so no revision pass was run.
+These low items are left for the author:
+
+28. QA #65: the production build's "Could not reach the API" message shows the `<pod-id>` placeholder
+    URL. Goes away once the RunPod URL is set.
+29. QA #42: the Compare chip's visible label is "Compare"; the full "Compare with plain Gemma" is only
+    in its accessible name and tooltip.
+30. QA #34: the sources list is not capped at 3 if a future backend returns more.
+31. QA #49: the old `tfc.progress.v1` localStorage key from the gamified build is never removed.
+32. A11y: "Skip to main content" does nothing while the mobile drawer is open (`app.ts` `skipToMain`).
+33. A11y: on `/chat` the sidebar headings come before the h1 in page order (no level is skipped).
+34. A11y: hidden "Rank" labels can let the outer frame scroll on `scrollIntoView`. Fix: add
+    `position: relative` to `.rank` in `sources.css`.
+35. A11y: in the dark theme, the backdrop behind the mobile drawer barely dims the page.
+36. A11y: `/chat` and `/practice` have no page-level footer.
+37. A11y: at 375 px the open tone-mark bar wraps to 3 rows, so the docked composer covers about 45%
+    of the screen.
+38. A11y: the 96 px logo file is 96 × 78 instead of 96 × 77 (about 1%, invisible at 28 px).
+
+## What changed in this pass (2026-10-27)
+
+**1. Gamification removed.** All code and UI listed in item 19, every import and call site (app
+shell, chat store, answer, chat page, starter list, top bar, Practice), the `.xp-chip` styles,
+`hasToneMarks` (only the badge used it) and six icons that only the badges used (flame, globe,
+scale, search, bulb, tone). `LETTERS` moved to `core/quiz.ts`.
+
+**2. Real sources from the backend.** `ApiService` reads `sources` from `/ask/rag` (never from
+`/ask/plain`) through `readSources()`: anything that is not a list counts as none, items without
+the three strings are skipped, and the rank is the item's position in the backend's list (1 =
+best match). Sources are saved with the answer in the chat history, and saved items that are
+malformed are dropped on load, so they can never break the drawer. The drawer shows, per source:
+the rank in a small circle, the `source_dataset` badge in monospace and its subject; "Matched
+text", the `search_context` split into its Yorùbá line (`lang="yo"`) and the muted English line
+(AfriMMLU's subject id as a badge); "Verified content", the full `pedagogical_answer` in a tinted
+inset with the corpus labels as small bold labels and options as chips. The caption says "Found by
+hybrid search over the corpus, best match first." (real) or that the rows are demo data. If no
+sources come back (an older backend), the drawer is replaced by one quiet line: "No sources came
+back with this answer." Splitting uses a spaced pipe and the part count each dataset should have
+(item 14).
+
+**3. A real product feel.** New type, colour and motion (next section), and copy that reads like a
+shipped tool: the assistant is "Twins for Change" (the CLAUDE.md labels with "(Gemma + RAG)" and
+"(no RAG)" appear only in compare mode, and announcements follow the same rule); the disclaimer
+under the composer is "Twins for Change can make mistakes. Check the verified sources."; the
+starter list lost its "Try a question from the corpus" label (a hidden "Suggested questions"
+heading keeps the structure); the empty history says "Your chats will appear here. They stay in
+this browser."; the sidebar status is a two-line row. The architecture page now shows the
+`/ask/rag` response with `sources` and no longer lists retrieved sources as a gap.
 
 ## Design choices
 
-The author asked for a minimalist tool like ChatGPT and Gemini. The interface is a quiet chat tool
-built for reading long Yorùbá and English answers and comparing two answers quickly.
+The author wants a quiet, ChatGPT-like structure with its own identity, solid surfaces, no
+gradients, patterns or textures, and nothing that looks like a hackathon demo.
 
-- **Flat surfaces.** No gradients, patterns, textures, glows, or decorative lines. Light theme:
-  white page and white sidebar, gray-blue `#D6DEEA` borders, navy text, brand blue only for the
-  send button, links and pressed chips. Dark theme: flat navy, white text, sky blue accents, light
-  navy for the composer surface and the selected row. Areas are separated by spacing and a few thin
-  borders. Only the composer (and the mobile drawer) has a very soft shadow, in the light theme.
-- **Welcome screen.** Vertically centred: the small mark, one modest heading "Báwo ni! How can we
-  learn together today?" (28–32 px, medium weight, no colour, wraps instead of clipping), the
-  composer right under it, and the four starter questions as quiet rows (line icon, the Yorùbá
-  line, the English line muted underneath). Demo mode is one small muted line with a pill. A short
-  fade is the only motion. After the first message the composer docks at the bottom.
-- **Sidebar.** Plain rows with line icons and a subtle hover: the mark and name, New chat (with the
-  shortcut hint), small muted section labels, history grouped by date with rename and delete on
-  hover or focus, and a compact four-line status footer.
-- **Composer.** One rounded box: "+" on the left, the text box, then small chips for Compare and
-  Tone marks (accent outline when on) and a round send button that becomes a square Stop. The tone
-  mark bar and the attachment list are slim rows inside the box. On narrow screens the text box
-  takes the first line and the controls the second.
-- **Messages.** The user's question is a light bubble on the right with a small avatar, "You" and
-  the time. Answers have no bubble: a small avatar, a small plain label, a "Demo data" pill, the
-  time, the Markdown, and icon-only Copy and Regenerate buttons (named for screen readers, with
-  tooltips). Yorùbá blocks keep one thin rule at their start (meaningful: it keeps the two
-  languages distinct; a small legend explains it).
-- **Compare mode.** Two equal columns under the question, the same typography as normal answers,
-  one thin divider, each with its own label ("Twins for Change (Gemma + RAG)", "Plain Gemma (no
-  RAG)"), loading line and actions; the sources drawer only under the RAG column. Told apart by
-  label and position, never by colour.
-- **Logo.** Only the mark, on white: directly on the white surfaces in the light theme, on a small
-  white rounded tile in the dark theme. Used in the sidebar header, above the greeting, in the top
-  bar when the sidebar is hidden, and as the favicon. Alt text "Twins for Change".
-- **Typography.** System fonts tested for Yorùbá (item 17); body 16 px, one modest heading size,
-  muted secondary text; line height at least 1.6, 1.7 for `[lang="yo"]`, 1.75 for Yorùbá in
-  answers; Yorùbá text is never uppercased or put in a fixed-height box with hidden overflow;
-  monospace for code and `source_dataset` badges.
-- **Contrast.** Text pairs from the palette only: navy/white 13.3, blue/white 6.5, white/navy 13.3,
-  sky/navy 8.6, pale/navy 10.5; muted text is navy at 78% (6.8:1). Input boundaries are 3:1 or more
-  (navy at 55% on white, pale blue at 50% on navy). The dark-theme send button is sky blue with a
-  navy arrow (8.6:1). Focus rings: brand blue on white, sky blue on navy. Sky on white and blue on
-  navy are never used for text, icons or focus rings.
-- **Motion.** The word-by-word reveal and the sources drawer (0.2 s) are the main motion, plus the
-  short welcome fade. Under `prefers-reduced-motion`, animations stop and answers appear in full at
+- **Type.** Twins Sans (Andika) at 16 px for everything people read, with line height 1.6 (1.7
+  for Yorùbá, 1.75 inside answers and quiz text), so marks above and below never touch or clip.
+  Literata Display at one size only (`clamp(1.625rem, …, 2rem)`, 26 px on phones, 32 px on
+  desktop) for the greeting and the page titles. Two weights in the body face: regular for the
+  interface, bold for structure inside answers (labels, step names, headings, the final answer).
+  Monospace for code, dataset badges, ranks and the YO/EN tags.
+- **One colour story.** Navy (adire indigo) is the dominant colour: the sidebar is a solid navy
+  surface in both themes (a deeper shade, #08214A, in the dark theme so it still reads as its own
+  surface next to the navy canvas). Sky blue is the one sharp accent and lives on navy only: the
+  open chat's edge, the online dot, focus rings, the assistant avatar's marks, and every accent in
+  the dark theme. On white, brand blue drives the few actions (send, primary buttons, the pressed
+  Compare chip). The answer callout uses a light tint of pale blue (light theme) or light navy
+  (dark theme). No other hues. All text pairs were measured: navy/white 13.3, muted #415B86 on
+  white 6.9 and on the grey-blue tint 5.9, blue/white 6.5, white/navy 13.3, pale/navy 10.5,
+  sky/navy 8.6, white on #08214A 15.8, sky on the pressed-chip tint 5.2 (dark) and blue on its
+  tint 5.6 (light). Sky on white and blue on navy are never used for text, icons or focus rings.
+- **Sidebar.** Brand lockup (the mark on its small white tile, then the name), an outlined New
+  chat row with its shortcut, a small "Chats" label, date groups, and the open chat as a lighter
+  navy row with a sky edge. The status footer is one two-line row ("API online" over "gemma3:4b ·
+  Qdrant hybrid", with a state dot) that opens upwards to LLM, Search, API and Backend.
+- **Welcome.** Mark (56 px, on white), the greeting, the composer and four quiet starter rows
+  (subject icon, the Yorùbá question, the English muted underneath), centred vertically.
+- **Thread.** User messages in a soft grey-blue bubble with a "tail" corner; answers flat on the
+  canvas with a small avatar, a bold label and the time. The YO/EN blocks keep their thin rule and
+  now carry outlined monospace tags; the final-answer line is a tinted callout band. Arithmetic
+  keeps tabular figures. Compare mode: two equal columns with one thin divider, the same
+  typography, told apart by label and position.
+- **Composer.** One rounded box with a soft shadow; its border keeps 3.4:1 against the page as an
+  input boundary. "+", the text box, the Compare and Tone marks chips, and one round button that
+  is Send, disabled, or Stop.
+- **Practice.** The display-face title, one line of explanation, then one question at a time:
+  "Question N of 25 · Subject", the Yorùbá question large with the English muted, four outlined
+  option rows, and after an answer an icon plus words ("Correct" / "Not quite", "Your answer",
+  "Verified answer"), never colour alone.
+- **Motion (CSS only).** One orchestrated welcome load: mark 0 ms, greeting 70 ms, composer
+  140 ms, starter rows 210, 280, 350 and 420 ms, each fading and rising 8 px over 400 ms with an
+  ease-out curve. New messages ease in (350 ms). The progressive answer keeps its blinking cursor.
+  The sources drawer opens by animating its grid row from 0fr to 1fr (280 ms) while its content
+  fades in. The send button changes colour in place (200 ms) and its icon swaps with a short scale.
+  The fill mode is `backwards`, so nothing keeps a transform after it moves. With
+  `prefers-reduced-motion`, every animation and transition is instant and answers appear in full at
   once.
 
-## Scrolling: bugs found and fixed (redesign pass)
+## Quiz bank (generated)
 
-Reproduced with Playwright in Chrome at 1440×900, 1280×800, 768×1024 and 375×740 in both themes,
-with seeded long answers, compare mode and 40+ chats, before and after the fix.
+`npm run generate:demo-data` (or `python3 site/scripts/generate-demo-data.py`) writes
+`site/src/app/core/quiz-bank.ts` from the AfriMMLU rows of `dataset_rag.csv`, read only, with no
+randomness:
 
-| Bug found | Fix |
-|---|---|
-| The page itself could scroll on desktop and tablet (the document was 1,007 px taller than a 1440×900 window; `window.scrollTo` or a `scrollIntoView` moved the whole app and left blank space). | The chat shell is now `position: fixed; inset: 0`, so the document never scrolls (height = viewport, `scrollTo` has no effect). |
-| The sidebar history did not scroll on its own at 768 px and wider with many chats. | The grid row is `minmax(0, 1fr)` and the whole sidebar is one scroll container (sticky header and status footer, `overscroll-behavior: contain`), so the wheel works anywhere over it. |
-| The wheel did nothing over the composer or the top bar (the thread was a separate box). | One scroll container holds the sticky top bar, the thread and the sticky docked composer, so the wheel over any of them scrolls the thread. |
-| Nothing followed the answer while it was revealed, and there was no way back to the latest message. | While the view is at the bottom it follows the reveal. Scrolling up (wheel, touch, Arrow Up, Page Up, Home, or dragging the scrollbar) stops following without pulling the reader back, and a round "Scroll to latest message" button appears above the composer. |
-| After sending at 768 and 375 px the new question was not in view. | Sending always goes to the latest message. |
-| Opening a chat landed in the middle of the thread. | Opening a chat starts at the latest message. |
-| A sources drawer opening near the bottom could end up behind the composer. | Opening a drawer stops following, and `scroll-padding` equals the measured height of the docked composer (ResizeObserver), so `scrollIntoView` keeps it visible. |
+- **Parsing.** Options from the `- Options (Yorùbá): A) … | B) …` and `- Options (English): …`
+  lines (the "A) " prefix dropped, the rest copied), the letter from `- Verified Answer (English):
+  X) …`. Each item keeps the row's `source_dataset`, its subject id and an id made of the dataset
+  and the row's position in the CSV.
+- **Skipped rows**: not exactly four options A–D in both languages; a verified answer that does
+  not match the option it names; the same option twice in one language; different numbers in the
+  Yorùbá and English text; invisible U+200C characters where tone marks should be; spreadsheet
+  artifacts such as "18-Jan"; questions that point to a table, figure or passage the row does not
+  include; "I and II only" style options; options longer than 56 characters or questions longer
+  than 220; duplicates; and the two AfriMMLU starter questions (kept fresh for the A/B demo).
+- **Selection.** For each of the five subjects, the item in the middle of each fifth of the valid
+  rows, in corpus order: 5 per subject, 25 in total, interleaved by subject so "Next question"
+  moves from subject to subject. The items are copied exactly, including some weak Yorùbá
+  translations; a Yorùbá speaker should review the list.
 
-Checked and fine before and after: no nested scroll areas in compare columns, no horizontal scroll,
-and the page behind the mobile drawer does not move (the thread is also locked while the drawer is
-open).
+## Scrolling (redesign pass, still valid)
+
+The chat shell is fixed to the viewport, so the page never scrolls; the sidebar and the workspace
+(sticky top bar, thread, sticky docked composer) are the only scroll containers. While at the
+bottom the view follows the revealed answer; scrolling up stops that and shows a round "Scroll to
+latest message" button. Sending and opening a chat go to the latest message, and opening a
+sources drawer stops following, with `scroll-padding` equal to the docked composer's height.
 
 ## What was built
 
-- **Routes.** `/chat` (default; rendered in the browser) and `/architecture` (prerendered). `/` and
-  unknown paths go to `/chat`. Titles "Chat · Twins for Change" and "How it works · Twins for
-  Change". One `h1` per route.
+- **Routes.** `/chat` (default; rendered in the browser, in the main bundle), `/practice`
+  (rendered in the browser, lazy) and `/architecture` (prerendered, lazy). `/` and unknown paths go
+  to `/chat`. Titles "Chat · Twins for Change", "Practice · Twins for Change" and "How it works ·
+  Twins for Change". One `h1` per route.
 - **Sidebar** (`aside` with `nav`): New chat with Ctrl/Cmd + Shift + O; history in `localStorage`
-  grouped by Today, Yesterday, Previous 7 days, Previous 30 days and Older, with rename and delete
-  (inline confirmation); status footer (`LLM: gemma3:4b (Ollama)`, `Search: Qdrant hybrid (bge-m3 +
-  BM25, RRF)`, `API: Demo mode / online / offline` from polling `/health/health` every 30 s, and
-  `Backend: local, no internet needed after setup` or `Backend: RunPod (cloud)`). Below 768 px it
-  is a drawer (focus moves in, the page behind is inert and locked, Escape closes it).
-- **Welcome screen, messages, compare mode, composer:** as described in Design choices. Starter
-  rows send their Yorùbá question at once. Copy, Regenerate, Stop (`AbortController` or freezing the
-  reveal), Markdown with numbered steps, code blocks and tables; `lang="yo"` on Yorùbá text.
-- **Verified sources (top 3)** under each Twins for Change answer: rank, monospace `source_dataset`
-  badge, subject, the matched `search_context` (Yorùbá, then English muted), and the full
-  `pedagogical_answer` with its corpus labels styled and options split.
-- **Composer details.** Text box up to 200 px (Enter sends, Shift + Enter adds a line); tone mark
-  bar (one tab stop, arrow keys between the 19 characters, inserts the whole sequence at the cursor
-  and puts the cursor after it); attachments by "+" or drag and drop anywhere, with chips, previews,
-  validation in an `aria-live` region and the "not sent" notice.
-- **Errors.** 422, 500, network failure, proxy timeout, client timeout and unexpected responses each
-  show a message with Retry; an offline API shows one muted line with "Check again".
-- **Theme.** Light and dark; follows `prefers-color-scheme` until the user toggles it (saved, and
-  applied before the first paint).
-- **`/architecture`.** Flat page: the five-step pipeline as a numbered list, the compare baseline,
-  pipeline settings, deployment (cloud and local mode), corpus table, API table, and what the
-  backend does not do yet.
+  grouped by date, with rename and delete; the status row. Below 768 px it is a drawer (focus moves
+  in, the page behind is inert, Escape closes it).
+- **Chat**: welcome screen with the four starters, messages with avatars, times, Copy and
+  Regenerate, progressive display with Stop, compare mode, the sources drawer, Markdown with the
+  answer polish (language blocks, answer callout, equations, the calm out-of-database note), error
+  messages with Retry, and the composer (tone mark bar, attachments that are not sent, Enter and
+  Shift + Enter). One polite live region announces each finished answer once.
+- **Practice**: the plain quiz described above. **How it works**: pipeline, settings, deployment,
+  corpus table, API and the remaining backend gaps.
+- **Theme**: light and dark, following `prefers-color-scheme` until the toggle saves a choice.
 
 ## How to run with `ng serve`
 
 ```bash
 cd site
 npm install
-ng serve          # http://localhost:4200, mock mode (no backend needed)
+ng serve          # http://localhost:4200
 ```
 
-Other commands: `ng test --watch=false` (unit tests) and `npm run generate:demo-data`.
+With `useMock: false` (the current setting), start the backend first (CLAUDE.md, Commands);
+otherwise the chat shows "API: offline". Other commands: `ng test --watch=false` (unit tests) and
+`npm run generate:demo-data` (regenerates starters, demo answers and the quiz bank).
 
 ## How to serve the production build locally
 
@@ -245,23 +386,26 @@ npm run serve:dist                # same as: node scripts/serve-dist.mjs
 ```
 
 It serves `dist/site/browser` at **http://localhost:4300** (another port: `PORT=4301 npm run
-serve:dist`). Stop it with Ctrl + C. It needs no packages and no internet. Routing matches
-`vercel.json`: existing files are served as they are (JS, CSS, images, and `architecture/index.html`
-for `/architecture`); every other path, such as `/`, `/chat` or `/any/unknown/path`, returns the
-app shell `index.csr.html` with status 200, and the Angular router shows `/chat` (redirecting `/`
-and unknown paths there). Text files are compressed (brotli or gzip) like on Vercel.
+serve:dist`). Stop it with Ctrl + C. Routing matches `vercel.json`: existing files are served as
+they are (including `architecture/index.html` and the fonts); every other path, such as `/`,
+`/chat`, `/practice` or `/any/unknown/path`, returns the app shell `index.csr.html` with status
+200, and the Angular router shows the right page (redirecting `/` and unknown paths to `/chat`).
 
-## How to switch from mock mode to the real backend
+## How to switch between mock mode and the real backend
 
 Only the two environment files change.
 
-- **Stage 2, everything local.** Start Qdrant, Ollama and the backend with the commands in CLAUDE.md
-  (uvicorn on port 8000; see item 10). In `site/src/environments/environment.development.ts` set
-  `useMock: false` (keep `apiBaseUrl: 'http://localhost:8000'`) and run `ng serve`. The sidebar
-  shows "API: online" and "Backend: local, no internet needed after setup".
-- **Stage 3, RunPod + Vercel.** In `site/src/environments/environment.ts` set `apiBaseUrl` to
-  `https://<real-pod-id>-8000.proxy.runpod.net` and `useMock: false`. Never use `http://` there
-  (mixed content). Rebuild and deploy.
+- **Mock mode (no backend needed):** set `useMock: true` in
+  `site/src/environments/environment.development.ts` (for `ng serve`) and/or `environment.ts` (for
+  the production build). Answers to the four starters are demo data built from their corpus rows,
+  with demo sources labelled "Demo data".
+- **Stage 2, everything local:** start Qdrant, Ollama and the backend with the commands in CLAUDE.md
+  (uvicorn on port 8000), keep `apiBaseUrl: 'http://localhost:8000'` and `useMock: false` in
+  `environment.development.ts`, and run `ng serve`. The status row shows "API online" and, opened,
+  "Backend: local, no internet needed after setup". The drawer then shows the real top 3 sources.
+- **Stage 3, RunPod + Vercel:** in `environment.ts` set `apiBaseUrl` to
+  `https://<real-pod-id>-8000.proxy.runpod.net` and `useMock: false` (see item 10). Never use
+  `http://` there (mixed content). Rebuild and deploy.
 
 ## Vercel settings and deploy steps
 
@@ -274,43 +418,62 @@ Only the two environment files change.
 | Node.js version | 22.x or 24.x (Angular 22 requirement) |
 | Base href | `/` (set in `src/index.html`) |
 
-Steps for the author (agents do not deploy): confirm the `.gitignore` change (item 7); commit
-`site/` and `docs/`; import the repository in Vercel with the settings above; deploy; check a
-reload on `/chat` and a direct visit to `/architecture`. Until the RunPod URL exists the site runs
-in demo mode, with every mock answer labelled "Demo data".
+Steps for the author (agents do not deploy): settle item 10 first; commit `site/` and `docs/`;
+import the repository in Vercel with the settings above; deploy; check a reload on `/chat` and
+`/practice`, a direct visit to `/architecture`, and that `/fonts/twins-sans-regular.woff2` loads.
 
-## Verification of this build
+## Verification of this pass (2026-10-27)
 
-- **Production build:** succeeds with no warnings and no budget warnings. Initial bundle 285.27 kB
-  raw (about 80 kB transferred); lazy chunks `/chat` 134.42 kB (about 34 kB) and `/architecture`
-  15.24 kB (about 4 kB). One route prerendered.
-- **Unit tests** (`ng test --watch=false`): 7 files, 56 tests, all passing: the API service in mock
-  and real mode (exact POST body and URL, 422/500, network failure, missing answer, timeout of at
-  least 120 s, user stop, health incl. "healty"); tone mark insertion at the cursor (function and
-  composer DOM); chat history storage (save, load, corrupt data, reload while pending, date groups,
-  rename, delete, no history sent, compare calls both endpoints, stop); the Compare chip; Markdown
-  safety and heading levels; corpus label parsing; demo-data integrity; the live region.
-- **External URL grep** of `dist/`: only the strings in item 18 plus licence text in
-  `3rdpartylicenses.txt`.
-- **Browser checks** (Playwright + Chrome on the production build): the scroll checks above at four
-  sizes in both themes; follow, unpin and "Scroll to latest" with a long answer from a local
-  stand-in backend (same routes as `src/modules/app`; a scratch build with `useMock: false`,
-  environment file restored right after) at 1280×800, 1440×900 in compare mode, and 375×740; no
-  console errors; no request to any host but the local server.
-- **axe-core** (WCAG 2.1 A/AA + best practices): 0 violations on the welcome screen, a long answer
-  with sources open, and compare mode, in light and dark at 1280 px; welcome and compare at 375 px;
-  and `/architecture` in dark.
-- **Lighthouse 13.5** (mobile, local server with compression): `/chat` 94 / 100 / 100 and
-  `/architecture` 100 / 100 / 100 (performance / accessibility / best practices).
+- **Production build:** succeeds with no warnings. Initial 439.95 kB raw (120.30 kB transferred);
+  lazy `/practice` 24.31 kB (6.61 kB, includes the quiz bank) and `/architecture` 14.73 kB
+  (4.32 kB). One route prerendered.
+- **Unit tests** (`ng test --watch=false`): 8 files, 76 tests, all passing. New or changed in this
+  pass: the API service in real mode returns ranked sources exactly as sent, treats a missing,
+  non-list or null `sources` as none, skips a malformed item without shifting ranks, and never
+  reads sources from `/ask/plain`; history keeps an answer's sources and drops a malformed saved
+  one; `splitSearchContext` keeps a row whole when its own text contains " | " and splits only on
+  a spaced pipe; the quiz-bank tests no longer test the daily challenge. Still covered: mock mode
+  offline with 3 ranked demo sources, tone mark insertion at the cursor (with combining marks),
+  chat history storage, compare mode, Stop, the live region and the Markdown polish.
+- **Gamification grep** (`xp`, `streak`, `badge`, `level`, `toast`, `daily`, `progress`) over
+  `site/src`: only unrelated words remain ("source_dataset badges", "Income levels" in a corpus row,
+  Markdown heading levels, "progressive display").
+- **External URL grep** of `dist/site/browser`: only the strings in item 23.
+- **Lighthouse 12.8.2** on the production build (`serve-dist.mjs`), performance / accessibility /
+  best practices:
+
+  | Route | Mobile (2 runs) | Desktop |
+  |---|---|---|
+  | `/chat` | 93–94 / 100 / 100 (FCP 1.8 s, LCP 2.6 s, TBT 170–190 ms, CLS 0) | 100 / 100 / 100 |
+  | `/practice` | 93 / 100 / 100 | 100 / 100 / 100 |
+  | `/architecture` | 91–93 / 100 / 100 | 100 / 100 / 100 |
+
+- **Fonts in real renders:** the four starter questions and "ẹ́ ọ̀ ṣ ń ǹ Ẹ́ Ọ̀" in NFC and in NFD
+  (for example e + U+0323 + U+0301), in the shipped Twins Sans regular and bold and Literata
+  Display files, at 17 and 56 px: every tone mark sits centred over its dot-below letter and
+  nothing clips. In the app, the four starters were sent as NFD questions: the bubbles keep the NFD
+  text (checked in the DOM) and render like NFC, and an NFD answer renders correctly.
+- **Browser checks** (headless Chrome, fake backend at `localhost:8000` returning 3 real CSV rows
+  as `sources`) at 1440 px light and dark, 768 px and 375 px light and dark: welcome, pending, an
+  answer, the sources drawer open, compare pending and done, and Practice before and after an
+  answer. Also: the older-backend line (no `sources`), the status footer open in both themes,
+  rename and delete on navy, the tone mark bar, the mobile drawer in both themes, `/architecture`
+  at 1440 (light and dark) and 375 px, and reduced motion (stagger delays 0, answer shown in full at
+  once). No horizontal scroll at any width, no console errors or exceptions; the welcome screen
+  loads only the regular and display faces. The stagger was read from the computed styles: 0, 70,
+  140, 210, 280, 350 and 420 ms, 400 ms each.
 
 ## Main files
 
-- `site/src/app/core/`: API service and mock mode, configuration token, chat state and reveal,
-  history storage, health polling, theme, media queries and live announcer, Markdown, corpus label
-  parsing, corpus facts, Yorùbá helpers and tone marks, generated starters and demo data.
-- `site/src/app/chat/`: chat page (layout and scrolling), sidebar, welcome heading, starter list,
-  answer, sources drawer, composer.
-- `site/src/app/architecture/`: the prerendered architecture page.
-- `site/src/app/shared/`: top bar, logo mark, icons.
-- `site/src/styles.css`: palette tokens, themes, focus rings, buttons, Markdown styles.
-- `site/src/environments/`: `apiBaseUrl` and `useMock` for development and production.
+- `site/public/fonts/`: the three woff2 files and `OFL-Andika.txt`, `OFL-Literata.txt` (new).
+- `site/src/styles.css`: `@font-face`, palette tokens, the `.surface-navy` token set, the `rise`
+  motion, Markdown and answer polish styles.
+- `site/src/index.html`: the two font preloads and the favicon sizes.
+- `site/src/app/core/`: `api.service.ts` (`readSources`), `history.ts` (saved sources checked),
+  `pedagogical.ts` (search-context split), `chat-store.ts` and `corpus.ts` (mode-aware labels),
+  `quiz.ts` (letters and subject names); specs updated.
+- `site/src/app/chat/`: sidebar, welcome, starter list, composer (one Send/Stop button), answer,
+  sources drawer, chat page.
+- `site/src/app/practice/`: the plain quiz. `site/src/app/architecture/`: API table and gaps.
+- `site/src/app/shared/`: top bar (no progress chip), icons (badge icons removed).
+- `site/src/app/app.routes.ts`: `/chat` in the main bundle.

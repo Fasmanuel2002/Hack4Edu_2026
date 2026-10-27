@@ -52,7 +52,7 @@ Section labels inside `pedagogical_answer` start a line and end with `]:`. Style
 ### Backend API (FastAPI, `src/modules/app/`; base URL `http://localhost:8000` locally, the RunPod HTTPS URL in production)
 | Method | Path | Request body | Response | Use |
 |---|---|---|---|---|
-| POST | `/ask/rag` | `{"question": string}` | `{"answer": string}` | Twins for Change: Gemma + RAG |
+| POST | `/ask/rag` | `{"question": string}` | `{"answer": string, "sources": [{"source_dataset": string, "search_context": string, "pedagogical_answer": string}]}` | Twins for Change: Gemma + RAG. `sources` are the 3 retrieved documents, best first, with no scores |
 | POST | `/ask/plain` | `{"question": string}` | `{"answer": string}` | Plain Gemma with no context (A/B baseline) |
 | GET | `/health/health` | none | `{"status": "healty"}` | The API process is up (spelling as the backend returns it) |
 
@@ -65,7 +65,6 @@ Section labels inside `pedagogical_answer` start a line and end with `]:`. Style
 ### Not supported by the backend yet
 For each item below, build the UI with a typed mock, label mock content as "Demo data" in the UI, and list the item in `docs/build-summary.md` under `needs_review`. Frontend agents do not change the backend.
 - Token streaming: reveal the received answer progressively on the client.
-- Retrieved sources: `/ask/rag` returns only the answer, with no `source_dataset`, `search_context`, `pedagogical_answer`, or scores.
 - Subject filter: search always covers all 15,791 rows. The UI has no subject filter (the author removed it); list it under `needs_review` as a possible future feature.
 - File uploads: there is no upload endpoint, and user files are not indexed.
 - Health of Ollama and Qdrant: `/health/health` only shows that the API process is running.
@@ -81,9 +80,9 @@ For each item below, build the UI with a typed mock, label mock content as "Demo
 - Angular, latest stable version (Angular CLI 21 is installed), TypeScript in strict mode, standalone components, Signals for state, and plain CSS (custom properties, Grid, Flexbox).
 - The project lives in `site/` and is created with the Angular CLI, with routing enabled. Prerender the static route (`/architecture`); the chat runs in the browser. If SSR or prerendering is enabled, access `localStorage` only in the browser (`isPlatformBrowser` or `afterNextRender`).
 - Build with `ng build --configuration production`.
-- The app must work with no internet: no CDNs, external fonts, analytics, or remote assets.
+- The app must work with no internet: no CDNs, remote fonts, analytics, or remote assets. Font files are bundled in `site/public/` and served by the app itself.
 - No UI component libraries. A small Markdown renderer (such as `marked`) is allowed if it is listed and justified in `docs/build-summary.md`.
-- Fonts: a system font stack that renders Yorùbá tone marks correctly (`ẹ́`, `ọ̀`, `ṣ`, `ń`). Never strip or change tone marks in text.
+- Fonts: distinctive, self-hosted open-licence fonts (no generic Inter, Roboto, Arial or system stacks as the main face), chosen and checked so that Yorùbá tone marks render correctly (`ẹ́`, `ọ̀`, `ṣ`, `ń`), with a system fallback. List each font and its licence in `docs/build-summary.md`. Never strip or change tone marks in text.
 - Interface language: English UI with bilingual Yorùbá + English content. Set `lang="en"` on `<html>` and `lang="yo"` on elements whose text is Yorùbá.
 
 ## Features
@@ -107,7 +106,7 @@ For each item below, build the UI with a typed mock, label mock content as "Demo
 - **Progressive display**: show the answer word by word with a blinking cursor. A **Stop generating** button cancels the request (`AbortController`) or stops the display. Gemma may keep generating on the server after a cancel. With `prefers-reduced-motion`, show the full answer at once.
 - **Formatting**: Markdown, numbered math steps, code blocks, and the corpus labels listed above. Keep the Yorùbá and English parts visually distinct.
 - **Compare mode**: a "Compare with plain Gemma" toggle. When it is on, each question goes to `/ask/rag` and `/ask/plain` at the same time. The two answers appear side by side as "Twins for Change (Gemma + RAG)" and "Plain Gemma (no RAG)", each with its own loading state. This is the main demo for the judges.
-- **Verified sources drawer**: under every Twins for Change answer, an expandable "Verified sources (top 3)" section showing the `source_dataset` badge, the matched `search_context`, and the full `pedagogical_answer`. Until the backend returns sources, use mock sources labelled "Demo data". If scores are added later, show them as a rank, not a confidence percentage: RRF scores are not probabilities.
+- **Verified sources drawer**: under every Twins for Change answer, an expandable "Verified sources (top 3)" section showing, for each document in `sources` (rank 1–3), the `source_dataset` badge, the matched `search_context`, and the full `pedagogical_answer`. Show the rank, never a confidence percentage: RRF scores are not probabilities. In mock mode, the sources are mock rows labelled "Demo data". If an older backend returns no `sources`, say so in one quiet line.
 
 ### 3. Message composer (bottom of the chat)
 - **Text box** that grows up to 200px. `Enter` sends, and `Shift + Enter` adds a new line.
@@ -117,11 +116,22 @@ For each item below, build the UI with a typed mock, label mock content as "Demo
 
 ### 4. Routes
 - `/chat` (default): the chat workspace described above.
+- `/practice`: the Practice page described in feature 6, rendered in the browser like `/chat`.
 - `/architecture`: how Twins for Change works, as a diagram: question → hybrid search over the 15,791-row corpus (bge-m3 + BM25, RRF, top 3) → tutor prompt → gemma3:4b → bilingual answer. Also show the deployment: Vercel (Angular frontend) → RunPod (FastAPI, REST API, RAG logic) → Ollama (LLM inference) and Qdrant (vector database), and the local mode where all of it runs on one machine with no internet. Include the corpus table. This route is prerendered.
-- The header or sidebar footer links to both routes and has a light/dark theme toggle.
+- The header links to all three routes (Chat, Practice, How it works) and has a light/dark theme toggle.
 
 ### 5. Theme
 - Light and dark themes. Follow `prefers-color-scheme` by default, with a manual toggle saved in `localStorage`.
+
+### 6. Practice
+A plain quiz page. No gamification: no XP, levels, streaks, badges, daily challenge, toasts, or celebrations (the author rejected them).
+- **Quiz bank**: about 25 real AfriMMLU multiple-choice rows from `dataset_rag.csv` (about 5 per subject), with the Yorùbá and English question, the 4 options in both languages, and the verified answer letter. Generate the file with the existing generator script, copying the text and never retyping it. Leave out the two AfriMMLU starter questions so they stay fresh for the A/B demo.
+- **Practice page** (`/practice`): one question at a time with "Next question". Each question shows the Yorùbá text (`lang="yo"`) with the English underneath and 4 option buttons. After an answer, show correct or incorrect with an icon and text (never color alone), the verified answer labelled "Verified answer (AfriMMLU)", and an "Ask Twins for Change to explain" button. That button opens a new chat and sends the Yorùbá question. Nothing is stored.
+
+### 7. Answer polish
+- The final-answer line (`**Ìdáhùn / Answer:**`, `**Ìdáhùn:**`, `**Answer:**`) is shown as its own clear answer callout, even when Gemma writes it on the line right after a list item. Handle both NFC and NFD spellings of Ìdáhùn, and never change the displayed text.
+- The sections under "Àlàyé ní Èdè Yorùbá" and "Explanation in English" are shown as two continuous language blocks with small YO and EN tags. This replaces the per-paragraph rules and the footer "Yorùbá text" legend.
+- Arithmetic such as `2 × 3 = 6` is shown with tabular figures, without changing any characters.
 
 ## Technical requirements
 

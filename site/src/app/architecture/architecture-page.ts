@@ -15,5 +15,7 @@ export class ArchitecturePage {
   // Written here because "{" starts an ICU expression in Angular templates.
   protected readonly askBody = '{"question": string}';
   protected readonly answerBody = '{"answer": string}';
+  protected readonly ragBody =
+    '{"answer": string, "sources": [{"source_dataset": string, "search_context": string, "pedagogical_answer": string}]}';
   protected readonly healthBody = '{"status": "healty"}';
 }

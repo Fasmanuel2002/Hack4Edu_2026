@@ -7,7 +7,17 @@ import {
   REQUEST_TIMEOUT_MS,
 } from './api.service';
 import { API_CONFIG } from './config';
+import { DEMO_ANSWERS } from './demo-data';
 import { STARTERS } from './starters';
+
+/** Three real corpus rows in the backend's shape: best first, no rank and no score. */
+const BACKEND_SOURCES = DEMO_ANSWERS[1].sources.map(
+  ({ source_dataset, search_context, pedagogical_answer }) => ({
+    source_dataset,
+    search_context,
+    pedagogical_answer,
+  }),
+);
 
 function setup(useMock: boolean, apiBaseUrl = 'http://localhost:8000'): ApiService {
   TestBed.configureTestingModule({
@@ -54,7 +64,7 @@ describe('ApiService in mock mode', () => {
     const result = await pending;
     expect(result.sources[0].source_dataset).toBe('afrimgsm_train');
     expect(result.sources[0].pedagogical_answer).toContain('[Exact Final Answer]: 11');
-    expect(result.answer).toContain('Exact final answer: **11**');
+    expect(result.answer).toContain('**Answer:** 11');
   });
 
   it('matches a question typed with extra spaces', async () => {
@@ -88,8 +98,10 @@ describe('ApiService in mock mode', () => {
 });
 
 describe('ApiService with the real backend', () => {
-  it('POSTs exactly {"question": ...} to /ask/rag and returns the answer', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ answer: '**Ìdáhùn:** 11' }));
+  it('POSTs exactly {"question": ...} to /ask/rag and returns the answer with its ranked sources', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ answer: '**Ìdáhùn:** C) p = 12', sources: BACKEND_SOURCES }));
     vi.stubGlobal('fetch', fetchMock);
     const api = setup(false);
 
@@ -101,7 +113,45 @@ describe('ApiService with the real backend', () => {
     expect(init.method).toBe('POST');
     expect((init.headers as Record<string, string>)['Content-Type']).toBe('application/json');
     expect(JSON.parse(init.body as string)).toEqual({ question: STARTERS[1].yo });
-    expect(result).toEqual({ answer: '**Ìdáhùn:** 11', sources: [], demo: false });
+    expect(result.answer).toBe('**Ìdáhùn:** C) p = 12');
+    expect(result.demo).toBe(false);
+    // Ranks follow the backend's order, and every text is kept exactly as sent.
+    expect(result.sources).toEqual(BACKEND_SOURCES.map((source, i) => ({ rank: i + 1, ...source })));
+  });
+
+  it('treats missing or malformed sources as none instead of failing the answer', async () => {
+    const [first, second, third] = BACKEND_SOURCES;
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValueOnce(jsonResponse({ answer: 'older backend' }))
+        .mockResolvedValueOnce(jsonResponse({ answer: 'a', sources: 'not a list' }))
+        .mockResolvedValueOnce(jsonResponse({ answer: 'b', sources: null }))
+        .mockResolvedValueOnce(
+          jsonResponse({ answer: 'c', sources: [first, { ...second, search_context: 7 }, null, third] }),
+        ),
+    );
+    const api = setup(false);
+
+    expect(await api.ask('rag', 'q')).toEqual({ answer: 'older backend', sources: [], demo: false });
+    expect((await api.ask('rag', 'q')).sources).toEqual([]);
+    expect((await api.ask('rag', 'q')).sources).toEqual([]);
+    // A broken item is skipped; the others keep their own rank (1 and 4), so no rank is invented.
+    const mixed = await api.ask('rag', 'q');
+    expect(mixed.sources.map((s) => [s.rank, s.source_dataset])).toEqual([
+      [1, first.source_dataset],
+      [4, third.source_dataset],
+    ]);
+  });
+
+  it('never reads sources from /ask/plain', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(jsonResponse({ answer: 'baseline', sources: BACKEND_SOURCES })),
+    );
+    const api = setup(false);
+    expect(await api.ask('plain', 'q')).toEqual({ answer: 'baseline', sources: [], demo: false });
   });
 
   it('sends the baseline question to /ask/plain on the configured base URL', async () => {

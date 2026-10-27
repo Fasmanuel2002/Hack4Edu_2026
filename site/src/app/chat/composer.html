@@ -106,21 +106,27 @@
           <span class="glyph" lang="yo">{{ toneGlyph }}</span>
           <span class="chip-text">Tone marks</span>
         </button>
-        @if (store.generating()) {
-          <button type="button" class="send stop" aria-label="Stop generating" title="Stop generating" (click)="store.stop()">
-            <app-icon name="stop" />
-          </button>
-        } @else {
-          <button type="submit" class="send" aria-label="Send question" title="Send" [disabled]="!canSend()">
-            <app-icon name="send" />
-          </button>
-        }
+        <!-- One button that turns into Stop while an answer is on its way (the form submit decides). -->
+        <button
+          type="submit"
+          class="send"
+          [class.stop]="store.generating()"
+          [attr.aria-label]="store.generating() ? 'Stop generating' : 'Send question'"
+          [title]="store.generating() ? 'Stop generating' : 'Send'"
+          [disabled]="!store.generating() && !canSend()"
+        >
+          @if (store.generating()) {
+            <app-icon class="swap" name="stop" />
+          } @else {
+            <app-icon class="swap" name="send" />
+          }
+        </button>
       </div>
     </div>
   </div>
 
   <p class="message" aria-live="polite">{{ message() }}</p>
-  <p class="fineprint">Answers can be wrong: check them against the verified sources.</p>
+  <p class="fineprint">Twins for Change can make mistakes. Check the verified sources.</p>
 </form>
 
 @if (dragging()) {

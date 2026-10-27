@@ -6,7 +6,7 @@
   <aside
     #sidebar
     id="sidebar"
-    class="sidebar"
+    class="sidebar surface-navy"
     aria-label="Chats and settings"
     [attr.inert]="media.mobile() && !drawerOpen() ? '' : null"
   >
@@ -32,7 +32,7 @@
     (keydown)="onKeys($event)"
     (sourcesopen)="unpin()"
   >
-    <app-top-bar class="bar" [menu]="menu()" [showBrand]="!sidebarShown()" (menuToggle)="toggleMenu()" />
+    <app-top-bar [menu]="menu()" [showBrand]="!sidebarShown()" (menuToggle)="toggleMenu()" />
 
     <main id="main" class="main" [class.empty]="!store.active()" tabindex="-1">
       @if (store.active(); as conversation) {
@@ -57,9 +57,9 @@
               </div>
 
               <div class="answers" [class.compare]="turn.plain">
-                <app-answer [conversationId]="conversation.id" [turn]="turn" kind="rag" />
+                <app-answer [conversationId]="conversation.id" [turn]="turn" kind="rag" [latest]="$last" />
                 @if (turn.plain) {
-                  <app-answer [conversationId]="conversation.id" [turn]="turn" kind="plain" />
+                  <app-answer [conversationId]="conversation.id" [turn]="turn" kind="plain" [latest]="$last" />
                 }
               </div>
             </article>

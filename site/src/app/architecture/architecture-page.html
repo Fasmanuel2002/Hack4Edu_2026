@@ -1,4 +1,4 @@
-<app-top-bar class="bar" />
+<app-top-bar />
 
 <main id="main" class="page" tabindex="-1">
   <div class="intro">
@@ -106,7 +106,10 @@
         </dd>
       </div>
     </dl>
-    <p class="note">Sources are shown by rank (1 to 3), never as a percentage: RRF scores are not probabilities.</p>
+    <p class="note">
+      Under every answer, the chat shows the 3 retrieved documents by rank (1 to 3), never as a
+      percentage: RRF scores are not probabilities.
+    </p>
   </section>
 
   <section aria-labelledby="deploy-title">
@@ -203,8 +206,8 @@
             <td>POST</td>
             <th scope="row"><code>/ask/rag</code></th>
             <td><code>{{ askBody }}</code></td>
-            <td><code>{{ answerBody }}</code></td>
-            <td>Twins for Change: Gemma + RAG</td>
+            <td><code>{{ ragBody }}</code></td>
+            <td>Twins for Change: Gemma + RAG. <code>sources</code> are the 3 retrieved documents, best first, with no scores</td>
           </tr>
           <tr>
             <td>POST</td>
@@ -241,10 +244,6 @@
     <h2 id="demo-title">What the backend does not do yet</h2>
     <p>The interface is ready for these features. Until the backend supports them, the chat handles them like this:</p>
     <ul class="notes">
-      <li>
-        <strong>Retrieved sources.</strong> The API returns only the answer. In demo mode the sources
-        drawer shows real corpus rows, labelled “Demo data”.
-      </li>
       <li><strong>Token streaming.</strong> There is none: the chat reveals the full answer word by word.</li>
       <li><strong>File uploads.</strong> There is no upload endpoint: attachments are listed but not sent.</li>
       <li>

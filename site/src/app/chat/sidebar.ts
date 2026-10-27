@@ -25,6 +25,14 @@ const API_LABELS = {
   offline: 'offline',
 } as const;
 
+/** The first line of the collapsed status row; the second names the model and the search. */
+const SUMMARIES = {
+  demo: 'Demo mode',
+  checking: 'Checking API…',
+  online: 'API online',
+  offline: 'API offline',
+} as const;
+
 @Component({
   selector: 'app-sidebar',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,6 +56,7 @@ export class Sidebar {
   protected readonly confirmId = signal<string | null>(null);
   protected readonly local = isLocalApi(inject(API_CONFIG).apiBaseUrl);
   protected readonly apiLabel = computed(() => API_LABELS[this.health.status()]);
+  protected readonly summary = computed(() => SUMMARIES[this.health.status()]);
   protected readonly shortcut = /Mac|iPhone|iPad/.test(navigator.userAgent)
     ? '⌘ ⇧ O'
     : 'Ctrl ⇧ O';

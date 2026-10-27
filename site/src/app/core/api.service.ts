@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { API_CONFIG, isLocalApi } from './config';
 import { DEMO_ANSWERS } from './demo-data';
-import { AnswerKind, AskResult } from './models';
+import { AnswerKind, AskResult, CorpusSource } from './models';
 
 /** Client timeout for one answer. CLAUDE.md: never below 120 seconds (laptop CPUs are slow). */
 export const REQUEST_TIMEOUT_MS = 300_000;
@@ -145,12 +145,16 @@ export class ApiService {
           ? failure()
           : new ApiError('bad-response', 'The API sent a response that is not valid JSON.');
       }
-      const answer = (body as { answer?: unknown } | null)?.answer;
-      if (typeof answer !== 'string') {
+      const data = body as { answer?: unknown; sources?: unknown } | null;
+      if (typeof data?.answer !== 'string') {
         throw new ApiError('bad-response', 'The API sent a response without an answer.');
       }
-      // The backend does not return the retrieved sources yet (see docs/build-summary.md).
-      return { answer, sources: [], demo: false };
+      // Only /ask/rag returns sources. An older backend sends none: the drawer then says so.
+      return {
+        answer: data.answer,
+        sources: kind === 'rag' ? readSources(data.sources) : [],
+        demo: false,
+      };
     } finally {
       clearTimeout(timer);
       signal?.removeEventListener('abort', onAbort);
@@ -177,6 +181,32 @@ export class ApiService {
       signal?.addEventListener('abort', onAbort, { once: true });
     });
   }
+}
+
+/**
+ * The `sources` of POST /ask/rag: the retrieved documents, best first, with no scores. Anything
+ * malformed counts as no source instead of breaking the answer. The rank is the position in the
+ * backend's list, so a skipped item never shifts the ranks of the others.
+ */
+export function readSources(value: unknown): CorpusSource[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.flatMap((item: unknown, index) => {
+    const source = item as Partial<Record<keyof CorpusSource, unknown>> | null;
+    return typeof source?.source_dataset === 'string' &&
+      typeof source.search_context === 'string' &&
+      typeof source.pedagogical_answer === 'string'
+      ? [
+          {
+            rank: index + 1,
+            source_dataset: source.source_dataset,
+            search_context: source.search_context,
+            pedagogical_answer: source.pedagogical_answer,
+          },
+        ]
+      : [];
+  });
 }
 
 function demoResult(kind: AnswerKind, question: string): AskResult {

@@ -9,12 +9,20 @@ import {
 } from '@angular/core';
 import { Announcer } from '../core/browser';
 import { ChatStore, slotKey } from '../core/chat-store';
-import { ANSWER_LABELS } from '../core/corpus';
+import { API_CONFIG } from '../core/config';
+import { answerLabel } from '../core/corpus';
 import { clockTime, isoTime } from '../core/format';
-import { renderMarkdown } from '../core/markdown';
+import { isFallbackAnswer, renderLines, renderMarkdown } from '../core/markdown';
 import { AnswerKind, AnswerSlot, Turn } from '../core/models';
 import { Icon } from '../shared/icon';
 import { Sources } from './sources';
+
+/** What the pending state says: no fake progress stages, only what is really happening. */
+const PENDING_TEXT = {
+  demo: 'Preparing the demo answer\u2026',
+  rag: 'Searching the verified corpus and writing\u2026',
+  plain: 'Writing an answer with no retrieved context\u2026',
+} as const;
 
 /** One answer card: label, Markdown body revealed word by word, actions, and sources. */
 @Component({
@@ -28,12 +36,16 @@ export class Answer {
   readonly conversationId = input.required<string>();
   readonly turn = input.required<Turn>();
   readonly kind = input.required<AnswerKind>();
+  /** The latest answer keeps its actions visible; earlier ones show them on hover or focus. */
+  readonly latest = input(true);
 
   protected readonly store = inject(ChatStore);
+  private readonly demoMode = inject(API_CONFIG).useMock;
   private readonly announcer = inject(Announcer);
   private readonly document = inject(DOCUMENT);
 
-  protected readonly label = computed(() => ANSWER_LABELS[this.kind()]);
+  /** "Twins for Change"; in compare mode the two labels from CLAUDE.md. */
+  protected readonly label = computed(() => answerLabel(this.kind(), this.turn().plain !== null));
   protected readonly slot = computed<AnswerSlot>(() => {
     const turn = this.turn();
     return this.kind() === 'plain' && turn.plain ? turn.plain : turn.rag;
@@ -45,12 +57,17 @@ export class Answer {
     this.store.reveals().get(slotKey(this.conversationId(), this.turn().id, this.kind())),
   );
   protected readonly revealing = computed(() => this.shown() !== undefined);
+  /** The out-of-database answer, known from the full text so its note shows from the first word. */
+  protected readonly fallback = computed(() => isFallbackAnswer(this.slot().text));
   protected readonly html = computed(() => {
     const text = this.slot().text;
     const shown = this.shown();
-    return renderMarkdown(shown === undefined ? text : text.slice(0, shown));
+    const visible = shown === undefined ? text : text.slice(0, shown);
+    return this.fallback() ? renderLines(visible) : renderMarkdown(visible);
   });
-  protected readonly hasYoruba = computed(() => this.html().includes('class="yo"'));
+  protected readonly pendingText = computed(() =>
+    this.demoMode ? PENDING_TEXT.demo : PENDING_TEXT[this.kind()],
+  );
   protected readonly elapsed = computed(() => {
     const since = this.slot().requestedAt ?? this.turn().askedAt;
     return Math.max(0, Math.round((this.store.now() - since) / 1000));

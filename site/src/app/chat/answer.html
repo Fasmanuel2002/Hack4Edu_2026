@@ -26,11 +26,15 @@
 
   @switch (slot().status) {
     @case ('pending') {
-      <p class="pending">
-        <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-        Waiting for the answer
-        <span class="elapsed">{{ elapsed() }} s</span>
-      </p>
+      <div class="pending">
+        <p class="pending-line">
+          {{ pendingText() }}
+          @if (elapsed() >= 5) {
+            <span class="elapsed">{{ elapsed() }} s</span>
+          }
+        </p>
+        <div class="skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+      </div>
     }
     @case ('error') {
       <div class="error">
@@ -45,40 +49,46 @@
       </div>
     }
     @default {
-      <div class="md" [class.revealing]="revealing()" [innerHTML]="html()"></div>
+      @if (fallback()) {
+        <div class="note-callout" role="note">
+          <app-icon name="info" />
+          <div class="md lines" [class.revealing]="revealing()" [innerHTML]="html()"></div>
+        </div>
+      } @else {
+        <div class="md" [class.revealing]="revealing()" [innerHTML]="html()"></div>
+      }
       @if (slot().status === 'stopped') {
         <p class="note">
           {{ slot().text ? 'Stopped. The answer above is incomplete.' : 'Stopped before an answer arrived.' }}
         </p>
       }
       @if (!revealing()) {
-        <div class="foot">
-          @if (slot().text) {
+        <div class="foot" [class.latest]="latest()">
+          <div class="actions">
+            @if (slot().text) {
+              <button
+                type="button"
+                class="icon-btn"
+                [attr.aria-label]="copied() ? 'Copied' : 'Copy'"
+                [attr.aria-describedby]="'label-' + key()"
+                [title]="copied() ? 'Copied' : 'Copy'"
+                (click)="copy()"
+              >
+                <app-icon [name]="copied() ? 'check' : 'copy'" />
+              </button>
+            }
             <button
               type="button"
               class="icon-btn"
-              [attr.aria-label]="copied() ? 'Copied' : 'Copy'"
+              aria-label="Regenerate"
+              title="Regenerate"
               [attr.aria-describedby]="'label-' + key()"
-              [title]="copied() ? 'Copied' : 'Copy'"
-              (click)="copy()"
+              [disabled]="store.generating()"
+              (click)="regenerate()"
             >
-              <app-icon [name]="copied() ? 'check' : 'copy'" />
+              <app-icon name="regenerate" />
             </button>
-          }
-          <button
-            type="button"
-            class="icon-btn"
-            aria-label="Regenerate"
-            title="Regenerate"
-            [attr.aria-describedby]="'label-' + key()"
-            [disabled]="store.generating()"
-            (click)="regenerate()"
-          >
-            <app-icon name="regenerate" />
-          </button>
-          @if (hasYoruba()) {
-            <span class="legend"><span class="legend-rule" aria-hidden="true"></span>Yorùbá text</span>
-          }
+          </div>
         </div>
         @if (kind() === 'rag' && slot().status === 'done') {
           <app-sources [sources]="slot().sources" [demo]="slot().demo" [panelId]="'sources-' + key()" />

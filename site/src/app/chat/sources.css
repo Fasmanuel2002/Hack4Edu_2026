@@ -1,22 +1,23 @@
 .sources {
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
 }
 
 .toggle {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
   min-height: 2.25rem;
   margin-inline-start: -0.5rem;
-  padding: 0.25rem 0.6rem 0.25rem 0.45rem;
+  padding: 0.25rem 0.75rem 0.25rem 0.5rem;
   border: 0;
-  border-radius: 8px;
+  border-radius: 999px;
   background: transparent;
   color: var(--text);
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 700;
   text-align: start;
+  transition: background-color 0.15s ease;
 }
 
 .toggle:hover {
@@ -25,40 +26,54 @@
 
 .chevron {
   color: var(--text-muted);
-  transition: transform 0.2s var(--ease);
+  transition: transform 0.25s var(--ease-out);
 }
 
 .toggle[aria-expanded='true'] .chevron {
   transform: rotate(90deg);
 }
 
-/* Opens by animating the grid row from 0fr to 1fr: quick, smooth, and height stays auto. */
+/* Opens by animating the grid row from 0fr to 1fr: smooth, quick, and the height stays auto. */
 .panel {
   display: grid;
   grid-template-rows: 0fr;
   visibility: hidden;
   transition:
-    grid-template-rows 0.2s var(--ease),
-    visibility 0s linear 0.2s;
+    grid-template-rows 0.28s var(--ease-out),
+    visibility 0s linear 0.28s;
 }
 
 .panel.open {
   grid-template-rows: 1fr;
   visibility: visible;
   transition:
-    grid-template-rows 0.2s var(--ease),
+    grid-template-rows 0.28s var(--ease-out),
     visibility 0s;
 }
 
 .panel-inner {
   min-height: 0;
   overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.open .panel-inner {
+  opacity: 1;
+}
+
+.explain,
+.none {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
 }
 
 .explain {
-  padding: 0.35rem 0 0.25rem;
-  color: var(--text-muted);
-  font-size: 0.8125rem;
+  padding: 0.35rem 0 0.5rem;
+}
+
+.none {
+  margin-top: 0.5rem;
 }
 
 .list {
@@ -68,7 +83,7 @@
 }
 
 .source {
-  padding: 0.85rem 0 0.9rem;
+  padding: 1rem 0 1.1rem;
   border-top: 1px solid var(--border);
   font-size: 0.9375rem;
 }
@@ -77,14 +92,21 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
+/* The rank is an order (1 = best match), never a score. */
 .rank {
-  min-width: 1.1rem;
-  color: var(--text-muted);
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.35rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .subject {
@@ -93,52 +115,53 @@
 }
 
 .field {
-  margin-top: 0.6rem;
+  margin: 0.85rem 0 0.2rem;
   color: var(--text-muted);
   font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .context + .context {
-  margin-top: 0.1rem;
+  margin-top: 0.15rem;
 }
 
 .secondary {
   color: var(--text-muted);
 }
 
-.answer {
+/* The pedagogical_answer reads as a document excerpt: one tinted inset, its corpus labels inside. */
+.content {
   display: grid;
-  gap: 0.45rem;
-  margin-top: 0.15rem;
+  gap: 0.6rem;
+  padding: 0.75rem 0.95rem 0.85rem;
+  border-radius: 10px;
+  background: var(--bubble);
 }
 
-/* Corpus section labels such as [Verified Answer (Yorùbá)]. */
+/* Corpus section labels such as [Verified Answer (Yorùbá)]: small, bold, muted. */
 .seg-label {
   display: block;
   color: var(--text-muted);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.answer p {
+.content p {
   white-space: pre-wrap;
-}
-
-.yo {
-  line-height: 1.75;
 }
 
 .options {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 0.4rem;
-  margin: 0.1rem 0 0;
+  gap: 0.3rem 0.4rem;
+  margin: 0.15rem 0 0;
   padding: 0;
   list-style: none;
 }
 
 .options li {
-  padding: 0 0.45rem;
+  padding: 0 0.5rem;
   border: 1px solid var(--border);
   border-radius: 6px;
 }

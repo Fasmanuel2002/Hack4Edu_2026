@@ -14,7 +14,7 @@ export interface DemoAnswer {
 export const DEMO_ANSWERS: readonly DemoAnswer[] = [
   {
     question: "Roger ní bọ́ọ́lù aláfajọ̀ 5. Ó ra agolo bọ́ọ́lù aláfajọ̀gbá 2 kún-un. Agolo kọ̀ọ̀kan ní bọ́ọ́lù aláfajọ̀gbá 3. Bọ́ọ́lù aláfajọ̀gbá mélòó ni ó ní báyìí?",
-    answer: "### Yorùbá\n\n**Ìbéèrè: Roger ní bọ́ọ́lù aláfajọ̀ 5. Ó ra agolo bọ́ọ́lù aláfajọ̀gbá 2 kún-un. Agolo kọ̀ọ̀kan ní bọ́ọ́lù aláfajọ̀gbá 3. Bọ́ọ́lù aláfajọ̀gbá mélòó ni ó ní báyìí?**\n\nÌdáhùn lẹ́sẹsẹ:\n\n1. Roger bẹ̀rẹ̀ pẹ̀lú bọ́ọ́lù 5.\n2. Agolo 2 bọ́ọ́lù aláfajọ̀gbá kọ̀ọ̀kan 3 jẹ́ bọ́ọ́lù aláfajọ̀gbá 6.\n3. 5 + 6 = 11.\n\n**Ìdáhùn náà ni 11.**\n\n### English summary\n\nQuestion: Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 tennis balls. How many tennis balls does he have now?\n\n1. Roger starts with 5 tennis balls.\n2. 2 cans of 3 tennis balls each make 6 tennis balls.\n3. 5 + 6 = 11\n\nExact final answer: **11**\n",
+    answer: "### Àlàyé ní Èdè Yorùbá\nÌdáhùn lẹ́sẹsẹ:\n\n1. Roger bẹ̀rẹ̀ pẹ̀lú bọ́ọ́lù 5.\n2. Agolo 2 bọ́ọ́lù aláfajọ̀gbá kọ̀ọ̀kan 3 jẹ́ bọ́ọ́lù aláfajọ̀gbá 6.\n3. 5 + 6 = 11.\n**Ìdáhùn / Answer:** 11\n\n---\n\n### Explanation in English\nQuestion: Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 tennis balls. How many tennis balls does he have now?\n\n1. Roger starts with 5 tennis balls.\n2. 2 cans of 3 tennis balls each make 6 tennis balls.\n3. 5 + 6 = 11\n**Answer:** 11\n",
     sources: [
       {
         rank: 1,
@@ -38,7 +38,7 @@ export const DEMO_ANSWERS: readonly DemoAnswer[] = [
   },
   {
     question: "Kínni iyì p nínú 24 = 2p?",
-    answer: "### Yorùbá\n\n**Kínni iyì p nínú 24 = 2p?**\n\n**C) p = 12**\n\n### Step by step\n\n1. 24 = 2p\n2. 24 ÷ 2 = 2p ÷ 2\n3. 12 = p, so p = 12\n\n### English summary\n\nWhat is the value of p in 24 = 2p?\n\n- A) p = 4\n- B) p = 8\n- C) p = 12\n- D) p = 24\n\nVerified answer: **C) p = 12**\n",
+    answer: "### Àlàyé ní Èdè Yorùbá\nKínni iyì p nínú 24 = 2p?\n\n1. 24 = 2p\n2. 24 ÷ 2 = 2p ÷ 2\n3. p = 12\n**Ìdáhùn / Answer:** C) p = 12\n\n---\n\n### Explanation in English\nWhat is the value of p in 24 = 2p?\n\n- A) p = 4\n- B) p = 8\n- C) p = 12\n- D) p = 24\n\n1. 24 = 2p\n2. 24 ÷ 2 = 2p ÷ 2\n3. p = 12\n**Answer:** C) p = 12\n",
     sources: [
       {
         rank: 1,
@@ -62,7 +62,7 @@ export const DEMO_ANSWERS: readonly DemoAnswer[] = [
   },
   {
     question: "Àyípadà nínú èwo nínú àwọn wọ̀nyìí ni kò ní fa ìyípadà nínú ìbéèrè fún hámúbọgà?",
-    answer: "### Yorùbá\n\n**Àyípadà nínú èwo nínú àwọn wọ̀nyìí ni kò ní fa ìyípadà nínú ìbéèrè fún hámúbọgà?**\n\n- A) Iye owó họ́tí dọọ̀gì\n- B) iye owó hámúbọgà\n- C) iye owó àwọn bọ́nsì hámúbọgà\n- D) àwọn ìpele owó ọ̀yà àwọn oníbàárà\n\n**B) iye owó hámúbọgà**\n\n### English summary\n\nA change in which of the following will NOT cause a shift in the demand curve for hamburgers?\n\n- A) The price of hot dogs\n- B) The price of hamburgers\n- C) The price of hamburger buns\n- D) Income levels of hamburger consumers\n\nVerified answer: **B) The price of hamburgers**\n",
+    answer: "### Àlàyé ní Èdè Yorùbá\nÀyípadà nínú èwo nínú àwọn wọ̀nyìí ni kò ní fa ìyípadà nínú ìbéèrè fún hámúbọgà?\n\n- A) Iye owó họ́tí dọọ̀gì\n- B) iye owó hámúbọgà\n- C) iye owó àwọn bọ́nsì hámúbọgà\n- D) àwọn ìpele owó ọ̀yà àwọn oníbàárà\n**Ìdáhùn / Answer:** B) iye owó hámúbọgà\n\n---\n\n### Explanation in English\nA change in which of the following will NOT cause a shift in the demand curve for hamburgers?\n\n- A) The price of hot dogs\n- B) The price of hamburgers\n- C) The price of hamburger buns\n- D) Income levels of hamburger consumers\n**Answer:** B) The price of hamburgers\n",
     sources: [
       {
         rank: 1,
@@ -86,7 +86,7 @@ export const DEMO_ANSWERS: readonly DemoAnswer[] = [
   },
   {
     question: "Nibo ni awọn ọmọ ogun Ọgagun Stark wa?",
-    answer: "### Yorùbá\n\n**Nibo ni awọn ọmọ ogun Ọgagun Stark wa?**\n\n> Lórí ọ̀rọ̀ àwọn amúnisìn, tó wà ní ààlà tí ó kángun ní àríwá ni àwọn ọkùnrin Stark fi ìkàlẹ̀ s.\n\n**Ni opin ariwa, lẹgbẹ odi naa**\n\n### English summary\n\nWhere were Colonel Stark’s troops situated?\n\n> Stark's men took positions along the fence on the north end of the Colonist's position.\n\nVerified answer: **On the north end, along the fence**\n",
+    answer: "### Àlàyé ní Èdè Yorùbá\nNibo ni awọn ọmọ ogun Ọgagun Stark wa?\n\n> Lórí ọ̀rọ̀ àwọn amúnisìn, tó wà ní ààlà tí ó kángun ní àríwá ni àwọn ọkùnrin Stark fi ìkàlẹ̀ s.\n\n**Ìdáhùn / Answer:** Ni opin ariwa, lẹgbẹ odi naa\n\n---\n\n### Explanation in English\nWhere were Colonel Stark’s troops situated?\n\n> Stark's men took positions along the fence on the north end of the Colonist's position.\n\n**Answer:** On the north end, along the fence\n",
     sources: [
       {
         rank: 1,

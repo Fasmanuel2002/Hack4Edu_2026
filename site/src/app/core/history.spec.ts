@@ -9,6 +9,7 @@ import {
   parseHistory,
   serializeHistory,
 } from './history';
+import { DEMO_ANSWERS } from './demo-data';
 import { Conversation } from './models';
 import { STARTERS } from './starters';
 
@@ -64,6 +65,24 @@ describe('HistoryStorage', () => {
     expect(storage.load()).toEqual([]);
     localStorage.setItem(HISTORY_KEY, JSON.stringify({ conversations: [{ id: 1 }] }));
     expect(storage.load()).toEqual([]);
+  });
+
+  it('keeps the ranked sources of an answer and drops a saved source that is malformed', () => {
+    const chat = conversation('a', 1000, STARTERS[1].yo);
+    const sources = DEMO_ANSWERS[1].sources;
+    const withSources: Conversation = {
+      ...chat,
+      turns: [{ ...chat.turns[0], rag: { ...chat.turns[0].rag, sources } }],
+    };
+    const raw = JSON.parse(serializeHistory([withSources])) as {
+      conversations: { turns: { rag: { sources: unknown[] } }[] }[];
+    };
+    raw.conversations[0].turns[0].rag.sources.push({ rank: 4, source_dataset: 'afrimmlu_test' });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(raw));
+
+    const loaded = TestBed.inject(HistoryStorage).load();
+
+    expect(loaded[0].turns[0].rag.sources).toEqual(sources);
   });
 
   it('shows an answer that was pending at reload as an error with a retry', () => {

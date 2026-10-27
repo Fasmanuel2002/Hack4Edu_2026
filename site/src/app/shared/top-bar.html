@@ -18,9 +18,17 @@
       <span class="name" aria-hidden="true">Twins for Change</span>
     </a>
   }
+  <!-- Text links when there is room; icons with the same accessible names when narrow. -->
   <nav class="topnav" aria-label="Main">
-    <a routerLink="/chat" routerLinkActive="current" ariaCurrentWhenActive="page">Chat</a>
-    <a routerLink="/architecture" routerLinkActive="current" ariaCurrentWhenActive="page">How it works</a>
+    <a routerLink="/chat" routerLinkActive="current" ariaCurrentWhenActive="page" title="Chat">
+      <app-icon name="chat" /><span class="nav-text">Chat</span>
+    </a>
+    <a routerLink="/practice" routerLinkActive="current" ariaCurrentWhenActive="page" title="Practice">
+      <app-icon name="target" /><span class="nav-text">Practice</span>
+    </a>
+    <a routerLink="/architecture" routerLinkActive="current" ariaCurrentWhenActive="page" title="How it works">
+      <app-icon name="layers" /><span class="nav-text">How it works</span>
+    </a>
   </nav>
   <button
     type="button"

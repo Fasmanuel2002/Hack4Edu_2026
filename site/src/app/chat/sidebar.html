@@ -1,6 +1,6 @@
 <div class="head">
   <a routerLink="/chat" class="brand">
-    <app-logo [width]="30" />
+    <app-logo [width]="28" />
     <span class="name" aria-hidden="true">Twins for Change</span>
   </a>
   @if (showClose()) {
@@ -26,7 +26,7 @@
   <nav class="history" aria-labelledby="history-title">
     <h2 id="history-title" class="label">Chats</h2>
     @if (store.groups().length === 0) {
-      <p class="hint">No chats yet. They are saved in this browser only.</p>
+      <p class="hint">Your chats will appear here. They stay in this browser.</p>
     }
     @for (group of store.groups(); track group.label) {
       <h3 class="group">{{ group.label }}</h3>
@@ -107,16 +107,21 @@
 
 <footer class="foot">
   <h2 class="visually-hidden">System status</h2>
-  <dl>
-    <div><dt>LLM: </dt><dd>gemma3:4b (Ollama)</dd></div>
-    <div><dt>Search: </dt><dd>Qdrant hybrid (bge-m3 + BM25, RRF)</dd></div>
-    <div>
-      <dt>API: </dt>
-      <dd><span [class]="'dot ' + health.status()" aria-hidden="true"></span>{{ apiLabel() }}</dd>
-    </div>
-    <div>
-      <dt>Backend: </dt>
-      <dd>{{ local ? 'local, no internet needed after setup' : 'RunPod (cloud)' }}</dd>
-    </div>
-  </dl>
+  <!-- One quiet row (API state and model) that opens to the full status. -->
+  <details class="status">
+    <summary>
+      <span [class]="'dot ' + health.status()" aria-hidden="true"></span>
+      <span class="summary-text">
+        <span class="summary-main">{{ summary() }}</span>
+        <span class="summary-sub">gemma3:4b · Qdrant hybrid</span>
+      </span>
+      <app-icon name="chevron" class="chev" />
+    </summary>
+    <dl>
+      <div><dt>LLM:</dt><dd>gemma3:4b (Ollama)</dd></div>
+      <div><dt>Search:</dt><dd>Qdrant hybrid (bge-m3 + BM25, RRF)</dd></div>
+      <div><dt>API:</dt><dd>{{ apiLabel() }}</dd></div>
+      <div><dt>Backend:</dt><dd>{{ local ? 'local, no internet needed after setup' : 'RunPod (cloud)' }}</dd></div>
+    </dl>
+  </details>
 </footer>

@@ -1,0 +1,177 @@
+:host {
+  display: block;
+}
+
+.page {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.page:focus-visible {
+  outline: none;
+}
+
+.lead,
+.question-en,
+.option-en,
+.verified-label,
+.verified-en,
+.mark,
+.subject,
+.quiz-title {
+  color: var(--text-muted);
+}
+
+.lead {
+  margin-top: 0.6rem;
+}
+
+.quiz {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.quiz-title {
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.quiz-title:focus-visible {
+  border-radius: 4px;
+}
+
+.question {
+  margin-top: 0.6rem;
+  font-size: 1.1875rem;
+  line-height: 1.75;
+}
+
+.question-en {
+  margin-top: 0.25rem;
+  font-size: 0.9375rem;
+}
+
+.options {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Four quiet option rows: the letter, the Yorùbá option, the English one muted underneath. */
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: transparent;
+  text-align: start;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.option:not([aria-disabled]):hover {
+  border-color: var(--border-strong);
+  background: var(--hover);
+}
+
+.option[aria-disabled] {
+  cursor: default;
+}
+
+.letter {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  font-size: 0.8125rem;
+}
+
+.option-text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  padding-top: 0.1rem;
+}
+
+.option-en,
+.verified-label {
+  font-size: 0.8125rem;
+}
+
+/* After an answer: shape and text tell right from wrong, never colour alone. */
+.mark {
+  --icon-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+}
+
+.is-answer {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.is-answer .letter {
+  border-color: var(--accent);
+  background: var(--action-bg);
+  color: var(--action-fg);
+}
+
+.is-answer .mark,
+.verdict.right app-icon {
+  color: var(--accent);
+}
+
+.is-wrong {
+  border-color: var(--border-strong);
+}
+
+.result {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.verdict {
+  --icon-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.0625rem;
+}
+
+.verified-label {
+  margin-top: 0.85rem;
+  font-weight: 700;
+}
+
+.verified {
+  margin-top: 0.15rem;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+@media (min-width: 40rem) {
+  .page {
+    padding-top: 3rem;
+  }
+}

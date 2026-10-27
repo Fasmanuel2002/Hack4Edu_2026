@@ -86,6 +86,12 @@ export class ChatPage {
   constructor() {
     this.store.load();
     this.health.start();
+    // "Ask Twins for Change to explain" on /practice: a new chat with that question.
+    const queued = this.store.takeQueuedQuestion();
+    if (queued) {
+      this.store.newChat();
+      this.askStarter(queued);
+    }
 
     effect(() => {
       if (!this.media.mobile()) {

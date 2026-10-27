@@ -1,8 +1,8 @@
 <section class="starters" aria-labelledby="starters-title">
-  <h2 id="starters-title" class="label">Try a question from the corpus</h2>
+  <h2 id="starters-title" class="visually-hidden">Suggested questions</h2>
   <ul>
-    @for (starter of starters; track starter.yo) {
-      <li>
+    @for (starter of starters; track starter.yo; let i = $index) {
+      <li class="rise" [style.--delay]="(210 + i * 70) + 'ms'">
         <button type="button" class="starter" [title]="starter.subject" (click)="ask.emit(starter.yo)">
           <app-icon [name]="starter.icon" />
           <span class="text">
@@ -15,6 +15,6 @@
     }
   </ul>
   @if (demo) {
-    <p class="demo"><span class="pill">Demo mode</span> No backend is connected. Answers are demo data built from real corpus rows.</p>
+    <p class="demo rise" style="--delay: 490ms"><span class="pill">Demo mode</span> No backend is connected. Answers are demo data built from real corpus rows.</p>
   }
 </section>

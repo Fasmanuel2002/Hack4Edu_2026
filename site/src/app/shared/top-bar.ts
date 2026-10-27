@@ -9,7 +9,7 @@ export interface MenuButtonState {
   readonly expanded: boolean;
 }
 
-/** Flat top bar: sidebar button, the name (and mark when no sidebar shows it), links, theme. */
+/** Flat top bar: sidebar button, the name (when no sidebar shows it), links, theme. */
 @Component({
   selector: 'app-top-bar',
   changeDetection: ChangeDetectionStrategy.OnPush,
