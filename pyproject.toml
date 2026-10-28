@@ -1,9 +1,14 @@
 [project]
+environments = [
+    "sys_platform == 'win32'",
+    "sys_platform == 'linux'",
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
 name = "hack4edu-2026"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12,<3.14"
 dependencies = [
     "datasets>=5.1.0",
     "dotenv>=0.9.9",
@@ -11,6 +16,7 @@ dependencies = [
     "fastembed>=0.7.4",
     "langchain-community>=0.4.2",
     "langchain-ollama>=1.1.0",
+    "langchain-openai>=1.7.3",
     "langchain-qdrant>=1.1.0",
     "pandas>=3.1.0",
     "qdrant-client>=1.20.0",

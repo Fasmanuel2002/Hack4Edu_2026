@@ -4,29 +4,28 @@ from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
-from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 from langchain_core.vectorstores import VectorStoreRetriever
 from src.modules.rag.retriever.retrieval import get_hybrid_retriever, format_documents
 load_dotenv()
 
 MODEL_NAME = "gemma3:4b"
 
-
-llm = ChatOllama(
-    model=MODEL_NAME,
+llm = ChatOpenAI(
+    model=os.getenv("LLM_MODEL", "gemma3:4b"),
+    base_url=os.getenv("LLM_BASE_URL", "http://127.0.0.1:11434/v1"),
+    api_key=os.getenv("LLM_API_KEY", "ollama"),
     temperature=0.0,
     seed=42,
-    num_ctx=8192,
-    num_predict=1024,
-    repeat_penalty=1.0,  
+    max_tokens=1024,
+    max_retries=3,
+    timeout=300,
     stop=[
         "<END_OF_RESPONSE>",
         "[Student Question]:",
         "#### EXAMPLE",
         "[Reference Blocks]:"
-        "[Tutor Response]:",
     ],
-    base_url=os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434"),
 )
 initial_prompt = ChatPromptTemplate.from_template(
 """You are Twins for Change, a precise, patient, and encouraging bilingual tutor for Yorùbá–English classrooms.

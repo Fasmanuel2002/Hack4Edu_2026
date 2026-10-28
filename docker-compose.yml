@@ -6,25 +6,15 @@ services:
       - 127.0.0.1:6333:6333
     volumes:
       - qdrant_data:/qdrant/storage
-  
 
-  ollama:
+  ollama:                     
     image: ollama/ollama:latest
     restart: unless-stopped
     ports:
       - 127.0.0.1:11434:11434
-    environment:
-      - OLLAMA_CONTEXT_LENGTH=65536
     volumes:
       - ollama_data:/root/.ollama
 
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
   ollama-init:
     image: ollama/ollama:latest
     restart: "no"
@@ -32,15 +22,14 @@ services:
       - ollama
     environment:
       - OLLAMA_HOST=http://ollama:11434
-
     entrypoint: >
-      sh -c "until ollama list >/dev/null 2>&1; do sleep 1; done && ollama pull bge-m3 && ollama pull gemma3:4b"
+      sh -c "until ollama list >/dev/null 2>&1; do sleep 1; done && ollama pull bge-m3"
 
   hack_edu_app:
     build:
       context: .
       dockerfile: Dockerfile
-    restart : "no"
+    restart: unless-stopped
     ports:
       - 127.0.0.1:8000:8000
     depends_on:
@@ -51,12 +40,12 @@ services:
     env_file:
       - path: .env
         required: false
-
     environment:
-      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_BASE_URL=http://ollama:11434  
       - QDRANT_CLIENT_URL=http://qdrant:6333
       - HOST=0.0.0.0
       - PORT=8000
+  
     command: uv run python main.py
 
 volumes:
