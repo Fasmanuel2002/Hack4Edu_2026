@@ -3,7 +3,9 @@ __pycache__
 *.pyc
 .git
 .gitignore
-site
+site/node_modules
+site/dist
+site/.angular
 docs
 notebooks
 main.ipynb

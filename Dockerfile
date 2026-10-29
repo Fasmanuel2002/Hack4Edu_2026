@@ -1,3 +1,10 @@
+FROM node:22-slim AS site
+WORKDIR /site
+COPY site/package.json site/package-lock.json ./
+RUN npm ci
+COPY site ./
+RUN npx ng build --configuration production
+
 FROM python:3.13-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -14,6 +21,7 @@ RUN uv sync --locked --no-install-project
 COPY main.py ./
 COPY src ./src
 COPY dataset_rag.csv ./
+COPY --from=site /site/dist/site/browser ./site_dist
 
 RUN uv sync --locked
 
