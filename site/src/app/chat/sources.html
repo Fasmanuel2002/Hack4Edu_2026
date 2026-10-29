@@ -1,17 +1,17 @@
 @if (items().length) {
   <div class="sources">
+    <!-- One quiet line that opens the drawer: icon, title, count (or Demo data), chevron. -->
     <button
       type="button"
-      class="toggle"
+      class="track"
       [attr.aria-expanded]="open()"
       [attr.aria-controls]="panelId()"
       (click)="toggle()"
     >
-      <app-icon name="chevron" class="chevron" />
-      <span>Verified sources (top 3)</span>
-      @if (demo()) {
-        <span class="pill">Demo data</span>
-      }
+      <app-icon name="search" />
+      <span class="track-text">Verified sources (top 3)</span>
+      <span class="track-meta">{{ demo() ? 'Demo data' : count() }}</span>
+      <app-icon name="chevronDown" class="chev" />
     </button>
 
     <div #panel class="panel" [id]="panelId()" [class.open]="open()" [attr.inert]="open() ? null : ''">
@@ -73,10 +73,13 @@
 } @else {
   <!-- An older backend returns no sources (or none matched): say so in one quiet line. -->
   <p class="none">
-    @if (demo()) {
-      No demo sources for this question: demo data covers only the four starter questions.
-    } @else {
-      No sources came back with this answer.
-    }
+    <app-icon name="search" />
+    <span>
+      @if (demo()) {
+        No demo sources for this question: demo data covers only the four starter questions.
+      } @else {
+        No sources came back with this answer.
+      }
+    </span>
   </p>
 }

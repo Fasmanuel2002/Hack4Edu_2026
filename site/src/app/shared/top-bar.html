@@ -1,7 +1,8 @@
-<header class="topbar">
+<header class="topbar" [class.lined]="lined()" [class.extra]="!!menu()">
   @if (menu(); as state) {
     <button
       type="button"
+      id="open-sidebar"
       class="icon-btn"
       aria-controls="sidebar"
       [attr.aria-label]="state.label"
@@ -9,12 +10,12 @@
       [title]="state.label"
       (click)="menuToggle.emit()"
     >
-      <app-icon name="panel" />
+      <app-icon name="sidebar" />
     </button>
   }
   @if (showBrand()) {
     <a class="brand" routerLink="/chat">
-      <app-logo [width]="26" />
+      <span class="logo-tile"><app-logo [width]="22" /></span>
       <span class="name" aria-hidden="true">Twins for Change</span>
     </a>
   }
@@ -30,14 +31,40 @@
       <app-icon name="layers" /><span class="nav-text">How it works</span>
     </a>
   </nav>
+  <span class="gap"></span>
+  @if (health.status() === 'offline') {
+    <button
+      type="button"
+      class="status"
+      aria-label="API offline. Check again"
+      [title]="statusTitle()"
+      (click)="health.check()"
+    >
+      <span class="dot" data-state="offline" aria-hidden="true"></span>
+      <span class="status-text" aria-hidden="true">{{ statusText() }}</span>
+    </button>
+  } @else {
+    <p class="status" [title]="statusTitle()">
+      <span class="dot" [attr.data-state]="health.status()" aria-hidden="true"></span>
+      <span class="visually-hidden">API: </span><span class="status-text">{{ statusText() }}</span>
+    </p>
+  }
+  @if (showNewChat()) {
+    <button type="button" class="icon-btn" aria-label="New chat" title="New chat" (click)="newChatRequest.emit()">
+      <app-icon name="compose" />
+    </button>
+  }
+  <!-- One toggle button; the sliding thumb and the two icons only show its state. -->
   <button
     type="button"
-    class="icon-btn"
+    class="theme"
     aria-label="Dark theme"
     title="Dark theme"
     [attr.aria-pressed]="theme.theme() === 'dark'"
     (click)="theme.toggle()"
   >
-    <app-icon [name]="theme.theme() === 'dark' ? 'moon' : 'sun'" />
+    <span class="thumb" aria-hidden="true"></span>
+    <app-icon name="sun" class="sun" />
+    <app-icon name="moon" class="moon" />
   </button>
 </header>

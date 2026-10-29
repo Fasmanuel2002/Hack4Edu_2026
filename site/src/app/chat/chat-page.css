@@ -2,7 +2,10 @@
   display: block;
 }
 
-/* Fixed to the viewport: the page itself never scrolls; only the thread and the sidebar do. */
+/*
+ * Fixed to the viewport: the page itself never scrolls; only the stage and the history do.
+ * Desktop: grid [268px sidebar | main]; collapsing animates the column to 0.
+ */
 .shell {
   position: fixed;
   inset: 0;
@@ -12,45 +15,54 @@
   overflow: hidden;
 }
 
-/* Below 768px the sidebar is an off-canvas drawer. */
+/* Below 768px the sidebar is a drawer that slides in over a scrim. */
 .sidebar {
   position: fixed;
   inset-block: 0;
   inset-inline-start: 0;
   z-index: 40;
-  width: min(18rem, 86vw);
+  width: var(--sb-w);
+  max-width: 86vw;
   /* Navy in both themes (.surface-navy); a faint edge only where the canvas is navy too. */
   border-inline-end: 1px solid var(--side-edge);
-  transform: translateX(-100%);
+  transform: translateX(-102%);
   visibility: hidden;
   transition:
-    transform 0.25s var(--ease-out),
-    visibility 0s linear 0.25s;
+    transform 0.35s var(--ease),
+    visibility 0s linear 0.35s;
 }
 
 .drawer-open .sidebar {
   transform: none;
   visibility: visible;
-  transition: transform 0.25s var(--ease-out);
+  transition: transform 0.35s var(--ease);
 }
 
-.backdrop {
+.scrim {
   position: fixed;
   inset: 0;
   z-index: 30;
-  background: rgb(12 45 100 / 0.4);
+  background: var(--scrim);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
 }
 
-.drawer-open .backdrop {
+.drawer-open .scrim {
   opacity: 1;
   pointer-events: auto;
 }
 
-/* The one scroll container of the chat (top bar, thread, docked composer). */
-.workspace {
+/* Grid rows: the 56px top bar, then the stage. */
+.main-col {
+  display: grid;
+  grid-template-rows: var(--topbar-h) minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+}
+
+/* The one scroll container of the chat: the thread and the docked composer. */
+.stage {
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -58,12 +70,11 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scroll-padding-top: 3.5rem;
   scroll-padding-bottom: calc(var(--dock-height, 8rem) + 0.5rem);
 }
 
 /* The drawer locks the page behind it. */
-.drawer-open .workspace {
+.drawer-open .stage {
   overflow: hidden;
 }
 
@@ -77,15 +88,15 @@
   outline: none;
 }
 
-/* Empty chat: greeting, composer, and starters centred in the screen. */
+/* Empty chat: greeting, composer and starters centred in the stage, a little above the middle. */
 .main.empty {
   justify-content: center;
-  padding: 1rem 0 6vh;
+  padding: 1rem 0 10vh;
 }
 
-/* The welcome load: mark, greeting, composer, then the starter rows (welcome, starter list). */
+/* The welcome load: mark, greeting and line (welcome), composer, then the tiles (starter list). */
 .main.empty .dock {
-  animation: rise 0.4s var(--ease-out) 140ms backwards;
+  animation: rise 0.6s var(--ease) 180ms backwards;
 }
 
 .thread {
@@ -94,36 +105,37 @@
   width: 100%;
   max-width: 72rem;
   margin: 0 auto;
-  padding: 1rem 1rem 1.5rem;
+  padding: 1.25rem 1.5rem 2.5rem;
 }
 
 /* New messages ease in. */
 .turn {
   max-width: var(--content);
   margin: 0 auto;
-  animation: rise 0.35s var(--ease-out) backwards;
+  animation: fade-up 0.35s var(--ease) backwards;
 }
 
+/* Compare turns get the room of two columns; the question stays in the reading column. */
 .turn.compare-turn {
   max-width: 72rem;
 }
 
 .turn + .turn {
-  margin-top: 2.5rem;
+  margin-top: 1.75rem;
 }
 
 .user {
   display: grid;
   justify-items: end;
-  gap: 0.3rem;
+  gap: 0.375rem;
   max-width: var(--content);
   margin-inline: auto;
 }
 
-.user-msg {
-  max-width: min(36rem, 85%);
-  padding: 0.6rem 1rem;
-  border-radius: 20px 20px 6px 20px;
+.bubble {
+  max-width: min(80%, 36rem);
+  padding: 0.625rem 1rem;
+  border-radius: 20px;
   background: var(--bubble);
 }
 
@@ -133,16 +145,23 @@
 }
 
 .attachments {
-  margin-top: 0.25rem;
+  --icon-size: 0.875rem;
+  display: flex;
+  gap: 0.375rem;
+  max-width: min(80%, 36rem);
   color: var(--text-muted);
   font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.attachments app-icon {
+  margin-top: 0.2rem;
 }
 
 .meta {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding-inline-end: 0.25rem;
+  gap: 0.375rem;
   color: var(--text-muted);
   font-size: 0.75rem;
 }
@@ -151,9 +170,25 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Same avatar style as the answers: a light tint with a thin ring, visible in both themes. */
+/* Copy shows on hover and keyboard focus, and always on touch and narrow screens. */
+.meta app-copy-button {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.user:hover app-copy-button,
+.meta:focus-within app-copy-button {
+  opacity: 1;
+}
+
+@media (hover: none), (max-width: 767.98px) {
+  .meta app-copy-button {
+    opacity: 1;
+  }
+}
+
 .avatar {
-  --icon-size: 0.85rem;
+  --icon-size: 0.8rem;
   display: grid;
   place-items: center;
   width: 1.25rem;
@@ -164,100 +199,120 @@
 }
 
 .answers {
-  margin-top: 1.25rem;
+  margin-top: 1.75rem;
 }
 
-/* Compare: two equal columns with one thin divider, stacked when the thread is narrow. */
+/* Compare: two equal outlined columns, stacked when the thread is narrow. */
 .answers.compare {
   display: grid;
-  gap: 1.25rem;
-}
-
-.answers.compare > app-answer + app-answer {
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--border);
+  gap: 0.75rem;
 }
 
 @container (min-width: 40rem) {
   .answers.compare {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0;
-  }
-  .answers.compare > app-answer:first-child {
-    padding-inline-end: 1.5rem;
-  }
-  .answers.compare > app-answer + app-answer {
-    padding-top: 0;
-    padding-inline-start: 1.5rem;
-    border-top: 0;
-    border-inline-start: 1px solid var(--border);
+    gap: 1rem;
   }
 }
 
 .dock {
   position: relative;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
 }
 
-/* After the first message the composer docks at the bottom of the scroll area. */
+.dock > * {
+  max-width: var(--content);
+  margin-inline: auto;
+}
+
+/* After the first message the composer docks at the bottom, on a solid strip of the canvas. */
 .dock.docked {
   position: sticky;
   bottom: 0;
   z-index: 4;
-  padding: 0.5rem 1rem 0.75rem;
+  padding: 0.5rem 1.5rem 0.75rem;
   background: var(--bg);
 }
 
 .latest {
-  --icon-size: 1.05rem;
+  --icon-size: 1.1rem;
   position: absolute;
-  top: -2.75rem;
+  top: -2.875rem;
   left: 50%;
   display: grid;
   place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border: 1px solid var(--border-strong);
+  width: 2.125rem;
+  height: 2.125rem;
+  border: 1px solid var(--border-mid);
   border-radius: 50%;
   background: var(--raised);
-  color: var(--text);
+  color: var(--text-muted);
   box-shadow: var(--shadow);
   transform: translateX(-50%);
+  animation: fade-up 0.2s var(--ease) backwards;
 }
 
 .latest:hover {
-  background: var(--bg);
+  color: var(--text);
 }
 
 .offline {
-  max-width: var(--content);
-  margin: 0 auto 0.45rem;
+  --icon-size: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
   color: var(--text-muted);
   font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.offline app-icon {
+  margin-top: 0.1rem;
+}
+
+.fineprint {
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
   text-align: center;
 }
 
+@media (max-width: 767.98px) {
+  .thread {
+    padding: 1rem 1rem 2rem;
+  }
+  .dock,
+  .dock.docked {
+    padding-inline: 1rem;
+  }
+}
 
 @media (min-width: 768px) {
   .shell {
-    grid-template-columns: 16.5rem minmax(0, 1fr);
+    grid-template-columns: var(--sb-w) minmax(0, 1fr);
+    transition: grid-template-columns 0.35s var(--ease);
   }
   .shell.collapsed {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: 0 minmax(0, 1fr);
   }
   .sidebar {
-    position: static;
+    position: relative;
+    z-index: auto;
     width: auto;
-    min-height: 0;
+    max-width: none;
+    min-width: 0;
+    overflow: hidden;
     transform: none;
     visibility: visible;
-    transition: none;
+    transition: visibility 0s;
   }
-  .collapsed .sidebar,
-  .backdrop {
+  /* Hidden only once the column has closed, so the collapse animates. */
+  .collapsed .sidebar {
+    visibility: hidden;
+    transition: visibility 0s linear 0.35s;
+  }
+  .scrim {
     display: none;
-  }
-  .thread {
-    padding: 1.5rem 1.5rem 2rem;
   }
 }

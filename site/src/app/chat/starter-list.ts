@@ -1,22 +1,21 @@
 import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 import { API_CONFIG } from '../core/config';
 import { STARTERS } from '../core/starters';
-import { Icon, IconName } from '../shared/icon';
 
-/** Line icon per starter, in STARTERS order: two mathematics questions, economics, reading. */
-const ICONS: readonly IconName[] = ['calculator', 'calculator', 'chart', 'book'];
-
-/** The four real corpus questions, as quiet rows under the composer on the empty-chat screen. */
+/** The four real corpus questions, as light tiles in a 2-column grid under the composer. */
 @Component({
   selector: 'app-starter-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon],
   templateUrl: './starter-list.html',
   styleUrl: './starter-list.css',
 })
 export class StarterList {
-  /** Emits the Yorùbá question of the row that was chosen. */
+  /** Emits the Yorùbá question of the tile that was chosen. */
   readonly ask = output<string>();
-  protected readonly starters = STARTERS.map((starter, i) => ({ ...starter, icon: ICONS[i] }));
+  /** "Mathematics (AfriMGSM)" is shown as "Mathematics · AfriMGSM"; the data is not changed. */
+  protected readonly starters = STARTERS.map((starter) => ({
+    ...starter,
+    label: starter.subject.replace(/\s*\((.+)\)$/, ' · $1'),
+  }));
   protected readonly demo = inject(API_CONFIG).useMock;
 }

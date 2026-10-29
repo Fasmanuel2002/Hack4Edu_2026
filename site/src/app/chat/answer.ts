@@ -1,34 +1,34 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DOCUMENT,
   computed,
   inject,
   input,
-  signal,
+  linkedSignal,
 } from '@angular/core';
-import { Announcer } from '../core/browser';
 import { ChatStore, slotKey } from '../core/chat-store';
 import { API_CONFIG } from '../core/config';
 import { answerLabel } from '../core/corpus';
-import { clockTime, isoTime } from '../core/format';
+import { clockTime, formatDuration, isoTime } from '../core/format';
 import { isFallbackAnswer, renderLines, renderMarkdown } from '../core/markdown';
 import { AnswerKind, AnswerSlot, Turn } from '../core/models';
+import { CopyButton } from '../shared/copy-button';
 import { Icon } from '../shared/icon';
+import { Logo } from '../shared/logo';
 import { Sources } from './sources';
 
 /** What the pending state says: no fake progress stages, only what is really happening. */
 const PENDING_TEXT = {
-  demo: 'Preparing the demo answer\u2026',
-  rag: 'Searching the verified corpus and writing\u2026',
-  plain: 'Writing an answer with no retrieved context\u2026',
+  demo: 'Preparing the demo answer…',
+  rag: 'Searching the corpus…',
+  plain: 'Writing an answer with no retrieved context…',
 } as const;
 
-/** One answer card: label, Markdown body revealed word by word, actions, and sources. */
+/** One answer: avatar, label, sources track, Markdown revealed word by word, then actions. */
 @Component({
   selector: 'app-answer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Icon, Sources],
+  imports: [Icon, Logo, CopyButton, Sources],
   templateUrl: './answer.html',
   styleUrl: './answer.css',
 })
@@ -41,11 +41,11 @@ export class Answer {
 
   protected readonly store = inject(ChatStore);
   private readonly demoMode = inject(API_CONFIG).useMock;
-  private readonly announcer = inject(Announcer);
-  private readonly document = inject(DOCUMENT);
 
+  /** Compare mode: each answer is an outlined column with its CLAUDE.md label. */
+  protected readonly compare = computed(() => this.turn().plain !== null);
   /** "Twins for Change"; in compare mode the two labels from CLAUDE.md. */
-  protected readonly label = computed(() => answerLabel(this.kind(), this.turn().plain !== null));
+  protected readonly label = computed(() => answerLabel(this.kind(), this.compare()));
   protected readonly slot = computed<AnswerSlot>(() => {
     const turn = this.turn();
     return this.kind() === 'plain' && turn.plain ? turn.plain : turn.rag;
@@ -65,6 +65,14 @@ export class Answer {
     const visible = shown === undefined ? text : text.slice(0, shown);
     return this.fallback() ? renderLines(visible) : renderMarkdown(visible);
   });
+  /** The sources track: Twins for Change answers only, once the answer (or a part) is there. */
+  protected readonly showSources = computed(() => {
+    const slot = this.slot();
+    return (
+      this.kind() === 'rag' &&
+      (slot.status === 'done' || (slot.status === 'stopped' && slot.sources.length > 0))
+    );
+  });
   protected readonly pendingText = computed(() =>
     this.demoMode ? PENDING_TEXT.demo : PENDING_TEXT[this.kind()],
   );
@@ -72,50 +80,23 @@ export class Answer {
     const since = this.slot().requestedAt ?? this.turn().askedAt;
     return Math.max(0, Math.round((this.store.now() - since) / 1000));
   });
-  protected readonly copied = signal(false);
+  /** When this answer was requested: a finished slot no longer carries it, so it is kept here. */
+  private readonly requestedAt = linkedSignal<AnswerSlot, number | null>({
+    source: this.slot,
+    computation: (slot, previous) =>
+      slot.status === 'pending' ? (slot.requestedAt ?? null) : (previous?.value ?? null),
+  });
+  /** "4.2 s" from request to answer, known when this page saw the request start. */
+  protected readonly took = computed(() => {
+    const from = this.requestedAt();
+    const to = this.slot().receivedAt;
+    return from !== null && to ? formatDuration(to - from) : null;
+  });
 
   protected readonly clockTime = clockTime;
   protected readonly isoTime = isoTime;
 
   protected regenerate(): void {
     this.store.regenerate(this.conversationId(), this.turn().id, this.kind());
-  }
-
-  protected async copy(): Promise<void> {
-    const text = this.slot().text;
-    let ok: boolean;
-    try {
-      await navigator.clipboard.writeText(text);
-      ok = true;
-    } catch {
-      ok = this.legacyCopy(text);
-    }
-    if (ok) {
-      this.copied.set(true);
-      this.announcer.announce('Answer copied.');
-      setTimeout(() => this.copied.set(false), 2000);
-    } else {
-      this.announcer.announce('Could not copy. Select the answer text and copy it instead.');
-    }
-  }
-
-  /** The Clipboard API needs a secure context; a school LAN may serve the app over http. */
-  private legacyCopy(text: string): boolean {
-    const active = this.document.activeElement as HTMLElement | null;
-    const area = this.document.createElement('textarea');
-    area.value = text;
-    area.setAttribute('readonly', '');
-    area.style.position = 'fixed';
-    area.style.opacity = '0';
-    this.document.body.appendChild(area);
-    area.select();
-    try {
-      return this.document.execCommand('copy');
-    } catch {
-      return false;
-    } finally {
-      area.remove();
-      active?.focus();
-    }
   }
 }

@@ -2,62 +2,41 @@
   display: block;
 }
 
+/* One rounded box with a soft border and shadow; the border strengthens with focus inside. */
 .composer {
-  max-width: var(--content);
-  margin: 0 auto;
-}
-
-/* One rounded box. Its border is 3:1 or more against the page (input boundary). */
-.box {
   container-type: inline-size;
-  display: grid;
-  gap: 0.35rem;
-  padding: 0.5rem;
-  border: 1px solid var(--border-strong);
-  border-radius: 1.625rem;
+  position: relative;
+  border: 1px solid var(--border-mid);
+  border-radius: 24px;
   background: var(--raised);
   box-shadow: var(--shadow);
   transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-/* One focus indication: the box border itself turns into a 2px focus-coloured ring. */
-.box:has(textarea:focus-visible) {
+.composer:focus-within {
+  border-color: var(--border-strong);
+}
+
+/* The text box's focus indication: the box border takes the focus colour (6.5:1 on white). */
+.composer:has(textarea:focus-visible) {
   border-color: var(--focus);
-  box-shadow:
-    0 0 0 1px var(--focus),
-    var(--shadow);
-}
-
-.row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-areas: 'plus input tools';
-  align-items: end;
-  gap: 0.25rem;
-}
-
-.plus {
-  grid-area: plus;
-  border-radius: 50%;
 }
 
 textarea {
-  grid-area: input;
-  min-width: 0;
-  min-height: 2.25rem;
+  display: block;
+  width: 100%;
+  min-height: 52px;
   max-height: 200px;
-  padding: 0.35rem 0.5rem;
+  padding: 15px 18px 4px;
   border: 0;
+  outline: 0;
   background: transparent;
+  font-size: 1rem;
   line-height: 1.6;
   resize: none;
   overflow-y: auto;
-}
-
-textarea:focus-visible {
-  outline: none;
 }
 
 textarea::placeholder {
@@ -65,77 +44,74 @@ textarea::placeholder {
   opacity: 1;
 }
 
-.tools {
-  grid-area: tools;
+/* Bottom bar: "+", the two chips, the keyboard hint, then the round Send / Stop button. */
+.bar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 0.3rem;
+  gap: 0.5rem;
+  padding: 4px 10px 10px;
 }
 
-/* Small chips, like ChatGPT's "Think": quiet until pressed or opened. */
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+.attach {
+  width: 2.125rem;
   height: 2.125rem;
-  padding: 0 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-  white-space: nowrap;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
+  border-radius: 50%;
 }
 
-.chip:hover {
-  background: var(--hover);
-  color: var(--text);
-}
-
-.chip[aria-pressed='true'],
-.chip[aria-expanded='true'] {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
+/* Compare and Tone marks: the global .chip-btn pills (pressed = accent tint plus accent border). */
 .chip {
-  --icon-size: 1rem;
+  --icon-size: 0.95rem;
+  flex: none;
 }
 
 .glyph {
   font-size: 0.9375rem;
-  line-height: 1.6;
 }
 
-/* Send, disabled, and Stop are one button: its colour and icon change in place. */
+.hint {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.composer:focus-within .hint {
+  opacity: 1;
+}
+
+.gap {
+  flex: 1;
+}
+
+/* Send, disabled and Stop are one button: its colour and icon change in place. */
 .send {
+  --icon-size: 1.125rem;
   display: grid;
   place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.125rem;
+  height: 2.125rem;
   flex: none;
   border: 0;
   border-radius: 50%;
   background: var(--action-bg);
   color: var(--action-fg);
   transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.15s var(--ease-out);
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s var(--ease);
 }
 
-.send:active:not(:disabled) {
-  transform: scale(0.92);
+.send:not(:disabled):hover {
+  background: color-mix(in srgb, var(--action-bg) 86%, var(--text));
+}
+
+.send:not(:disabled):active {
+  transform: scale(0.95);
 }
 
 .send:disabled {
-  background: var(--hover);
+  background: var(--raised-3);
   color: var(--text-muted);
   cursor: not-allowed;
 }
@@ -146,24 +122,133 @@ textarea::placeholder {
 }
 
 .swap {
-  animation: swap 0.2s var(--ease-out) backwards;
+  animation: pop 0.2s var(--ease) backwards;
 }
 
-@keyframes swap {
-  from {
-    opacity: 0;
-    transform: scale(0.6);
+/* The tone mark bar: one slim row inside the box that scrolls sideways when the box is narrow. */
+.tones {
+  display: flex;
+  gap: 2px;
+  padding: 8px 10px 6px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.tones[hidden] {
+  display: none;
+}
+
+.tone {
+  flex: none;
+  min-width: 2rem;
+  height: 2.125rem;
+  padding: 0 0.25rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.tone:hover {
+  background: var(--hover);
+}
+
+/* Attachment chips on top, inside the box: extension badge or thumbnail, name, size, remove. */
+.attachments {
+  display: grid;
+  gap: 0.375rem;
+  padding: 10px 12px 0;
+}
+
+.files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5625rem;
+  max-width: min(16.25rem, 100%);
+  height: 2.625rem;
+  padding: 0 0.25rem 0 0.375rem;
+  border: 1px solid var(--border-mid);
+  border-radius: 10px;
+  background: var(--raised-2);
+  animation: fade-up 0.2s var(--ease) backwards;
+}
+
+.thumb {
+  display: grid;
+  place-items: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  flex: none;
+  border-radius: 7px;
+  object-fit: cover;
+}
+
+.ext {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.file-text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+/* The full name is in the tooltip; the padding keeps any tone mark inside the clip. */
+.file-name {
+  padding-block: 1px;
+  overflow: hidden;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-size,
+.not-sent,
+.message {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.file-remove {
+  --icon-size: 0.875rem;
+  width: 1.625rem;
+  height: 1.625rem;
+  border-radius: 7px;
+}
+
+.message {
+  margin: 0.375rem 1rem 0;
+  color: var(--text);
+}
+
+.message:empty {
+  margin: 0;
+}
+
+/* The keyboard hint needs room; the chip words give way only on very narrow boxes. */
+@container (max-width: 35.98rem) {
+  .hint {
+    display: none;
   }
 }
 
-/* Narrow boxes: the text box on its own line, the controls under it. */
-@container (max-width: 34rem) {
-  .row {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-areas:
-      'input input input'
-      'plus . tools';
-  }
+@container (max-width: 19.98rem) {
   .chip-text {
     position: absolute;
     width: 1px;
@@ -174,128 +259,44 @@ textarea::placeholder {
   }
 }
 
-/* The tone mark bar: one slim row inside the box. */
-.tones {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.15rem;
-  padding: 0.1rem 0.25rem 0.35rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.tones[hidden] {
-  display: none;
-}
-
-.tone {
-  min-width: 2rem;
-  height: 2.125rem;
-  padding: 0 0.25rem;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--text);
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.tone:hover {
-  background: var(--hover);
-}
-
-.attachments {
-  display: grid;
-  gap: 0.3rem;
-  padding: 0.15rem 0.25rem 0.3rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.files {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.file {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  max-width: 100%;
-  padding: 0.2rem 0.15rem 0.2rem 0.3rem;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-
-.thumb {
-  display: grid;
-  place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  flex: none;
-  border-radius: 6px;
-  object-fit: cover;
-  background: var(--bubble);
-  color: var(--text-muted);
-}
-
-.file-text {
-  display: grid;
-  min-width: 0;
-  line-height: 1.35;
-}
-
-.file-name {
-  font-size: 0.8125rem;
-  overflow-wrap: anywhere;
-}
-
-.file-size,
-.not-sent,
-.fineprint,
-.message {
-  color: var(--text-muted);
-  font-size: 0.75rem;
-}
-
-.file-remove {
-  width: 1.875rem;
-  height: 1.875rem;
-}
-
-.message {
-  margin: 0.3rem 0.75rem 0;
-  color: var(--text);
-}
-
-.message:empty {
-  margin: 0;
-}
-
-.fineprint {
-  margin: 0.35rem 0.75rem 0;
-  text-align: center;
-}
-
+/* Drag and drop anywhere: a translucent solid canvas and one dashed drop box. */
 .drop {
   position: fixed;
   inset: 0;
   z-index: 50;
   display: grid;
   place-items: center;
-  padding: 2rem;
-  background: rgb(12 45 100 / 0.82);
-  color: var(--white);
-  font-size: 1.0625rem;
-  font-weight: 700;
-  text-align: center;
+  padding: 1.5rem;
+  background: color-mix(in srgb, var(--bg) 84%, transparent);
   pointer-events: none;
 }
 
-.drop p {
-  padding: 1.25rem 1.75rem;
-  border: 1.5px dashed var(--pale);
-  border-radius: 14px;
+.drop-box {
+  --icon-size: 1.875rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.375rem;
+  width: min(28.75rem, 100%);
+  padding: 2.5rem 1.75rem;
+  border: 2px dashed var(--border-strong);
+  border-radius: 18px;
+  background: var(--raised);
+  box-shadow: var(--shadow);
+  text-align: center;
+  animation: fade-up 0.18s var(--ease) backwards;
+}
+
+.drop-box app-icon {
+  margin-bottom: 0.25rem;
+  color: var(--accent);
+}
+
+.drop-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.drop-text {
+  color: var(--text-muted);
+  font-size: 0.875rem;
 }

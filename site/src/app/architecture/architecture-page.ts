@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CORPUS_TABLE } from '../core/corpus';
+import { Icon } from '../shared/icon';
 import { TopBar } from '../shared/top-bar';
 
 /** /architecture: how Twins for Change works. Prerendered at build time. */
 @Component({
   selector: 'app-architecture-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TopBar],
+  imports: [TopBar, Icon],
   templateUrl: './architecture-page.html',
   styleUrl: './architecture-page.css',
 })

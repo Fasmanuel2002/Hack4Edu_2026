@@ -1,66 +1,81 @@
 <app-top-bar />
 
 <main id="main" class="page" tabindex="-1">
-  <div class="intro">
-    <p class="eyebrow">Architecture</p>
+  <header class="hero">
     <h1>How Twins for Change works</h1>
-    <p class="lead">
+    <p class="sub">
       Gemma 3 4B makes things up when it answers in Yorùbá. Twins for Change retrieves verified
       bilingual examples with hybrid RAG and gives them to Gemma, so it answers from real data. The
       demo compares plain Gemma with Gemma + RAG on the same question.
     </p>
-  </div>
+  </header>
 
   <section aria-labelledby="flow-title">
     <h2 id="flow-title">From question to bilingual answer</h2>
     <ol class="steps">
       <li>
-        <span class="n" aria-hidden="true">1</span>
-        <div>
-          <h3>Question</h3>
-          <p>In Yorùbá or English. Each request carries one question and no chat history.</p>
+        <div class="step">
+          <span class="badge" aria-hidden="true"><app-icon name="chat" /></span>
+          <div>
+            <h3>Question</h3>
+            <p>In Yorùbá or English. Each request carries one question and no chat history.</p>
+          </div>
         </div>
       </li>
       <li>
-        <span class="n" aria-hidden="true">2</span>
-        <div>
-          <h3>Hybrid search</h3>
-          <p>bge-m3 + BM25 over the 15,791-row corpus, fused with RRF. Top 3 results.</p>
+        <app-icon class="between" name="chevronDown" />
+        <div class="step">
+          <span class="badge" aria-hidden="true"><app-icon name="search" /></span>
+          <div>
+            <h3>Hybrid search</h3>
+            <p>bge-m3 + BM25 over the 15,791-row corpus, fused with RRF. Top 3 results.</p>
+          </div>
         </div>
       </li>
       <li>
-        <span class="n" aria-hidden="true">3</span>
-        <div>
-          <h3>Tutor prompt</h3>
-          <p>The question plus the 3 retrieved <code>pedagogical_answer</code> texts.</p>
+        <app-icon class="between" name="chevronDown" />
+        <div class="step">
+          <span class="badge" aria-hidden="true"><app-icon name="clipboard" /></span>
+          <div>
+            <h3>Tutor prompt</h3>
+            <p>The question plus the 3 retrieved <code>pedagogical_answer</code> texts.</p>
+          </div>
         </div>
       </li>
       <li>
-        <span class="n" aria-hidden="true">4</span>
-        <div>
-          <h3>gemma3:4b</h3>
-          <p>Generates through Ollama with temperature 0.1.</p>
+        <app-icon class="between" name="chevronDown" />
+        <div class="step">
+          <span class="badge" aria-hidden="true"><app-icon name="cpu" /></span>
+          <div>
+            <h3>gemma3:4b</h3>
+            <p>Generates through Ollama with temperature 0.1.</p>
+          </div>
         </div>
       </li>
       <li>
-        <span class="n" aria-hidden="true">5</span>
-        <div>
-          <h3>Bilingual answer</h3>
-          <p>Main explanation in Yorùbá, key terms and a summary in English, step by step.</p>
+        <app-icon class="between" name="chevronDown" />
+        <div class="step">
+          <span class="badge" aria-hidden="true"><app-icon name="book" /></span>
+          <div>
+            <h3>Bilingual answer</h3>
+            <p>Main explanation in Yorùbá, key terms and a summary in English, step by step.</p>
+          </div>
         </div>
       </li>
     </ol>
 
-    <h3 class="sub">The baseline in compare mode</h3>
-    <ol class="flow">
-      <li>Question</li>
-      <li>gemma3:4b, no retrieved context</li>
-      <li>Plain answer</li>
-    </ol>
-    <p class="note">
-      <code>POST /ask/plain</code> sends the same question to Gemma with no context. In compare mode the
-      chat sends both requests at once and shows the answers side by side.
-    </p>
+    <div class="panel baseline">
+      <h3>The baseline in compare mode</h3>
+      <ol class="flow">
+        <li>Question</li>
+        <li>gemma3:4b, no retrieved context</li>
+        <li>Plain answer</li>
+      </ol>
+      <p class="note">
+        <code>POST /ask/plain</code> sends the same question to Gemma with no context. In compare mode the
+        chat sends both requests at once and shows the answers side by side.
+      </p>
+    </div>
   </section>
 
   <section aria-labelledby="settings-title">
@@ -115,15 +130,21 @@
   <section aria-labelledby="deploy-title">
     <h2 id="deploy-title">Deployment</h2>
     <div class="deploy">
-      <section class="box" aria-labelledby="cloud-title">
+      <section class="panel" aria-labelledby="cloud-title">
         <h3 id="cloud-title">Cloud demo</h3>
-        <ol class="flow vertical">
-          <li><strong>Vercel</strong>: Angular frontend, static files</li>
-          <li><strong>RunPod GPU pod</strong>: FastAPI with the REST API and RAG logic, reached over HTTPS</li>
-          <li><strong>Ollama</strong> for LLM inference and <strong>Qdrant</strong> as the vector database, on the same pod</li>
+        <ol class="chain">
+          <li><strong>Vercel</strong><span>Angular frontend, static files</span></li>
+          <li>
+            <app-icon class="between" name="chevronDown" />
+            <strong>RunPod GPU pod</strong><span>FastAPI with the REST API and RAG logic, reached over HTTPS</span>
+          </li>
+          <li>
+            <app-icon class="between" name="chevronDown" />
+            <strong>Ollama and Qdrant</strong><span>LLM inference and the vector database, on the same pod</span>
+          </li>
         </ol>
       </section>
-      <section class="box" aria-labelledby="local-title">
+      <section class="panel" aria-labelledby="local-title">
         <h3 id="local-title">Local mode for schools</h3>
         <p>One machine, no internet needed after setup:</p>
         <ul class="plain">
@@ -142,10 +163,11 @@
 
   <section aria-labelledby="corpus-title">
     <h2 id="corpus-title">The corpus</h2>
-    <p class="stats">
-      <strong>15,791</strong> rows in <code>dataset_rag.csv</code>: <strong>8,318</strong> Yorùbá
-      (<code>yor</code>) and <strong>7,473</strong> English (<code>eng</code>, all GSM8K).
-    </p>
+    <ul class="stats">
+      <li><b>15,791</b><span>rows in <code>dataset_rag.csv</code></span></li>
+      <li><b>8,318</b><span>Yorùbá rows (<code>yor</code>)</span></li>
+      <li><b>7,473</b><span>English rows (<code>eng</code>, all GSM8K)</span></li>
+    </ul>
     <div class="table-wrap" role="region" aria-labelledby="corpus-caption" tabindex="0">
       <table>
         <caption id="corpus-caption">Rows by subject and source dataset</caption>
