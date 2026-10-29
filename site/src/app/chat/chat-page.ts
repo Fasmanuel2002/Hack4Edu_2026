@@ -19,6 +19,7 @@ import { clockTime, formatSize, isoTime } from '../core/format';
 import { HealthService } from '../core/health.service';
 import { Turn } from '../core/models';
 import { looksYoruba } from '../core/yoruba';
+import { CopyButton } from '../shared/copy-button';
 import { Icon } from '../shared/icon';
 import { MenuButtonState, TopBar } from '../shared/top-bar';
 import { Answer } from './answer';
@@ -35,7 +36,7 @@ const UNSCROLL_KEYS = new Set(['ArrowUp', 'PageUp', 'Home']);
 @Component({
   selector: 'app-chat-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TopBar, Sidebar, Welcome, StarterList, Answer, Composer, Icon],
+  imports: [TopBar, Sidebar, Welcome, StarterList, Answer, Composer, Icon, CopyButton],
   templateUrl: './chat-page.html',
   styleUrl: './chat-page.css',
   host: { '(document:keydown)': 'onKeydown($event)' },
@@ -54,12 +55,16 @@ export class ChatPage {
   protected readonly sidebarShown = computed(() =>
     this.media.mobile() ? this.drawerOpen() : this.sidebarOpen(),
   );
-  protected readonly menu = computed<MenuButtonState>(() =>
-    this.media.mobile()
-      ? { label: 'Open sidebar', expanded: this.drawerOpen() }
-      : { label: this.sidebarOpen() ? 'Hide sidebar' : 'Show sidebar', expanded: this.sidebarOpen() },
-  );
+  /** The top bar's open button: only while the sidebar is hidden (it hides itself from its head). */
+  protected readonly menu = computed<MenuButtonState | null>(() => {
+    if (this.media.mobile()) {
+      return { label: 'Open sidebar', expanded: this.drawerOpen() };
+    }
+    return this.sidebarOpen() ? null : { label: 'Show sidebar', expanded: false };
+  });
 
+  /** The thread is scrolled: the top bar shows its bottom line. */
+  protected readonly scrolled = signal(false);
   /** True while the view stays at the latest message and follows new text. */
   protected readonly pinned = signal(true);
   private readonly overflowing = signal(false);
@@ -147,6 +152,7 @@ export class ChatPage {
 
   protected onScroll(): void {
     const scroller = this.scroller().nativeElement;
+    this.scrolled.set(scroller.scrollTop > 2);
     const distance = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight;
     if (distance <= PIN_DISTANCE && performance.now() - this.upIntentAt > 300) {
       this.pinned.set(true);
@@ -216,6 +222,7 @@ export class ChatPage {
     }
   }
 
+  /** The top bar's button: opens the drawer (mobile) or shows the collapsed sidebar (desktop). */
   protected toggleMenu(): void {
     if (this.media.mobile()) {
       this.drawerOpen.set(true);
@@ -223,7 +230,18 @@ export class ChatPage {
         this.sidebar().nativeElement.querySelector<HTMLElement>('button, a[href]')?.focus(),
       );
     } else {
-      this.sidebarOpen.update((open) => !open);
+      this.sidebarOpen.set(true);
+      this.focusById('hide-sidebar');
+    }
+  }
+
+  /** The sidebar's own head button: closes the drawer or collapses the sidebar. */
+  protected hideSidebar(): void {
+    if (this.media.mobile()) {
+      this.closeDrawer(true);
+    } else {
+      this.sidebarOpen.set(false);
+      this.focusById('open-sidebar');
     }
   }
 
@@ -233,10 +251,12 @@ export class ChatPage {
     }
     this.drawerOpen.set(false);
     if (restoreFocus) {
-      this.afterRender(() =>
-        this.document.querySelector<HTMLElement>('button[aria-controls="sidebar"]')?.focus(),
-      );
+      this.focusById('open-sidebar');
     }
+  }
+
+  private focusById(id: string): void {
+    this.afterRender(() => this.document.getElementById(id)?.focus());
   }
 
   protected newChat(): void {

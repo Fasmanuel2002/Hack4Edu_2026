@@ -33,6 +33,11 @@ const SUMMARIES = {
   offline: 'API offline',
 } as const;
 
+/** Accent-insensitive search key: tone marks and dots below are ignored only for matching. */
+function searchKey(text: string): string {
+  return text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+}
+
 @Component({
   selector: 'app-sidebar',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,8 +46,9 @@ const SUMMARIES = {
   styleUrl: './sidebar.css',
 })
 export class Sidebar {
-  readonly showClose = input(false);
-  readonly closeRequest = output<void>();
+  /** Below 768px the sidebar is a drawer: its head button closes it instead of collapsing it. */
+  readonly drawer = input(false);
+  readonly hideRequest = output<void>();
   readonly newChatRequest = output<void>();
   /** A chat was opened from the history. */
   readonly picked = output<void>();
@@ -54,6 +60,20 @@ export class Sidebar {
 
   protected readonly editingId = signal<string | null>(null);
   protected readonly confirmId = signal<string | null>(null);
+  protected readonly query = signal('');
+  /** The history filtered by title. Stored and displayed titles are never changed. */
+  protected readonly groups = computed(() => {
+    const query = searchKey(this.query().trim());
+    const groups = this.store.groups();
+    return query
+      ? groups
+          .map((group) => ({
+            ...group,
+            conversations: group.conversations.filter((c) => searchKey(c.title).includes(query)),
+          }))
+          .filter((group) => group.conversations.length > 0)
+      : groups;
+  });
   protected readonly local = isLocalApi(inject(API_CONFIG).apiBaseUrl);
   protected readonly apiLabel = computed(() => API_LABELS[this.health.status()]);
   protected readonly summary = computed(() => SUMMARIES[this.health.status()]);
@@ -61,6 +81,10 @@ export class Sidebar {
     ? '⌘ ⇧ O'
     : 'Ctrl ⇧ O';
   protected readonly looksYoruba = looksYoruba;
+
+  protected onSearch(event: Event): void {
+    this.query.set((event.target as HTMLInputElement).value);
+  }
 
   protected open(id: string): void {
     this.store.select(id);

@@ -1,121 +1,134 @@
 <div class="head">
   <a routerLink="/chat" class="brand">
-    <app-logo [width]="28" />
+    <span class="logo-tile"><app-logo [width]="22" /></span>
     <span class="name" aria-hidden="true">Twins for Change</span>
   </a>
-  @if (showClose()) {
-    <button type="button" class="icon-btn" aria-label="Close sidebar" title="Close sidebar" (click)="closeRequest.emit()">
-      <app-icon name="close" />
-    </button>
-  }
-</div>
-
-<div class="body">
   <button
     type="button"
-    id="new-chat"
-    class="row new-chat"
-    aria-keyshortcuts="Control+Shift+O Meta+Shift+O"
-    (click)="newChatRequest.emit()"
+    id="hide-sidebar"
+    class="icon-btn"
+    aria-controls="sidebar"
+    aria-expanded="true"
+    [attr.aria-label]="drawer() ? 'Close sidebar' : 'Hide sidebar'"
+    [title]="drawer() ? 'Close sidebar' : 'Hide sidebar'"
+    (click)="hideRequest.emit()"
   >
-    <app-icon name="newChat" />
-    <span class="row-text">New chat</span>
-    <kbd aria-hidden="true">{{ shortcut }}</kbd>
+    <app-icon [name]="drawer() ? 'x' : 'sidebar'" />
   </button>
+</div>
 
-  <nav class="history" aria-labelledby="history-title">
-    <h2 id="history-title" class="label">Chats</h2>
-    @if (store.groups().length === 0) {
-      <p class="hint">Your chats will appear here. They stay in this browser.</p>
-    }
-    @for (group of store.groups(); track group.label) {
-      <h3 class="group">{{ group.label }}</h3>
-      <ul class="items">
-        @for (chat of group.conversations; track chat.id) {
-          <li class="item" [class.active]="chat.id === store.activeId()">
-            @if (editingId() === chat.id) {
-              <form class="edit" (submit)="$event.preventDefault(); saveRename(chat.id, renameInput.value)">
-                <label class="visually-hidden" [for]="'rename-' + chat.id">Chat name</label>
-                <input
-                  #renameInput
-                  type="text"
-                  [id]="'rename-' + chat.id"
-                  [value]="chat.title"
-                  [attr.lang]="looksYoruba(chat.title) ? 'yo' : null"
-                  (keydown.escape)="cancelRename(chat.id, $event)"
-                />
-                <div class="edit-actions">
-                  <button type="submit" class="btn btn-primary">Save</button>
-                  <button type="button" class="btn btn-quiet" (click)="cancelRename(chat.id, $event)">Cancel</button>
-                </div>
-              </form>
-            } @else if (confirmId() === chat.id) {
-              <div class="edit" role="group" [attr.aria-labelledby]="'confirm-' + chat.id">
-                <p [id]="'confirm-' + chat.id">Delete this chat?</p>
-                <div class="edit-actions">
-                  <button type="button" class="btn btn-primary" (click)="confirmDelete(chat.id)">Delete</button>
-                  <button
-                    type="button"
-                    class="btn btn-quiet"
-                    [id]="'cancel-' + chat.id"
-                    (click)="cancelDelete(chat.id)"
-                    (keydown.escape)="cancelDelete(chat.id, $event)"
-                  >
-                    Cancel
-                  </button>
-                </div>
+<button
+  type="button"
+  id="new-chat"
+  class="row new-chat"
+  aria-keyshortcuts="Control+Shift+O Meta+Shift+O"
+  (click)="newChatRequest.emit()"
+>
+  <app-icon name="compose" />
+  <span class="row-text">New chat</span>
+  <kbd aria-hidden="true">{{ shortcut }}</kbd>
+</button>
+
+<label class="row search">
+  <app-icon name="search" />
+  <span class="visually-hidden">Search chats</span>
+  <input type="search" placeholder="Search chats" autocomplete="off" [value]="query()" (input)="onSearch($event)" />
+</label>
+
+<nav class="history" aria-labelledby="history-title">
+  <h2 id="history-title" class="visually-hidden">Chats</h2>
+  @if (store.groups().length === 0) {
+    <p class="hint">Your chats will appear here. They stay in this browser.</p>
+  } @else if (groups().length === 0) {
+    <p class="hint">No chats match your search.</p>
+  }
+  @for (group of groups(); track group.label) {
+    <h3 class="group">{{ group.label }}</h3>
+    <ul class="items">
+      @for (chat of group.conversations; track chat.id) {
+        <li class="item" [class.active]="chat.id === store.activeId()">
+          @if (editingId() === chat.id) {
+            <form class="edit" (submit)="$event.preventDefault(); saveRename(chat.id, renameInput.value)">
+              <label class="visually-hidden" [for]="'rename-' + chat.id">Chat name</label>
+              <input
+                #renameInput
+                type="text"
+                [id]="'rename-' + chat.id"
+                [value]="chat.title"
+                [attr.lang]="looksYoruba(chat.title) ? 'yo' : null"
+                (keydown.escape)="cancelRename(chat.id, $event)"
+              />
+              <div class="edit-actions">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-quiet" (click)="cancelRename(chat.id, $event)">Cancel</button>
               </div>
-            } @else {
+            </form>
+          } @else if (confirmId() === chat.id) {
+            <div class="edit" role="group" [attr.aria-labelledby]="'confirm-' + chat.id">
+              <p [id]="'confirm-' + chat.id">Delete this chat?</p>
+              <div class="edit-actions">
+                <button type="button" class="btn btn-primary" (click)="confirmDelete(chat.id)">Delete</button>
+                <button
+                  type="button"
+                  class="btn btn-quiet"
+                  [id]="'cancel-' + chat.id"
+                  (click)="cancelDelete(chat.id)"
+                  (keydown.escape)="cancelDelete(chat.id, $event)"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          } @else {
+            <button
+              type="button"
+              class="open"
+              [id]="'chat-' + chat.id"
+              [title]="chat.title"
+              [attr.aria-current]="chat.id === store.activeId() ? 'true' : null"
+              (click)="open(chat.id)"
+            >
+              <span class="title" [attr.lang]="looksYoruba(chat.title) ? 'yo' : null">{{ chat.title }}</span>
+            </button>
+            <div class="tools">
               <button
                 type="button"
-                class="open"
-                [id]="'chat-' + chat.id"
-                [attr.aria-current]="chat.id === store.activeId() ? 'true' : null"
-                (click)="open(chat.id)"
+                class="icon-btn"
+                [attr.aria-label]="'Rename chat: ' + chat.title"
+                title="Rename"
+                (click)="startRename(chat.id)"
               >
-                <span [attr.lang]="looksYoruba(chat.title) ? 'yo' : null">{{ chat.title }}</span>
+                <app-icon name="pencil" />
               </button>
-              <div class="tools">
-                <button
-                  type="button"
-                  class="icon-btn"
-                  [attr.aria-label]="'Rename chat: ' + chat.title"
-                  title="Rename"
-                  (click)="startRename(chat.id)"
-                >
-                  <app-icon name="pencil" />
-                </button>
-                <button
-                  type="button"
-                  class="icon-btn"
-                  [id]="'delete-' + chat.id"
-                  [attr.aria-label]="'Delete chat: ' + chat.title"
-                  title="Delete"
-                  (click)="askDelete(chat.id)"
-                >
-                  <app-icon name="trash" />
-                </button>
-              </div>
-            }
-          </li>
-        }
-      </ul>
-    }
-  </nav>
-
-</div>
+              <button
+                type="button"
+                class="icon-btn"
+                [id]="'delete-' + chat.id"
+                [attr.aria-label]="'Delete chat: ' + chat.title"
+                title="Delete"
+                (click)="askDelete(chat.id)"
+              >
+                <app-icon name="trash" />
+              </button>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+</nav>
 
 <footer class="foot">
   <h2 class="visually-hidden">System status</h2>
   <!-- One quiet row (API state and model) that opens to the full status. -->
   <details class="status">
     <summary>
-      <span [class]="'dot ' + health.status()" aria-hidden="true"></span>
+      <span class="dot" [attr.data-state]="health.status()" aria-hidden="true"></span>
       <span class="summary-text">
         <span class="summary-main">{{ summary() }}</span>
         <span class="summary-sub">gemma3:4b · Qdrant hybrid</span>
       </span>
-      <app-icon name="chevron" class="chev" />
+      <app-icon name="chevronDown" class="chev" />
     </summary>
     <dl>
       <div><dt>LLM:</dt><dd>gemma3:4b (Ollama)</dd></div>

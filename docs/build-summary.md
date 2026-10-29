@@ -1,9 +1,11 @@
 # Build summary: Twins for Change frontend
 
 Passes so far: the first build and the redesign (2026-10-25), the quality-and-gamification pass
-(2026-10-26), and this **product pass (2026-10-27)**: the gamification is gone, the sources drawer
+(2026-10-26), the **product pass (2026-10-27)**: the gamification is gone, the sources drawer
 shows the real sources that `POST /ask/rag` now returns, and the interface got its own identity
-(self-hosted fonts, a navy colour story, a few deliberate motion moments). The app lives in `site/`.
+(self-hosted fonts, a navy colour story, a few deliberate motion moments), and the **reference-UI
+restyle (2026-10-29)**, a visual and markup pass described in "Design update: reference-UI
+restyle" below. The app lives in `site/`.
 
 Both environment files have `useMock: false`, set by the author on purpose; this pass did not
 touch them. Mock mode still exists, is covered by the unit tests, and comes back by setting
@@ -14,7 +16,8 @@ touch them. Mock mode still exists, is covered by the unit tests, and comes back
 Nothing loads from the internet at runtime: no CDN, remote fonts, analytics, remote images, UI
 component library, icon library or third-party script. Fonts are files in `site/public/fonts/`,
 served by the app itself. The only network calls go to `apiBaseUrl`, and only when `useMock` is
-`false`. **This pass added three font files and their two licence texts, and no npm package.**
+`false`. **The 2026-10-27 pass added three font files and their two licence texts, and no npm
+package. The 2026-10-29 restyle added no package, font, image or other asset.**
 
 ### Fonts (new in this pass)
 
@@ -240,6 +243,123 @@ These low items are left for the author:
     of the screen.
 38. A11y: the 96 px logo file is 96 × 78 instead of 96 × 77 (about 1%, invisible at 28 px).
 
+### Open decisions from the reference-UI restyle (2026-10-29)
+
+39. **Elapsed time ("4.2 s") shows only for answers requested in the open page.** The chat store
+    drops `requestedAt` when an answer arrives, and this pass did not change the store, so the
+    answer component remembers it while the request runs. One line in `chat-store.ts` (keep
+    `requestedAt` in the finished slot) would show it for saved chats too.
+40. **The bold face now loads on the first paint**: the format asks for semibold labels (tile
+    subjects, history groups, the sidebar name), and the fonts have only 400 and 700. Lighthouse
+    was not re-run in this pass. If mobile performance drops below 90, set those labels to 400.
+41. **History titles are one line with an ellipsis** (the reference format). The clip box has
+    vertical padding so no tone mark or dot below is cut, the ellipsis falls between letters (a
+    letter and its marks are one cluster), and the full title is in the tooltip and the
+    accessible name. Starter tiles, bubbles, answers and sources always wrap.
+
+## Design update: reference-UI restyle (2026-10-29)
+
+**Where the format comes from.** The author's two vanilla JS/CSS apps: the chat UI
+(`2.7.3_generador_codigo/.../llm_chatbot/web`) for the shell, sidebar, top bar, composer, messages
+and the sources track, and the issue portal (`3.8.4_generador_codigo_pipeline/.../issue_portal/web`)
+for the Practice and How it works pages (hero, card, tag, outcome, stat and table patterns). Only
+the structure, spacing and motion were taken: no colours, brand marks, strings, Google Fonts or
+toasts. Behaviour, data flow, services and stores are unchanged.
+
+**What changed.**
+- **Shell.** Grid `[268px sidebar | main]` fixed to the viewport; collapsing animates the column
+  (0.35 s, `cubic-bezier(.22, 1, .36, 1)`) and hides the sidebar once closed. Below 768 px the
+  sidebar is a drawer (max 86vw) over a deep-navy scrim. Main is `[56px top bar | stage]`; the
+  top bar's bottom line fades in once the stage (or, on Practice and How it works, the window) is
+  scrolled.
+- **Sidebar.** 56px head (mark tile, name, Hide/Close button), New chat (the shortcut hint fades
+  in on hover and keyboard focus), **Search chats** (new: filters history titles; matching ignores
+  case, tone marks and dots below, and never changes stored or displayed text), date groups with
+  12px bold labels, one-line titles, and rename/delete icons on hover, focus and touch. Rename
+  and the inline delete confirmation are unchanged. The status footer keeps the four lines.
+- **Top bar.** Open-sidebar button and mark (when the sidebar is hidden), the three route links
+  as 36px pills (`aria-current`), an **API status pill** on every route (dot plus "Online",
+  "Offline", "Demo mode" or "Checking…"; when offline it is a button that checks again; polling
+  starts from the top bar too), New chat (sidebar hidden), and the theme toggle drawn as a
+  sliding sun/moon pill (one `aria-pressed` button, 0.3 s thumb).
+- **Welcome.** Mark on a white tile, the Literata greeting at the display size, one muted line,
+  the composer, then the four starters as **tiles in a 2-column grid** (1 column below 768 px:
+  subject label, Yorùbá question, English muted), and one 12px line under them (demo-mode
+  version: "Answers are demo data built from real corpus rows…"; real mode: "Answers come from
+  retrieved corpus rows and can still contain mistakes…"). Staggered rise: mark 50 ms, title
+  100 ms, line 140 ms, composer 180 ms, tiles 240–390 ms, line 440 ms, 0.6 s each.
+- **Thread.** 46rem column, 28px between messages, fade-up for new turns. User message: a
+  right-aligned bubble; under it a Copy button (new, on hover, focus, touch and narrow screens),
+  the avatar, "You" and the time. Answer: a grid with the logo mark on a white 28px tile, a label
+  line (label, "Demo data" pill, time), then the **sources track** above the answer (while
+  pending: spinner and "Searching the corpus…" or "Preparing the demo answer…", plus seconds
+  after 5 s; when done: search icon, "Verified sources (top 3)", "3 documents" or "Demo data", a
+  rotating chevron), the drawer (0fr→1fr, 0.3 s) with one card per ranked source, the Markdown,
+  an error card (alert icon, bold title, message, Retry pill), and a row of 30px actions (Copy
+  with an in-button check, Regenerate, a "Stopped" tag or the elapsed time). The action row is
+  always visible on touch and below 768 px. Compare mode: two outlined columns (1fr 1fr, 16px
+  gap) with the CLAUDE.md labels and their own loading states, stacked when the thread is
+  narrower than 640 px; only the RAG column has the track.
+- **Composer.** One 24px-radius box (mid-strength border, soft shadow; the border turns the focus
+  colour while typing): attachment chips on top (extension badge or thumbnail, name, size,
+  remove), the tone-mark strip as one slim row (it scrolls sideways on phones instead of
+  wrapping to 3 rows), the text box (52–200px), then "+", the Compare and Tone marks chips, the
+  "Enter to send · Shift + Enter new line" hint (on focus, wide boxes only; also the text box's
+  description) and the round Send/Stop button in brand blue (sky on navy). Docked on a solid
+  canvas strip with no gradient fade. Drag and drop shows a full-window overlay with a dashed box
+  and "Attachments are not sent yet: the backend has no upload endpoint."
+- **Practice.** Centred title and line, "Question N of 25" with the subject as an accent tag, a
+  bordered question card, four option rows with 28px letter badges, and after an answer an
+  outcome card: round icon, "Correct" or "Not quite", "Verified answer (AfriMMLU): …", then
+  "Ask Twins for Change to explain" (primary) and "Next question" (quiet). Right and wrong are
+  marked with icon, words and a 2px border.
+- **How it works.** The pipeline as five step cards with 40px accent-tint icon badges and a
+  chevron between them; the compare baseline and the settings in bordered panels; deployment as
+  two panels (cloud chain, local list); three stat tiles (15,791 / 8,318 / 7,473) above the
+  corpus table. Same facts, still prerendered, one h1.
+
+**Token mapping (reference → ours).** `--bg`→`--bg`; `--sidebar`→`--side-bg` (navy, deep navy
+in the dark theme); `--panel`→`--raised` (white / navy-2); `--panel-2`, `--panel-3`→ new
+`--raised-2`, `--raised-3` (grey-blue tints #F3F5F9 and #E6EBF2 in the light theme, navy-2 tints
+#1B4281 and #234B87 in the dark theme and on the sidebar); `--hover`/`--active`→`--hover`/
+`--selected`; `--line`→`--border`; `--line-strong`→ new `--border-mid` (24% navy on white, 28%
+pale on navy) for the composer, chips and soft card hovers; `--ink`→`--text`;
+`--ink-2/3`→`--text-muted` (never anything lighter: the reference's `--ink-4` is not used);
+`--user-bubble`→`--bubble`; `--accent`→ brand blue on white, sky on navy; `--shadow`→ soft
+navy shadows on the composer, the jump button and the drop box only. Not copied: the radial
+tint, the gradient above the dock, the shimmer, the progress sweep, backdrop blur, the green,
+amber and red status colours and the per-role hues. Status, errors and right/wrong use icon,
+words and border weight in navy, blue and sky tints. New measured pairs: pale on navy-2 8.7:1,
+pale on #1B4281 7.7:1, pale on #234B87 6.8:1, muted #415B86 on #E6EBF2 5.5:1, sky on its tint
+over navy-2 5.2:1, blue on its tint over white 5.6:1.
+
+**Deviations from developer.md that the author's newer instruction overrides** (key decisions):
+the starter questions are light tiles in a 2-column grid (developer.md: quiet rows); the display
+size is `clamp(2rem, 1.6rem + 1.2vw, 2.5rem)`, up to 40px, for the greeting and page titles
+(developer.md: about 28–32px); the route links live in the top bar next to the theme pill.
+Everything else in developer.md still applies.
+
+**Other decisions.** The Tone marks chip keeps `aria-expanded` and `aria-controls`, not
+`aria-pressed`: it opens a region, and one button should not carry both states; it looks the same
+as a pressed chip. Copy moved into a shared `CopyButton` so the user bubble and the answers use
+the same clipboard code (with the `execCommand` fallback); feedback is the check icon and one
+announcement, no toast. The welcome tiles drop the subject icons, so the `calculator`, `chart`
+and `file` icons were removed, along with the old icon names that the reference shapes replaced
+(`panel`, `close`, `send`, `regenerate`, `newChat`, `chevron`, `warning`). The `--avatar-*` and
+`--ease-out` tokens went with them. `.rank` got `position: relative` (open a11y item 34). The
+drawer scrim is a deep navy shade, so it also dims the navy canvas (open a11y item 35).
+
+**Checks run (2026-10-29).** `ng build --configuration production`: succeeds with no warnings
+(initial 453 kB raw, 123 kB transferred; two component stylesheets were brought back under the
+4 kB warning budget by moving the shared status dot and chip styles to `styles.css`).
+`ng test --watch=false`: 8 files, 76 tests pass, no spec changed (the markup keeps the selectors
+they use). The build output's URL strings are the same as in item 23. `site/src` has no
+`gradient(`, blur or glow. Headless Chrome on a temporary mock-mode build (the environment file
+was restored right after): welcome, pending, answer, sources open, compare and the collapsed
+sidebar at 1280 px in the light theme, no horizontal overflow and no console errors. This pass
+did not capture the other widths, the dark theme, Practice or How it works, and did not re-run
+Lighthouse.
+
 ## What changed in this pass (2026-10-27)
 
 **1. Gamification removed.** All code and UI listed in item 19, every import and call site (app
@@ -271,6 +391,9 @@ this browser."; the sidebar status is a two-line row. The architecture page now 
 `/ask/rag` response with `sources` and no longer lists retrieved sources as a gap.
 
 ## Design choices
+
+(From the 2026-10-27 pass. Where they differ, "Design update: reference-UI restyle" above
+replaces them: starter tiles, display size, sidebar rows, composer focus, motion timings.)
 
 The author wants a quiet, ChatGPT-like structure with its own identity, solid surfaces, no
 gradients, patterns or textures, and nothing that looks like a hackathon demo.
@@ -341,8 +464,9 @@ randomness:
 
 ## Scrolling (redesign pass, still valid)
 
-The chat shell is fixed to the viewport, so the page never scrolls; the sidebar and the workspace
-(sticky top bar, thread, sticky docked composer) are the only scroll containers. While at the
+The chat shell is fixed to the viewport, so the page never scrolls; the sidebar's history and the
+stage (thread and sticky docked composer, under the fixed 56px top bar row since 2026-10-29) are
+the only scroll containers. While at the
 bottom the view follows the revealed answer; scrolling up stops that and shows a round "Scroll to
 latest message" button. Sending and opening a chat go to the latest message, and opening a
 sources drawer stops following, with `scroll-padding` equal to the docked composer's height.

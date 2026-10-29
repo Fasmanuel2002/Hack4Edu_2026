@@ -2,18 +2,44 @@
   display: block;
 }
 
-.welcome {
+.hero {
   display: grid;
   justify-items: center;
-  gap: 1.25rem;
-  padding: 0 1rem 2rem;
+  max-width: calc(var(--content) + 3rem);
+  margin: 0 auto;
+  padding: 0 1.5rem 1.75rem;
   text-align: center;
+}
+
+.hero-mark {
+  --tile: 3.25rem;
+  --tile-radius: 14px;
+  --delay: 50ms;
+  margin-bottom: 1.25rem;
 }
 
 /* The greeting: the display face at the one display size, no colour, wrapping instead of clipping. */
 h1 {
-  --delay: 70ms;
+  --delay: 100ms;
   max-width: 100%;
   overflow-wrap: anywhere;
   text-wrap: balance;
+}
+
+.sub {
+  --delay: 140ms;
+  max-width: 34rem;
+  margin-top: 0.625rem;
+  color: var(--text-muted);
+  font-size: 1.03125rem;
+  text-wrap: pretty;
+}
+
+@media (max-width: 767.98px) {
+  .hero {
+    padding-inline: 1rem;
+  }
+  .sub {
+    font-size: 0.9375rem;
+  }
 }

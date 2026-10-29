@@ -9,6 +9,16 @@ export function isoTime(ms: number): string {
   return new Date(ms).toISOString();
 }
 
+/** "4.2 s" under a minute, "2 min 5 s" above (CPU answers can take minutes). */
+export function formatDuration(ms: number): string {
+  const tenths = Math.round(ms / 100);
+  if (tenths < 600) {
+    return `${(tenths / 10).toFixed(1)} s`;
+  }
+  const seconds = Math.round(ms / 1000);
+  return `${Math.floor(seconds / 60)} min ${seconds % 60} s`;
+}
+
 export function formatSize(bytes: number): string {
   if (bytes < 1024) {
     return `${bytes} B`;

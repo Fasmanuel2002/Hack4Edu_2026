@@ -55,6 +55,8 @@ export class Composer {
   protected readonly toneGlyph = '\u1EB9\u0301';
   protected readonly accept = ACCEPTED_EXTENSIONS.join(',');
   protected readonly formatSize = formatSize;
+  /** The extension badge of a file chip, for example "pdf". */
+  protected readonly extOf = (name: string) => extensionOf(name).slice(1);
 
   protected readonly text = signal('');
   protected readonly files = signal<readonly PendingFile[]>([]);

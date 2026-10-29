@@ -1,20 +1,18 @@
 <section
   class="answer"
+  [class.boxed]="compare()"
   [attr.aria-labelledby]="'label-' + key()"
   [attr.aria-busy]="slot().status === 'pending' || revealing()"
 >
+  <span class="avatar" [class.avatar-plain]="kind() === 'plain'" aria-hidden="true">
+    @if (kind() === 'rag') {
+      <app-logo [width]="20" />
+    } @else {
+      <svg viewBox="0 0 32 32" focusable="false"><circle cx="16" cy="16" r="7" /></svg>
+    }
+  </span>
+
   <header class="head">
-    <span class="avatar" [class.avatar-rag]="kind() === 'rag'" aria-hidden="true">
-      @if (kind() === 'rag') {
-        <svg viewBox="0 0 32 32" focusable="false">
-          <line x1="8.5" y1="17" x2="14" y2="9" />
-          <line x1="17.5" y1="17" x2="23" y2="9" />
-          <circle cx="16" cy="23.5" r="2.6" />
-        </svg>
-      } @else {
-        <svg viewBox="0 0 32 32" focusable="false"><circle class="ring" cx="16" cy="16" r="7" /></svg>
-      }
-    </span>
     <h2 class="label" [id]="'label-' + key()">{{ label() }}</h2>
     @if (slot().demo) {
       <span class="pill">Demo data</span>
@@ -24,76 +22,83 @@
     }
   </header>
 
-  @switch (slot().status) {
-    @case ('pending') {
-      <div class="pending">
-        <p class="pending-line">
-          {{ pendingText() }}
+  <div class="body">
+    <!-- (a, b) The sources track and its drawer come first, like a search step. -->
+    @if (kind() === 'rag') {
+      @if (slot().status === 'pending') {
+        <p class="track">
+          <span class="spinner" aria-hidden="true"></span>
+          <span>{{ pendingText() }}</span>
           @if (elapsed() >= 5) {
-            <span class="elapsed">{{ elapsed() }} s</span>
+            <span class="track-meta">{{ elapsed() }} s</span>
           }
         </p>
-        <div class="skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
-      </div>
+      } @else if (showSources()) {
+        <app-sources [sources]="slot().sources" [demo]="slot().demo" [panelId]="'sources-' + key()" />
+      }
     }
-    @case ('error') {
-      <div class="error">
-        <app-icon name="warning" />
-        <div class="error-body">
-          <p><strong>Could not get an answer.</strong> {{ slot().error }}</p>
-          <button type="button" class="btn btn-quiet" [disabled]="store.generating()" (click)="regenerate()">
-            <app-icon name="regenerate" />
+
+    @switch (slot().status) {
+      @case ('pending') {
+        @if (kind() === 'plain') {
+          <p class="pending-line">
+            {{ pendingText() }}
+            @if (elapsed() >= 5) {
+              <span class="track-meta">{{ elapsed() }} s</span>
+            }
+          </p>
+        }
+        <div class="skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+      }
+      @case ('error') {
+        <!-- (d) The error card, with Retry. -->
+        <div class="error-card">
+          <app-icon name="alert" />
+          <p class="error-title">Could not get an answer.</p>
+          <p class="error-text">{{ slot().error }}</p>
+          <button type="button" class="chip-btn" [disabled]="store.generating()" (click)="regenerate()">
+            <app-icon name="refresh" />
             Retry
           </button>
         </div>
-      </div>
-    }
-    @default {
-      @if (fallback()) {
-        <div class="note-callout" role="note">
-          <app-icon name="info" />
-          <div class="md lines" [class.revealing]="revealing()" [innerHTML]="html()"></div>
-        </div>
-      } @else {
-        <div class="md" [class.revealing]="revealing()" [innerHTML]="html()"></div>
       }
-      @if (slot().status === 'stopped') {
-        <p class="note">
-          {{ slot().text ? 'Stopped. The answer above is incomplete.' : 'Stopped before an answer arrived.' }}
-        </p>
-      }
-      @if (!revealing()) {
-        <div class="foot" [class.latest]="latest()">
-          <div class="actions">
+      @default {
+        <!-- (c) The answer. -->
+        @if (fallback()) {
+          <div class="note-callout" role="note">
+            <app-icon name="info" />
+            <div class="md lines" [class.revealing]="revealing()" [innerHTML]="html()"></div>
+          </div>
+        } @else {
+          <div class="md" [class.revealing]="revealing()" [innerHTML]="html()"></div>
+        }
+        <!-- (e) Actions, once the whole answer is on screen. -->
+        @if (!revealing()) {
+          <div class="actions" [class.latest]="latest()">
             @if (slot().text) {
-              <button
-                type="button"
-                class="icon-btn"
-                [attr.aria-label]="copied() ? 'Copied' : 'Copy'"
-                [attr.aria-describedby]="'label-' + key()"
-                [title]="copied() ? 'Copied' : 'Copy'"
-                (click)="copy()"
-              >
-                <app-icon [name]="copied() ? 'check' : 'copy'" />
-              </button>
+              <app-copy-button [text]="slot().text" [describedBy]="'label-' + key()" done="Answer copied." />
             }
             <button
               type="button"
-              class="icon-btn"
+              class="act"
               aria-label="Regenerate"
               title="Regenerate"
               [attr.aria-describedby]="'label-' + key()"
               [disabled]="store.generating()"
               (click)="regenerate()"
             >
-              <app-icon name="regenerate" />
+              <app-icon name="refresh" />
             </button>
+            @if (slot().status === 'stopped') {
+              <span class="act-tag">
+                {{ slot().text ? 'Stopped · the answer is incomplete' : 'Stopped before an answer arrived' }}
+              </span>
+            } @else if (took(); as duration) {
+              <span class="act-meta" title="Time from question to answer">{{ duration }}</span>
+            }
           </div>
-        </div>
-        @if (kind() === 'rag' && slot().status === 'done') {
-          <app-sources [sources]="slot().sources" [demo]="slot().demo" [panelId]="'sources-' + key()" />
         }
       }
     }
-  }
+  </div>
 </section>

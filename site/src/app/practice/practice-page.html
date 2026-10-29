@@ -1,19 +1,24 @@
 <app-top-bar />
 
 <main id="main" class="page" tabindex="-1">
-  <h1>Practice</h1>
-  <p class="lead">
-    Real multiple-choice questions from the AfriMMLU rows of the corpus, in Yorùbá with the English
-    underneath.
-  </p>
+  <header class="hero">
+    <h1>Practice</h1>
+    <p class="sub">
+      Real multiple-choice questions from the AfriMMLU rows of the corpus, in Yorùbá with the English
+      underneath.
+    </p>
+  </header>
 
   <section class="quiz" aria-labelledby="quiz-title">
-    <h2 id="quiz-title" #heading class="quiz-title" tabindex="-1">
-      Question {{ position() + 1 }} of {{ total }}
-      <span class="subject">· {{ subject() }}</span>
+    <h2 id="quiz-title" #heading class="counter" tabindex="-1">
+      <span>Question {{ position() + 1 }} of {{ total }}</span><span class="visually-hidden">, </span>
+      <span class="tag">{{ subject() }}</span>
     </h2>
-    <p class="question" lang="yo">{{ item().yo }}</p>
-    <p class="question-en">{{ item().en }}</p>
+
+    <div class="question-card">
+      <p class="question" lang="yo">{{ item().yo }}</p>
+      <p class="question-en">{{ item().en }}</p>
+    </div>
 
     <ul class="options">
       @for (option of options(); track option.letter) {
@@ -45,22 +50,27 @@
     </ul>
 
     @if (answered()) {
-      <div #result class="result">
-        <p class="verdict" [class.right]="correct()">
-          <app-icon [name]="correct() ? 'checkCircle' : 'xCircle'" />
-          <strong>{{ correct() ? 'Correct' : 'Not quite' }}</strong>
-        </p>
-        <p class="verified-label">Verified answer (AfriMMLU)</p>
-        <p class="verified" lang="yo">{{ verified().yo }}</p>
-        @if (verified().en !== verified().yo) {
-          <p class="verified-en">{{ verified().en }}</p>
-        }
-        <div class="actions">
-          <button type="button" class="btn btn-quiet" (click)="explain()">
+      <div #result class="outcome" [class.right]="correct()">
+        <div class="outcome-head">
+          <span class="outcome-icon" aria-hidden="true">
+            <app-icon [name]="correct() ? 'check' : 'x'" />
+          </span>
+          <div class="outcome-text">
+            <p class="outcome-title">{{ correct() ? 'Correct' : 'Not quite' }}</p>
+            <p class="outcome-sub">
+              Verified answer (AfriMMLU): <span class="verified" lang="yo">{{ verified().yo }}</span>
+            </p>
+            @if (verified().en !== verified().yo) {
+              <p class="outcome-en">{{ verified().en }}</p>
+            }
+          </div>
+        </div>
+        <div class="outcome-actions">
+          <button type="button" class="btn btn-primary" (click)="explain()">
             <app-icon name="chat" />
             Ask Twins for Change to explain
           </button>
-          <button type="button" class="btn btn-primary" (click)="next()">Next question</button>
+          <button type="button" class="btn btn-quiet" (click)="next()">Next question</button>
         </div>
       </div>
     }
