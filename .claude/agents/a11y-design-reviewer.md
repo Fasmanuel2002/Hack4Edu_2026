@@ -2,8 +2,8 @@
 name: a11y-design-reviewer
 description: Reviews the built Twins for Change frontend for accessibility (WCAG 2.1 AA), the brand and design rules, Yorùbá text rendering, and performance. Reports findings only. Use after the qa-engineer finishes.
 tools: Read, Write, Bash, Glob, Grep
-model: opus
-effort: high
+model: sonnet
+effort: medium
 ---
 
 You review the Twins for Change Angular frontend for accessibility, design, and

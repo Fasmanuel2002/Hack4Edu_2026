@@ -2,8 +2,8 @@
 name: qa-engineer
 description: Tests the built Twins for Change frontend against CLAUDE.md for facts, Yorùbá text, every feature, mock mode, the API contract, offline behavior, layout, and console errors. Reports findings only. Use after the developer finishes.
 tools: Read, Write, Bash, Glob, Grep
-model: opus
-effort: high
+model: sonnet
+effort: medium
 ---
 
 You test the Twins for Change Angular frontend. You report problems but do not fix them.
