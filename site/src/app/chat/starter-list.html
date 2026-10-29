@@ -1,20 +1,23 @@
 <section class="starters" aria-labelledby="starters-title">
   <h2 id="starters-title" class="visually-hidden">Suggested questions</h2>
-  <ul>
+  <ul class="tiles">
     @for (starter of starters; track starter.yo; let i = $index) {
-      <li class="rise" [style.--delay]="(210 + i * 70) + 'ms'">
-        <button type="button" class="starter" [title]="starter.subject" (click)="ask.emit(starter.yo)">
-          <app-icon [name]="starter.icon" />
-          <span class="text">
-            <span class="visually-hidden">{{ starter.subject }}: </span>
-            <span class="yo" lang="yo">{{ starter.yo }}</span>
-            <span class="en">{{ starter.en }}</span>
-          </span>
+      <li class="rise" [style.--delay]="(240 + i * 50) + 'ms'">
+        <button type="button" class="tile" (click)="ask.emit(starter.yo)">
+          <span class="subject">{{ starter.label }}</span>
+          <span class="yo" lang="yo">{{ starter.yo }}</span>
+          <span class="en">{{ starter.en }}</span>
         </button>
       </li>
     }
   </ul>
-  @if (demo) {
-    <p class="demo rise" style="--delay: 490ms"><span class="pill">Demo mode</span> No backend is connected. Answers are demo data built from real corpus rows.</p>
-  }
+  <p class="disclaimer rise" style="--delay: 440ms">
+    @if (demo) {
+      <span class="pill">Demo mode</span> Answers are demo data built from real corpus rows. Open
+      “Verified sources” under an answer to see them.
+    } @else {
+      Answers come from retrieved corpus rows and can still contain mistakes. Open “Verified
+      sources” under an answer to check them.
+    }
+  </p>
 </section>

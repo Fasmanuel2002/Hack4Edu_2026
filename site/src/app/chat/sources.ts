@@ -44,6 +44,10 @@ export class Sources {
       segments: parsePedagogicalAnswer(source.pedagogical_answer),
     })),
   );
+  protected readonly count = computed(() => {
+    const n = this.items().length;
+    return n === 1 ? '1 document' : `${n} documents`;
+  });
 
   protected toggle(): void {
     const open = !this.open();

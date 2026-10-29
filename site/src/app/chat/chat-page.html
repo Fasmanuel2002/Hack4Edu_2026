@@ -8,86 +8,104 @@
     id="sidebar"
     class="sidebar surface-navy"
     aria-label="Chats and settings"
-    [attr.inert]="media.mobile() && !drawerOpen() ? '' : null"
+    [attr.inert]="sidebarShown() ? null : ''"
   >
     <app-sidebar
-      [showClose]="media.mobile()"
-      (closeRequest)="closeDrawer(true)"
+      [drawer]="media.mobile()"
+      (hideRequest)="hideSidebar()"
       (newChatRequest)="newChat()"
       (picked)="onPicked()"
     />
   </aside>
 
-  <div class="backdrop" aria-hidden="true" (click)="closeDrawer(true)"></div>
+  <div class="scrim" aria-hidden="true" (click)="closeDrawer(true)"></div>
 
-  <!-- The one scroll container of the chat: top bar, thread, and the docked composer. -->
-  <div
-    #scroller
-    class="workspace"
-    [attr.inert]="drawerOpen() ? '' : null"
-    (scroll)="onScroll()"
-    (wheel)="onWheel($event)"
-    (touchstart)="onTouchStart($event)"
-    (touchmove)="onTouchMove($event)"
-    (keydown)="onKeys($event)"
-    (sourcesopen)="unpin()"
-  >
-    <app-top-bar [menu]="menu()" [showBrand]="!sidebarShown()" (menuToggle)="toggleMenu()" />
+  <!-- Grid rows: the 56px top bar, then the stage that scrolls (thread and docked composer). -->
+  <div class="main-col" [attr.inert]="drawerOpen() ? '' : null">
+    <app-top-bar
+      [menu]="menu()"
+      [showBrand]="!sidebarShown()"
+      [showNewChat]="!sidebarShown()"
+      [scrolled]="scrolled()"
+      (menuToggle)="toggleMenu()"
+      (newChatRequest)="newChat()"
+    />
 
-    <main id="main" class="main" [class.empty]="!store.active()" tabindex="-1">
-      @if (store.active(); as conversation) {
-        <div class="thread">
-          <h1 class="visually-hidden">
-            Chat: <span [attr.lang]="looksYoruba(conversation.title) ? 'yo' : null">{{ conversation.title }}</span>
-          </h1>
-          @for (turn of conversation.turns; track turn.id) {
-            <article class="turn" [class.compare-turn]="turn.plain" [attr.aria-label]="'Question ' + ($index + 1)">
-              <div class="user">
-                <div class="user-msg">
-                  <p class="question" [attr.lang]="looksYoruba(turn.question) ? 'yo' : null">{{ turn.question }}</p>
+    <div
+      #scroller
+      class="stage"
+      (scroll)="onScroll()"
+      (wheel)="onWheel($event)"
+      (touchstart)="onTouchStart($event)"
+      (touchmove)="onTouchMove($event)"
+      (keydown)="onKeys($event)"
+      (sourcesopen)="unpin()"
+    >
+      <main id="main" class="main" [class.empty]="!store.active()" tabindex="-1">
+        @if (store.active(); as conversation) {
+          <div class="thread">
+            <h1 class="visually-hidden">
+              Chat: <span [attr.lang]="looksYoruba(conversation.title) ? 'yo' : null">{{ conversation.title }}</span>
+            </h1>
+            @for (turn of conversation.turns; track turn.id) {
+              <article class="turn" [class.compare-turn]="turn.plain" [attr.aria-label]="'Question ' + ($index + 1)">
+                <div class="user">
+                  <div class="bubble">
+                    <p class="question" [attr.lang]="looksYoruba(turn.question) ? 'yo' : null">{{ turn.question }}</p>
+                  </div>
                   @if (turn.attachments.length) {
-                    <p class="attachments">Not sent (no upload endpoint yet): {{ attachmentNames(turn) }}</p>
+                    <p class="attachments">
+                      <app-icon name="paperclip" />
+                      <span>Not sent (no upload endpoint yet): {{ attachmentNames(turn) }}</span>
+                    </p>
+                  }
+                  <p class="meta">
+                    <app-copy-button [text]="turn.question" label="Copy question" done="Question copied." />
+                    <span class="avatar" aria-hidden="true"><app-icon name="user" /></span>
+                    <span>You</span>
+                    <time [attr.datetime]="isoTime(turn.askedAt)">{{ clockTime(turn.askedAt) }}</time>
+                  </p>
+                </div>
+
+                <div class="answers" [class.compare]="turn.plain">
+                  <app-answer [conversationId]="conversation.id" [turn]="turn" kind="rag" [latest]="$last" />
+                  @if (turn.plain) {
+                    <app-answer [conversationId]="conversation.id" [turn]="turn" kind="plain" [latest]="$last" />
                   }
                 </div>
-                <p class="meta">
-                  <span class="avatar" aria-hidden="true"><app-icon name="user" /></span>
-                  <span>You</span>
-                  <time [attr.datetime]="isoTime(turn.askedAt)">{{ clockTime(turn.askedAt) }}</time>
-                </p>
-              </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <app-welcome />
+        }
 
-              <div class="answers" [class.compare]="turn.plain">
-                <app-answer [conversationId]="conversation.id" [turn]="turn" kind="rag" [latest]="$last" />
-                @if (turn.plain) {
-                  <app-answer [conversationId]="conversation.id" [turn]="turn" kind="plain" [latest]="$last" />
-                }
-              </div>
-            </article>
+        <div #dock class="dock" [class.docked]="store.active()">
+          @if (showLatest()) {
+            <button type="button" class="latest" aria-label="Scroll to latest message" title="Scroll to latest message" (click)="scrollToLatest()">
+              <app-icon name="arrowDown" />
+            </button>
+          }
+          @if (health.status() === 'offline') {
+            <p class="offline" role="status">
+              <app-icon name="alert" />
+              <span>
+                API: offline. The backend is not responding; it may be stopped, or still loading the
+                15,791 documents after a start.
+                <button type="button" class="link-btn" (click)="health.check()">Check again</button>
+              </span>
+            </p>
+          }
+          <app-composer />
+          @if (store.active()) {
+            <p class="fineprint">Twins for Change can make mistakes. Check the verified sources.</p>
           }
         </div>
-      } @else {
-        <app-welcome />
-      }
 
-      <div #dock class="dock" [class.docked]="store.active()">
-        @if (showLatest()) {
-          <button type="button" class="latest" aria-label="Scroll to latest message" title="Scroll to latest message" (click)="scrollToLatest()">
-            <app-icon name="arrowDown" />
-          </button>
+        @if (!store.active()) {
+          <app-starter-list (ask)="askStarter($event)" />
         }
-        @if (health.status() === 'offline') {
-          <p class="offline" role="status">
-            API: offline. The backend is not responding; it may be stopped, or still loading the
-            15,791 documents after a start.
-            <button type="button" class="link-btn" (click)="health.check()">Check again</button>
-          </p>
-        }
-        <app-composer />
-      </div>
-
-      @if (!store.active()) {
-        <app-starter-list (ask)="askStarter($event)" />
-      }
-    </main>
+      </main>
+    </div>
   </div>
 </div>
