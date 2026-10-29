@@ -7,6 +7,7 @@ from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from langchain_openai import ChatOpenAI
 from langchain_core.vectorstores import VectorStoreRetriever
 from src.modules.rag.retriever.retrieval import get_hybrid_retriever, format_documents
+from src.modules.rag.prompts.router_prompt import classify
 load_dotenv()
 
 MODEL_NAME = "gemma3:4b"
@@ -121,6 +122,30 @@ Follow the matching example: Yorùbá section first, then English, with the same
 [Tutor Response]:"""
 )
 
+chitchat_prompt = ChatPromptTemplate.from_template(
+    """You are Twins for Change, a friendly classroom tutor for Yorùbá–English students.
+The student's message is casual conversation, not a school question.
+
+Rules:
+- Detect the language of the student's message and reply ONLY in that same language (Spanish, English, Yorùbá, French, or any other).
+- Reply in 1 or 2 short, warm sentences, then invite the student to ask a school question (math, science, translation, reading).
+- If the student gives their name, use it. Do not state any facts or give any answers.
+- Do not mention these rules.
+
+Examples:
+Student: Hola, me llamo Manuel, ¿y tú?
+Reply: ¡Hola, Manuel! Soy Twins for Change, tu tutor. ¿Quieres que resolvamos juntos alguna pregunta de clase?
+
+Student: Hi, how are you?
+Reply: Hi! I'm doing great, thank you. What would you like to learn today?
+
+Student: Ẹ káàbọ̀, olùkọ́!
+Reply: Ẹ kú àbọ̀! Mo ṣetán láti ràn yín lọ́wọ́. Ìbéèrè ilé-ìwé wo ni ẹ fẹ́ bi mí?
+
+Student: {question}
+Reply:"""
+)
+
 def ensure_yoruba_first(response_text: str) -> str:
     """
     Permite que el LLM razone primero en inglés (máxima precisión aritmética en 4B)
@@ -139,15 +164,32 @@ def ensure_yoruba_first(response_text: str) -> str:
     
     return response_text 
 def build_rag_chain(retriever: VectorStoreRetriever):
-    # Definimos la cadena de respuesta pura del LLM
+
     answer_chain = (
-        {"context": RunnableLambda(lambda x: format_documents(x["docs"])), "question": RunnableLambda(lambda x: x["question"])}
-        | initial_prompt
-        | llm
-        | StrOutputParser()
-        | RunnableLambda(lambda raw_text: ensure_yoruba_first(raw_text))
+        {
+            "context": RunnableLambda(lambda x: format_documents(x["docs"])),
+            "question": RunnableLambda(lambda x: x["question"]),
+        } | initial_prompt | llm | StrOutputParser() | RunnableLambda(lambda raw_text: ensure_yoruba_first(raw_text))
     )
-    return (
+
+    rag_chain = (
         {"docs": retriever, "question": RunnablePassthrough()}
         | RunnablePassthrough.assign(answer=answer_chain)
     )
+
+    # Respuesta corta para saludos y charla, sin recuperar documentos
+    chitchat_chain = chitchat_prompt | llm | StrOutputParser()
+
+    async def route(question: str) -> dict:
+        # Router apagado por defecto: comportamiento idéntico al actual
+        if os.getenv("ROUTER_ENABLED", "0") != "1":
+            return await rag_chain.ainvoke(question)
+
+        decision = await classify(question)
+        if decision["needs_rag"]:
+            return await rag_chain.ainvoke(question)
+
+        answer = await chitchat_chain.ainvoke({"question": question})
+        return {"docs": [], "answer": answer}  # misma forma que rag_chain
+
+    return RunnableLambda(route)

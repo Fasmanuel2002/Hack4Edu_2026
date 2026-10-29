@@ -23,3 +23,4 @@ async def ask_plain(body : AskRequest):
     "BaseLine Model for A/B testing"
     answer = await (llm | StrOutputParser()).ainvoke(body.question)
     return AskResponse(answer=answer)
+
