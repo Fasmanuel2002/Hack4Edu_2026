@@ -52,7 +52,7 @@ def _wrap(question: str) -> str:
     return f"Classify this message. Reply with the JSON only.\n<message>\n{q}\n</message>"
 
 
-def _build_few_shot() -> list:
+def build_few_shot() -> list:
     messages = []
     for question, needs_rag in EXAMPLES:
         messages.append(HumanMessage(_wrap(question)))
@@ -60,7 +60,7 @@ def _build_few_shot() -> list:
     return messages
 
 
-FEW_SHOT = _build_few_shot()
+FEW_SHOT = build_few_shot()
 
 classifier_llm = ChatOpenAI(
     model=os.environ["LLM_MODEL"],
@@ -73,7 +73,7 @@ classifier_llm = ChatOpenAI(
 )
 
 
-def _parse(raw: str):
+def parse(raw: str):
     """Devuelve True/False, o None si la salida no se entiende."""
     match = re.search(r"\{.*?\}", raw, re.DOTALL)
     if not match:
@@ -98,7 +98,7 @@ async def classify(question: str) -> dict:
         return default
 
     raw = msg.content if isinstance(msg.content, str) else str(msg.content)
-    needs_rag = _parse(raw)
+    needs_rag = parse(raw)
     detail = f" | q={question[:60]!r}" if LOG_QUESTIONS else ""
     if needs_rag is None:
         logger.warning("router: unparseable output %r, using RAG%s", raw[:80], detail)

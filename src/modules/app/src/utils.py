@@ -1,15 +1,8 @@
 
 from langchain_openai import OpenAI
-
+from src.modules.rag.prompts.router_prompt import CLASSIFIER_SYSTEM_PROMPT, DEFAULT_ROUTE
 
 def classify_prompt(text: str, model: str, client: OpenAI) -> dict:
-    """Route a user prompt: does it need repository context, does it want code, and under which file name.
-
-    On the local server thinking is disabled and the reply capped: a routing
-    JSON needs no reasoning, and with it every turn lost seconds. OpenAI's
-    GPT-5 models reject those parameters, so they are only sent elsewhere.
-    Any failure falls back to ``DEFAULT_ROUTE``.
-    """
     local_only = {}
     try:
         response = client.chat.completions.create(
