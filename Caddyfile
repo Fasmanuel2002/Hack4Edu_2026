@@ -1,0 +1,7 @@
+twinsforchange.com, www.twinsforchange.com {
+    reverse_proxy hack_edu_app:8000 {
+        transport http {
+            response_header_timeout 420s
+        }
+    }
+}
