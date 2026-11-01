@@ -70,9 +70,10 @@
   min-width: 2.25rem;
   height: 2.25rem;
   padding: 0 0.75rem;
-  border-radius: 999px;
-  color: var(--text-muted);
-  font-size: 0.875rem;
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
   transition:
@@ -90,9 +91,10 @@
   color: var(--text);
 }
 
+/* Current route: the accent tint and accent text (blue on white 5.3:1, aqua on navy 6.6:1). */
 .topnav a.current {
-  background: var(--selected);
-  color: var(--text);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .gap {

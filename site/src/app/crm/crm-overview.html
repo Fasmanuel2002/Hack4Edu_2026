@@ -1,0 +1,157 @@
+<ul class="stats">
+  <li class="stat" style="--tone: #3d7fe6">
+    <span class="ico"><app-icon name="clipboard" /></span>
+    <span class="k">Organizations</span>
+    <strong>{{ stats().orgs }}</strong>
+    <small>{{ stats().active }} in conversation or collaboration</small>
+  </li>
+  <li class="stat" style="--tone: #1f9bb5">
+    <span class="ico"><app-icon name="layers" /></span>
+    <span class="k">Countries with organizations</span>
+    <strong>{{ stats().countries }}</strong>
+    <small>of {{ profiles }} country profiles</small>
+  </li>
+  <li class="stat" style="--tone: #eda34b">
+    <span class="ico"><app-icon name="calendar" /></span>
+    <span class="k">Overdue follow-ups</span>
+    <strong>{{ due().overdue.length }}</strong>
+    <small>{{ due().today.length }} due today, {{ due().upcoming.length }} upcoming</small>
+  </li>
+  <li class="stat" style="--tone: #40d9e9">
+    <span class="ico"><app-icon name="globe" /></span>
+    <span class="k">Country–language records</span>
+    <strong>{{ summary.languageCountryRows }}</strong>
+    <small>{{ summary.uniqueLanguages }} unique languages</small>
+  </li>
+</ul>
+
+<p class="callout"><app-icon name="info" /><span><strong>Read with care.</strong> “No evidence in sample” does not mean that no model exists, and connectivity figures do not measure access to education.</span></p>
+
+<div class="dash">
+  <section class="card span-7" aria-labelledby="ov-stage">
+    <header class="ch"><h3 id="ov-stage">Pipeline by stage</h3><span class="muted">{{ stats().orgs }} organizations</span></header>
+    <div class="stack" aria-hidden="true">
+      @for (s of stages(); track s.state) {
+        @if (s.n) { <span [style.width.%]="s.pct" [style.background]="s.tone"></span> }
+      }
+    </div>
+    <ul class="legend">
+      @for (s of stages(); track s.state) {
+        <li [class.zero]="!s.n">
+          <i [style.background]="s.tone"></i><span>{{ stateLabel[s.state] }}</span>
+          <b>{{ s.n }}</b><small>{{ s.pct | number: '1.0-0' }}%</small>
+        </li>
+      }
+    </ul>
+    <h4>By priority</h4>
+    <div class="stack" aria-hidden="true">
+      @for (p of prios(); track p.p) {
+        @if (p.n) { <span [style.width.%]="p.pct" [style.background]="p.tone"></span> }
+      }
+    </div>
+    <ul class="legend">
+      @for (p of prios(); track p.p) {
+        <li [class.zero]="!p.n">
+          <i [style.background]="p.tone"></i><span>{{ priorityLabel[p.p] }}</span>
+          <b>{{ p.n }}</b><small>{{ p.pct | number: '1.0-0' }}%</small>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section class="card span-5" aria-labelledby="ov-check">
+    <header class="ch"><h3 id="ov-check">Needs verification</h3><span class="muted">before any outreach</span></header>
+    <ul class="checks">
+      <li>
+        <span class="ci warn"><app-icon name="alert" /></span>
+        <span class="ct"><b>{{ checks().pending.length }}</b> identity pending
+          @for (o of checks().pending; track o.id) { <button type="button" class="link" (click)="edit.emit(o)">{{ o.name }}</button> }
+        </span>
+      </li>
+      <li>
+        <span class="ci warn"><app-icon name="xCircle" /></span>
+        <span class="ct"><b>{{ checks().noRoute.length }}</b> with no contact route
+          @for (o of checks().noRoute; track o.id) { <button type="button" class="link" (click)="edit.emit(o)">{{ o.name }}</button> }
+        </span>
+      </li>
+      <li>
+        <span class="ci"><app-icon name="globe" /></span>
+        <span class="ct"><b>{{ checks().noDirect.length }}</b> without email or phone<small>Reach them through their website first.</small></span>
+      </li>
+      <li>
+        <span class="ci"><app-icon name="user" /></span>
+        <span class="ct"><b>{{ checks().unverified }}</b> contacts unverified, <b>{{ checks().verified }}</b> verified
+          <small>{{ checks().invalid }} invalid, {{ checks().needsUpdate }} need an update. Marks are saved only in this browser.</small>
+          <a routerLink="/crm" [queryParams]="{ view: 'contacts' }">Validate contacts</a>
+        </span>
+      </li>
+      <li>
+        <span class="ci ok"><app-icon name="mail" /></span>
+        <span class="ct"><b>{{ checks().withEmail }}</b> with a public email<small>Organization-level addresses, not re-verified.</small></span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="card span-6" aria-labelledby="ov-region">
+    <header class="ch"><h3 id="ov-region">Organizations by region</h3></header>
+    <ul class="bars">
+      @for (r of regions(); track r.name) {
+        <li>
+          <span class="lbl"><i [style.background]="r.tone"></i><span>{{ r.name }}<small>{{ r.countries }} {{ r.countries === 1 ? 'country' : 'countries' }}</small></span></span>
+          <span class="rail" aria-hidden="true"><span [style.width.%]="r.pct" [style.background]="r.tone"></span></span>
+          <b>{{ r.n }}</b>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section class="card span-6" aria-labelledby="ov-top">
+    <header class="ch"><h3 id="ov-top">Top countries</h3><a routerLink="/crm" [queryParams]="{ view: 'countries' }">All countries</a></header>
+    <ol class="top">
+      @for (c of topCountries(); track c.name) {
+        <li>
+          @if (flag(c.name)) { <img [src]="flag(c.name)" alt="" width="28" height="19" loading="lazy" /> }
+          <a routerLink="/crm" [queryParams]="{ view: 'countries', country: c.name }">{{ c.name }}</a>
+          <span class="n">{{ c.n }} {{ c.n === 1 ? 'organization' : 'organizations' }}</span>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section class="card span-6" aria-labelledby="ov-next">
+    <header class="ch"><h3 id="ov-next">Next follow-ups</h3></header>
+    @if (nextUp().length) {
+      <ul class="rows">
+        @for (o of nextUp(); track o.id) {
+          <li>
+            <span class="date">{{ o.followUp }}</span>
+            <span><button type="button" class="link" (click)="edit.emit(o)">{{ o.name }}</button><small>{{ o.country }} · {{ o.nextAction }}</small></span>
+            @if (o.followUp < today) { <span class="tag warn">Overdue</span> } @else if (o.followUp === today) { <span class="tag">Today</span> }
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="empty">
+        <span class="ei"><app-icon name="calendar" /></span>
+        <p><strong>No dated follow-ups yet.</strong> Set a follow-up date and a next action on an organization to see it here.</p>
+        <a routerLink="/crm" [queryParams]="{ view: 'orgs' }">Open organizations</a>
+      </div>
+    }
+  </section>
+
+  <section class="card span-6" aria-labelledby="ov-recent">
+    <header class="ch"><h3 id="ov-recent">Recent activity</h3></header>
+    @if (feed().length) {
+      <ol class="rows">
+        @for (a of feed(); track $index) {
+          <li><time class="date">{{ a.date || 'No date' }}</time><span><strong>{{ a.org }}</strong> · {{ a.country }}<small>{{ a.text }}</small></span></li>
+        }
+      </ol>
+    } @else {
+      <div class="empty">
+        <span class="ei"><app-icon name="book" /></span>
+        <p><strong>No activity logged yet.</strong> Open an organization and use “Activity history” to record a call, email or meeting.</p>
+      </div>
+    }
+  </section>
+</div>

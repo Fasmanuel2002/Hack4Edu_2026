@@ -1,0 +1,72 @@
+<div class="toolbar" role="search">
+  <label class="field grow">
+    <span class="visually-hidden">Search</span>
+    <input type="search" autocomplete="off" placeholder="Country, language or ISO code" [value]="query()" (input)="onQuery($event)" />
+  </label>
+  <label class="field">
+    <span class="visually-hidden">Country</span>
+    <select (change)="onCountry($event)">
+      <option value="">All countries</option>
+      @for (c of countries; track c.name) {
+        <option [value]="c.name" [selected]="c.name === country()">{{ c.nameEn }}</option>
+      }
+    </select>
+  </label>
+  <label class="field">
+    <span class="visually-hidden">Review result</span>
+    <select (change)="onResult($event)">
+      <option value="">All results</option>
+      @for (r of results; track r) {
+        <option [value]="r" [selected]="r === result()">{{ label(r) }}</option>
+      }
+    </select>
+  </label>
+</div>
+
+<div class="holder" tabindex="0" role="region" aria-label="Country and language records (scrollable)">
+  <table>
+    <caption class="visually-hidden">Country-language records from the desk review</caption>
+    <thead>
+      <tr>
+        <th scope="col">Country</th>
+        <th scope="col">Language or variety</th>
+        <th scope="col">ISO</th>
+        <th scope="col">Review result</th>
+        <th scope="col">Reference</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (l of visible(); track l.country + l.language) {
+        <tr>
+          <th scope="row">{{ name(l.country) }}</th>
+          <td>{{ l.language }}</td>
+          <td class="mono">{{ l.iso || '—' }}</td>
+          <td><span class="mini-pill" [class.good]="l.result.includes('documentado')" [class.warn]="l.result.startsWith('Sin')">{{ label(l.result) }}</span></td>
+          <td>
+            @if (link(l); as href) {
+              <a class="choose" [href]="href" target="_blank" rel="noopener noreferrer">Source<span class="visually-hidden"> for {{ l.language }} (opens in a new tab)</span></a>
+            } @else {
+              —
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="5" class="none">No records match these filters.</td></tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<div class="pager">
+  <p role="status">{{ rows().length }} of {{ total }} records · page {{ current() + 1 }} of {{ pages() }}</p>
+  <div class="buttons">
+    <button type="button" class="btn btn-quiet" [disabled]="current() === 0" (click)="go(-1)">Previous</button>
+    <button type="button" class="btn btn-quiet" [disabled]="current() >= pages() - 1" (click)="go(1)">Next</button>
+  </div>
+</div>
+
+<p class="caveat">
+  A result label says what the desk review found in open catalogues of models and corpora. It is not a test of
+  how well any model understands or answers in that language. "No evidence in sample" does not mean that no model
+  exists.
+</p>

@@ -2,7 +2,7 @@
 name: developer
 description: Builds and changes the Twins for Change Angular frontend in site/, following CLAUDE.md. Use for any frontend work and for the revision pass after QA.
 tools: Read, Write, Edit, Bash, Glob, Grep
-model: sonnet
+model: opus
 effort: high
 ---
 

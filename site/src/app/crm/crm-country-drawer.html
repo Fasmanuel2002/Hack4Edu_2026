@@ -1,0 +1,97 @@
+<dialog #dlg class="drawer" aria-labelledby="drawer-title" (close)="closed.emit()">
+  <header class="head">
+    <img class="flag" [src]="'site/flags/' + country().iso2 + '.png'" alt="" width="48" height="32" />
+    <div class="ttl">
+      <h2 id="drawer-title">{{ country().nameEn }}</h2>
+      <p><i [style.background]="tone()"></i>{{ country().region }} · {{ country().isTerritory ? 'Territory' : 'Country' }}</p>
+    </div>
+    <button type="button" class="icon-btn" aria-label="Close country profile" (click)="close()"><app-icon name="x" /></button>
+  </header>
+
+  <div class="body">
+    <section aria-labelledby="d-summary">
+      <h3 id="d-summary"><app-icon name="info" />Summary</h3>
+      <dl class="kpis">
+        <div><dt><app-icon name="user" />Population ({{ country().year ?? 'year n/a' }})</dt><dd>{{ country().population === null ? 'No data' : (country().population | number) }}</dd></div>
+        <div><dt><app-icon name="globe" />Internet use ({{ country().internetYear ?? 'year n/a' }})</dt><dd>{{ country().internetPct === null ? 'No data' : country().internetPct + ' %' }}</dd>
+          @if (country().internetPct !== null) { <span class="meter" aria-hidden="true"><span [style.width.%]="country().internetPct"></span></span> }</div>
+        <div><dt><app-icon name="chat" />Languages selected</dt><dd>{{ country().languageCount }}</dd></div>
+      </dl>
+      <p class="line muted">
+        Population: {{ country().year ?? 'year n/a' }}@if (isHttps(country().populationSource)) { · <a [href]="country().populationSource" target="_blank" rel="noopener noreferrer">World Bank indicator<span class="visually-hidden"> for population (opens in a new tab)</span></a> }.
+        Internet use: {{ country().internetYear ?? 'year n/a' }}@if (isHttps(country().internetSource)) { · <a [href]="country().internetSource" target="_blank" rel="noopener noreferrer">ITU / World Bank indicator<span class="visually-hidden"> for internet use (opens in a new tab)</span></a> }.
+        @if (country().offlineEstimate != null) {
+          Estimated people not using the internet: about {{ country().offlineEstimate | number }}. This is an orientative estimate from rounded percentages, not individual access to AI or literacy.
+        } @else {
+          Estimated offline population: not calculated (the connectivity source is from another year or missing).
+        }
+      </p>
+      <p class="line"><strong>Languages:</strong> {{ country().languages || 'No data' }}</p>
+      <!-- The snapshot keeps this field as the researchers wrote it, in Spanish. -->
+      <p class="line"><strong>Peoples:</strong>{{ " " }}<span lang="es">{{ country().peoples || 'No data' }}</span></p>
+      @if (isHttps(country().sources.population) || isHttps(country().sources.factbook)) {
+        <p class="line">
+          Sources:
+          @if (isHttps(country().sources.population)) { <a [href]="country().sources.population" target="_blank" rel="noopener noreferrer">Population<span class="visually-hidden"> (opens in a new tab)</span></a> }
+          @if (isHttps(country().sources.factbook)) { · <a [href]="country().sources.factbook" target="_blank" rel="noopener noreferrer">World Factbook<span class="visually-hidden"> (opens in a new tab)</span></a> }
+        </p>
+      }
+    </section>
+
+    <section aria-labelledby="d-lang">
+      <h3 id="d-lang"><app-icon name="chat" />Languages in the research</h3>
+      @if (languages().length) {
+        <ul class="langs">
+          @for (l of languages(); track l.language) {
+            <li>
+              <strong>{{ l.language }}</strong> <span class="iso">{{ l.iso }}</span>
+              <span class="res">{{ resultEn[l.result] ?? l.result }}</span>
+              @if (isHttps(l.modelSource || l.source)) {
+                <a [href]="l.modelSource || l.source" target="_blank" rel="noopener noreferrer">Source<span class="visually-hidden"> for {{ l.language }} (opens in a new tab)</span></a>
+              }
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="muted">No language records for this country.</p>
+      }
+      <p class="muted">
+        These results describe which open models and corpora document a language. They are desk research, not tested proficiency, and
+        "no evidence in sample" does not mean no model exists.
+      </p>
+      <ul class="muted cav">
+        @for (c of caveats; track c) { <li>{{ c }}</li> }
+      </ul>
+    </section>
+
+    <section aria-labelledby="d-orgs">
+      <h3 id="d-orgs"><app-icon name="clipboard" />Organizations ({{ orgs().length }})</h3>
+      @if (orgs().length) {
+        <ul class="orgs">
+          @for (o of orgs(); track o.id) {
+            <li>
+              <button type="button" class="org" (click)="editOrg.emit(o)">
+                <app-crm-avatar [name]="o.name" />
+                <span class="on"><strong>{{ o.name }}</strong><span>{{ stateLabel[o.status] }} · {{ priorityLabel[o.priority] }} priority</span></span>
+                <app-icon name="pencil" />
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="muted">No organizations in {{ country().nameEn }} yet.</p>
+      }
+    </section>
+
+    <section aria-labelledby="d-notes">
+      <h3 id="d-notes"><app-icon name="pencil" />Your notes</h3>
+      <label for="d-note" class="muted">Research notes for {{ country().nameEn }} ({{ note().length }}/{{ noteMax }}). Saved only in this browser.</label>
+      <textarea id="d-note" rows="5" [attr.maxlength]="noteMax" [value]="note()" (input)="saveNote($event)" (change)="noteSaved()"></textarea>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <button type="button" class="btn btn-primary" (click)="addOrg.emit(country().nameEn)"><app-icon name="plus" /> Add organization in {{ country().nameEn }}</button>
+    <button type="button" class="btn btn-quiet" (click)="close()">Close</button>
+  </footer>
+</dialog>

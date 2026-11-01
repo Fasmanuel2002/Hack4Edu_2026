@@ -11,6 +11,54 @@ Both environment files have `useMock: false`, set by the author on purpose; this
 touch them. Mock mode still exists, is covered by the unit tests, and comes back by setting
 `useMock: true` (see needs_review item 10).
 
+## Landing page and language map merged in (2026-11-01)
+
+Merged from the team's second Angular project (`~/Downloads/Twins_for_Change_Angular_FastAPI/frontend`)
+by adding routes only. `/chat`, `/practice`, `/architecture`, the chat store, composer, API service
+and backend are unchanged.
+
+- `/` is the new landing page (`site/src/app/site/landing-page.*`, lazy). The old `/` -> `/chat`
+  redirect is gone; `/app` is a redirect to `/chat`, and the landing CTA "Open the tutor" links to `/app`.
+- `/mapa` is the language map (`map-page.*`, lazy): search, region filter, approximate pins over a
+  reference map image, a country list, and a detail panel with the researchers' caveats and source
+  links. One quiet line says the tutor supports only Yorùbá and English. Pins are mouse-only
+  (`tabindex="-1"`, `aria-hidden`); the list is the keyboard and screen-reader path.
+- Both are client-rendered (the `**` server route); direct visits work through `index.csr.html`
+  (`vercel.json`, `serve-dist.mjs`, FastAPI fallback). Nothing in `app.routes.server.ts` changed.
+- Shared files touched: `shared/top-bar.html` (one "Home" link in the main nav), `shared/icon.ts`
+  (a `home` icon), `tsconfig.json` (`resolveJsonModule`), `app.routes.ts` (three routes).
+- The Spanish landing text was rewritten in English. Removed or softened: the "millions of people lack
+  access" claim, the fake chat mock-up, "designed to integrate with the existing tutor", the CRM card,
+  and the project-stats bar. Product claims now come only from CLAUDE.md.
+- Spanish data shown in English: country names (from the ISO code with `Intl.DisplayNames`), region
+  names, and the four result categories are mapped in `research.ts`; the six data caveats are English
+  renderings of the snapshot's `limitations`. The `peoples` text stays Spanish (`lang="es"`).
+
+Assets and data (all bundled, none fetched at runtime):
+
+| File | Provenance |
+|---|---|
+| `site/src/app/site/research.json` | The reference `src/app/data/research.json` (analysis date 2026-10-20) without `seedOrganizations` (outreach contacts, not needed) and `offlineEstimate`. |
+| `site/public/site/hero.webp` | `public/assets/hero-blue.png` of the reference, resized to 1280 px wide and converted to WebP. Labelled "Illustrative image." |
+| `site/public/site/map-africa.webp` | `public/assets/map-africa.png`, resized to 900 px wide, WebP. |
+| `site/public/site/flags/*.png` | 57 flag PNGs copied unchanged from the reference. |
+
+needs_review for this merge:
+- **CRM is public and browser-local (2026-11-01, author's decision).** `/crm` has no login and no server:
+  anyone can open it, and edits live only in that browser's `localStorage`. A CRM shared between people or
+  devices would need a backend (accounts, storage, access control); the backend CRM code is unwired and
+  `docs/crm-backend.md` describes it. Do not enter personal contact data in a public page without a decision
+  on privacy. The seed has only 6 organization names, country and status.
+- **Licence and provenance of `hero.webp` and the flags are not documented in the reference.** The
+  hero image looks like a generated or stock picture of children; confirm the right to use it and
+  whether to keep it (children's photo, consent).
+- **Source links in the data.** The JS bundle contains https URLs from the research data (World Bank,
+  GitHub factbook, Hugging Face, OIF, IRB). They are only `<a href>` links opened by the user, never
+  fetched. A grep for `http` in the build shows them next to `apiBaseUrl`.
+- The map data is a static snapshot; the Spanish `peoples` field is not translated.
+- Not checked: Lighthouse and screen reader runs on the two new pages; dark theme was not
+  inspected visually.
+
 ## External packages and assets
 
 Nothing loads from the internet at runtime: no CDN, remote fonts, analytics, remote images, UI
@@ -595,6 +643,57 @@ import the repository in Vercel with the settings above; deploy; check a reload 
   loads only the regular and display faces. The stagger was read from the computed styles: 0, 70,
   140, 210, 280, 350 and 420 ms, 400 ms each.
 
+## Landing page rebuild (2026-11-01)
+
+The `/` landing page was rebuilt to follow the author's reference HTML (`TWINS_FOR_CHANGE_ABRIR_AQUI.html`) in layout and
+rhythm: sticky header, full-bleed hero, facts strip, mission, tutor, map workspace, research table, collaborate band,
+CRM preview, method, footer. It is plain Angular components and plain CSS, with real links into the app.
+
+- **New asset and provenance.** `site/public/site/classroom.webp` (1200 px) and `classroom-640.webp` come from the
+  mission photo (1672 x 941 JPEG) embedded in the reference file; decoded, resized and converted with `cwebp -q 78`.
+  The reference's hero photo, map image and logo were already bundled (`hero.webp` is a brand-tinted version, so it was kept;
+  the map is identical; the full logo with wordmark is not used, `app-logo` shows only the mark). Nothing else from the
+  reference is shipped: no iframe, no `srcdoc`, no base64, no video, no remote URLs, no Inter.
+- **New packages.** None. `angular.json`: the `anyComponentStyle` budget went from 4/8 kB to 10/12 kB because the landing
+  stylesheet is about 9.4 kB (the CRM stylesheet is also above the old warning level).
+- **Palette and style.** The reference's teal-navy colors were not copied; sections use the brand tokens (navy, brand
+  blue, sky). Its gradients, glows, tilted demo window and heavy shadows were left out (flat-surface rule). The tutor and CRM
+  sections are navy in both themes (`surface-navy`), the collaborate band is brand blue with white text, the others follow
+  the light or dark theme. Display headings use Literata Display, body uses Twins Sans.
+- **Chat mechanism.** The four starters on `/` reuse the exact mechanism of Practice's "Ask Twins for Change to explain":
+  `ChatStore.queueQuestion(yo)` then `router.navigateByUrl('/chat')`; `ChatPage` takes the queued question and starts a new
+  chat. No chat code was edited. They are buttons, not links, so a middle-click cannot leave a queued question behind.
+- **Map.** `africa-explorer` was restyled as a workspace (map card with search, region filter, metric switch and legend,
+  plus a country profile card with a country picker). The metric switch uses data already in the snapshot: documentation in
+  the sample (`unknownCount`) or internet use. Pin meaning is carried by shape (filled, hollow, diamond), not by color alone.
+  "Open in CRM" links to `/crm?country=<English name>` (for example `Nigeria`); the CRM must read `country` and match
+  English names. Country names inside the research data are Spanish (for example `Kenia`), so a mismatch is possible.
+- **Research table.** New `research-table` component: 185 rows, search, country and result filters, 12 rows per page, caveat
+  text. Labels are described as what a desk review found, not tested ability. Both the map and the table load with
+  `@defer (on viewport)`.
+- **CRM preview.** Read-only table of the six rows in `crm/seed-organizations.json` (imported directly, no CRM store, no API).
+  Follow-up counts show only if some seed row has a follow-up date (none do today). Text says the CRM is public and saved only
+  in each visitor's browser.
+- **Claims removed or softened from the reference.** "54 + 1 countries / 148 languages / 1 mission" strip replaced by
+  corpus facts from CLAUDE.md (15,791 rows, 5 source datasets, 2 languages); the reference's "Imaginamos... en lenguas
+  locales" tutor copy (implied more languages) now says the tutor supports only Yorùbá and English; the fake scripted chat demo
+  ("Modo local (concepto)", number and word exercises) was dropped and replaced by the four real starters; "miles de voces"
+  became "many languages"; "Más lenguas. Más oportunidades." float card dropped; the hero video, scroll cue and vertical
+  label were not carried over; the CRM "live" dot and embed controls were dropped. No accuracy figures, testimonials or partner
+  names exist on the page.
+- **Header.** Anchors: Mission, Tutor, Map, Research, Collaborate, Method; route links: Practice, How it works, CRM
+  (boxed), and "Open the tutor" (`/app`, which redirects to `/chat`). There is no separate "CRM" scroll anchor in the header
+  (the section is reached by scrolling or from the CRM link). Below 72rem the menu is a panel opened by a button
+  (`aria-expanded`, Escape closes it and returns focus). The old shared TopBar is not used on `/`; `/mapa` still uses it.
+- **Verified.** `tsc --noEmit` for the app config; the site specs (routes, helpers, landing: one h1, four starters queue
+  the Yorùbá question, six CRM rows) pass. One production build succeeds. Headless Chrome: no horizontal overflow and one
+  h1 at 375, 768 and 1280 px in light and dark; screenshots at 1280 px (light) and 375 px (dark, menu open) were looked at.
+- **Not verified.** The CRM spec currently fails one test and `tsc` on the spec config reports errors in `src/app/crm/`;
+  those files belong to the parallel CRM work. Not run: Lighthouse, a screen reader, a keyboard walk-through (focus order was
+  not checked beyond the code), measured contrast (token pairs are from the brand table), 768 px screenshots, the reduced
+  motion path, and the `/mapa` page after the restyle (build passes). The `research.json` chunk (about 19 kB gzip) loads with
+  the landing because the page reads the record counts from it.
+
 ## Main files
 
 - `site/public/fonts/`: the three woff2 files and `OFL-Andika.txt`, `OFL-Literata.txt` (new).
@@ -609,3 +708,95 @@ import the repository in Vercel with the settings above; deploy; check a reload 
 - `site/src/app/practice/`: the plain quiz. `site/src/app/architecture/`: API table and gaps.
 - `site/src/app/shared/`: top bar (no progress chip), icons (badge icons removed).
 - `site/src/app/app.routes.ts`: `/chat` in the main bundle.
+
+## CRM, public and browser-local (2026-11-01)
+- `/crm` is a lazy, client-rendered route with no guard and no login. `CrmStore` (`crm/crm-store.ts`) holds the
+  organizations in a Signal, starts from the 6 organizations in `crm/seed-organizations.json` (copied from
+  `src/modules/crm/seed_organizations.json`; names, country and status only) and saves every edit to
+  `localStorage` (key `tfc.crm.organizations`). Storage is browser-only (`isPlatformBrowser`) and wrapped in
+  try/catch: if it throws or holds bad JSON, the page works in memory or from the seed.
+- The page shows "Saved only in this browser. Not shared with other people or devices." and a two-step
+  "Reset to the 6 starting organizations" button. Search, filters, add/edit, two-step delete, follow-ups,
+  CSV export (formula-safe) and validation limits are unchanged. No call to `/api` anywhere in the CRM.
+- Landing card: "Partner CRM, Open to everyone, saved in your browser."
+- Unreferenced files, awaiting the author's approval to delete (not deleted): `site/src/app/crm/login-page.ts`,
+  `crm/auth-guard.ts`, `crm/crm-service.ts`, `crm/crm-service.spec.ts` (still compiles and passes, tests only the
+  old HTTP service). `site/proxy.conf.json` and the `proxyConfig` entry in `angular.json` are no longer needed
+  by the CRM and were left in place; removing them is safe.
+
+### CRM rebuild: rich browser-local version (2026-11-01, later pass; supersedes the storage key above)
+- **Features.** `/crm` now has eight sections in a side navigation (links with `aria-current`; a wrapped row on
+  narrow screens): Overview (stat tiles computed from the data, next follow-ups, recent activity, pipeline by stage,
+  profiles by region), Countries (55 profiles from `site/research.ts`, search and region filter, country drawer),
+  Map (the existing `app-africa-explorer`, imported unchanged inside `@defer`), Organizations (search, region,
+  country, status and priority filters, sort by name, update or follow-up date, list or board by stage, add/edit
+  dialog with an activity history editor, two-step delete), Contacts, Follow-ups (overdue, today, upcoming; paused
+  and discarded excluded), Activity (timeline across organizations) and Sources (links and the caveat that the data
+  describe corpus and model coverage, not tested proficiency). Also JSON export and import (validated: 2 MB, 500
+  organizations, text cut to the field limits, unknown countries skipped, result announced), CSV export of the shown
+  organizations (formula-safe), and a two-step Reset (also clears country notes).
+- **URL state.** `?view=<overview|countries|map|orgs|contacts|followups|activities|sources>` and `?country=<English
+  name>` (case-insensitive). A valid country opens that country's drawer on any view; without `?view=` it opens
+  Countries. Example for the landing page: `/crm?country=Nigeria`.
+- **Dialogs.** The org form and the country drawer are native `<dialog>` elements opened with `showModal()`: focus is
+  trapped, Escape closes, focus returns to the opener. "Add organization in this country" opens the form with the
+  country preselected, on top of the drawer.
+- **Storage.** Key `tfc.crm.v2` holds `{ version: 2, organizations, countryNotes }`. On first load it migrates the
+  old `tfc.crm.organizations` array (each record gets `activities: []`; the retired status "Propuesta enviada" becomes
+  "En conversación"); the old key is left untouched. Stages now follow the reference CRM: Identificada, Contactada,
+  En conversación, Colaboración, Pausada, Descartada. Import merges by `id` (same id replaces) and adds new rows.
+  Activities are `{date, text}` (text up to 300 characters, up to 100 per organization). The seed rows stay Spanish
+  data (`lang="es"`); no organizations, people or contacts were invented, and empty contact fields stay empty.
+- **Files.** `crm/crm-logic.ts`, `crm-store.ts`, `crm-page.{ts,html,css}`, `crm-org-dialog.*`, `crm-country-drawer.*`,
+  `crm.spec.ts`, `crm-store.spec.ts`. No edits to `site/src/app/site/*`, `shared/icon.ts` or any other page.
+- **Skipped on purpose.** Country CSV export and CSV import (JSON only), a map-metric selector (the existing explorer
+  is reused as is). The Download icon does not exist in
+  `shared/icon.ts`, so the arrow-down icon is used.
+- **Needs a backend.** Sharing the CRM between people or devices, accounts, audit trail and any server-side backup.
+  Today the only backup is the JSON export; clearing browser data deletes the CRM.
+- **Not verified.** Dark-theme screenshots of /crm (contrast relies on the theme tokens), 375px and 768px layouts in a
+  real browser (headless Chrome clamps the window to about 500px), keyboard walk-through of the dialogs, screen
+  reader output, Lighthouse for /crm, and component-level tests of the page (only logic and store are unit-tested).
+  `crm-page.css` is about 7.9 kB, close to the 8 kB component-style error budget.
+
+## CRM dataset load, 2026-11-01 (61 organizations)
+
+- **Provenance**: bundle `Twins_for_Change_CRM_BASE_DATOS_CSV_SQLITE` (downloaded 2026-11-01), derived from `Twins_for_Change_CRM_Datos_ONG_Investigacion.json`, sha256 `0cce4a69894aeb9da4c73b886e63be3e529054b90f1b0f2b1582106eb2e62856` (from its `validacion.json`).
+- **Counts**: 61 organizations in 55 countries/territories (6 recovered from the original CRM, all in Nigeria, ids `seed-1`..`seed-6`; 55 from documentary research on 2026-11-01, ids `public-*`, including `public-NG-leap`); 60 with a source URL, 15 with an email, 1 with a phone; no contact person, follow-up or collaboration state (all `Identificada` / `Media`). AFECO (Nigeria) keeps its "identity pending verification" status, shown on the record.
+- **Earlier list of 64**: it could not be fully recovered. The 61 rows are a separate recovered + researched set, not that directory. The CRM Sources view says so.
+- **Generator**: `site/scripts/generate-crm-data.mjs [bundleDir]` writes `site/src/app/crm/seed-organizations.json` from `ongs_por_pais.csv` (country name from ISO2, same method as `research.ts`) and adds `offlineEstimate` to `site/src/app/site/research.json` from `paises.csv`. Nothing is retyped.
+- **Model**: `Org` gains optional read-only `sourceUrl`, `orgType`, `researchStatus`, `origin`, `researchDate`, `iso2`. They show in the organization dialog ("About this record"; source link is https only, `rel="noopener noreferrer"`, new tab).
+- **Existing visitors**: storage key and version stay `tfc.crm.v2`. The stored object gets a `seedSet` marker; when it is missing, the seed rows whose id the visitor lacks are added once (`addMissingSeeds`). Existing rows (and their edits) are never overwritten or removed, there are no duplicates, and a seed the visitor deletes later is not brought back. Old `seed-1`..`seed-6` rows keep their old text and do not get the new provenance fields.
+- **Cross-check of `paises.csv` and `lenguas_y_modelos_IA.csv` against `research.json`**: 55 countries and 185 language rows match on every compared field (names, region, population, year, internet %, internet year, both indicator source URLs, coordinates, language lists, counts, `is_territory`, connectivity qualifier, Factbook/OIF/published-statistics JSON, model statuses, conclusions, notes, source URLs). Only difference: `estimated_offline_population` was missing in `research.json` (24 countries have a value; the other 31 are empty on purpose). It is now `offlineEstimate`, shown in the country drawer with the indicator years and source links, as an orientative estimate. `estimated_speakers` is empty in all 185 rows, so nothing to add.
+- **Landing page**: counts use all 61 rows; the preview table shows the first 8 ("Showing 8 of 61").
+- **Intentionally not done** (author decision: the CRM stays public, browser-local, no auth, no DB): no backend, FastAPI endpoints, SQLite, Alembic, login or roles from the bundle's `PROMPT_CLAUDE.md`. Sharing the list between people still needs a backend.
+- Contact details come from public sources and were not re-verified; the CRM says so in the Organizations, Contacts and Sources views.
+
+## Reference-look pass (2026-11-01, visual only)
+
+The author asked for the app to look much closer to `TWINS_FOR_CHANGE_ABRIR_AQUI.html`. This overrides the earlier choice not to copy its colours and gradients. No logic changed: chat, chat store, composer, API service, CRM data logic and backend are untouched. Iterated with headless Chrome screenshots (reference and app side by side, 1280 / 1024 / 768 / 500 px, light and dark).
+
+- **Palette tokens (`src/styles.css`).** `--navy #052d4b`, `--navy-2 #0b3d63` (raised on navy), `--navy-deep #04273f`, `--blue #125cd4`, `--sky #40d9e9` (the reference aqua, on navy only), `--pale #b8d6e3`, `--grey-blue #e2edf3` (lines), `--ink #183b50` (text), `--light #f3f9fd`, `--amber #eda34b`, `--teal #0b5f86`, `--card-shadow`, and `--section-alt` (light blue-white in light, deep navy in dark). Muted text is `#5b7483`, not the reference `#617987` (4.31:1 on `#f3f9fd` fails). The collaborate band is `#0b5f86`, not `#0e729d` (its pale text was 4.3:1). Measured pairs: ink on light 11.1, muted on white 4.9 and on light 4.6, white on blue 6.0, blue on light 5.6, white on navy 14.2, aqua on navy 8.3, aqua on navy-2 6.6, white on the teal band 7.0, pale aqua on it 5.4, warn pill `#8a5f1f`/`#fff1dc` 5.1, good pill `#1d6f53`/`#e6f7f0` 5.5. The dark theme uses the same tokens: navy canvas, navy-2 cards, aqua accent.
+- **Typography.** Headings now use Twins Sans Bold with tight tracking, the closest bundled match for the reference's heavy sans. Inter is not used. Literata Display is no longer referenced: its `@font-face` and preload were removed, and `public/fonts/literata-display.woff2` plus its licence are still on disk (not deleted, awaiting approval). Buttons have 9px corners and heavy labels.
+- **Landing.** Sticky white header with the mark and a two-line name. Photo hero with the reference navy gradient veil (an even veil below 64rem so text stays readable), kicker pill, aqua `em`, scroll cue, and a side card plus vertical label (decorative, `aria-hidden`). Mission photo with a quote card. Navy tutor band with the starters inside a light "app window" (dots bar, 1 degree tilt on desktop, caption chip) and a link-styled input to `/app`. Map workspace with teal and amber pins: the gap pin is hollow, so shape also carries the meaning, and both colours are at least 3.3:1 against the white ring. Country profile card. Research table with result pills and "Source" chips. Centred teal collaborate band with icon cards. CRM hub with a radial-gradient background, KPIs, quick links to `/crm?view=countries|map|orgs|followups` and a browser-style shell around the preview table. Light transparency section. Deep navy three-column footer with the mark on a white tile.
+- **CRM.** Gradient navy sidebar with a "Coordination space" label, blue active item and an info card with "Back to the website". Eyebrow and `Partner CRM.` title (accent `#00798c`, 4.8:1; aqua in dark). Stat cards with the reference corner circle, a teal-edged callout, rounded cards with soft shadows, gradient bars, tinted badges, and a table card. Dialog and drawer have 18px corners, the reference shadows and backdrops.
+- **Shared.** Top-bar links are bold, and the current route uses the accent tint. `/mapa` has the reference heading and a light section background. `/chat`, `/practice` and `/architecture` keep their layouts and pick up the new tokens and heading style.
+- **New assets.** `public/site/hero-photo.webp` (1280 px, 66 KB) and `hero-photo-768.webp` (31 KB), encoded with `cwebp -q 72/70` from the reference's embedded hero JPEG (1280 × 720, the untinted original). The older brand-tinted `hero.webp` is no longer referenced but was kept (not deleted). `arrowUpRight` was added to `shared/icon.ts`.
+- **Budget.** The `anyComponentStyle` budget went from 10/12 kB to 18/20 kB. The landing stylesheet is about 16 kB and `crm-page.css` is about 10 kB.
+- **Fixes found on the way.** Visually hidden link text inside the scrollable tables widened the page at 500 px, so the scroll containers are now `position: relative`. The CRM table at 768 px and the country tiles at 1024 px overflowed: headers can now wrap and tiles can shrink.
+- **Still different from the reference, on purpose.** The copy is English and truthful: no "54 + 1 / 148 / 1 mission" strip, no "Más lenguas" card, no scripted "Números / Palabras / Practicar" demo (the four real starters are used instead). The full logo wordmark is not shown (CLAUDE.md brand rule). The page has no hero video, no embedded CRM iframe (the preview is a read-only table plus real links), and the header has more links than the reference (Practice, How it works, theme toggle, Open the tutor). Headings use Andika-based Twins Sans Bold, not Inter 850, so letterforms are rounder. The chat greeting now uses the bold heading style, not the earlier "modest" weight.
+- **Verified.** `tsc` (app and spec), `ng test` (11 files, 120 tests), production build. Headless Chrome found no horizontal overflow and exactly one h1 at 500, 768, 1024 and 1280 px, light and dark, on `/`, `/crm` (all views), `/mapa`, `/chat`, `/practice` and `/architecture`. Screenshots were reviewed for the landing (every section), the CRM overview, organizations, dialog and country drawer, the dark theme, 500 px, and the shared pages. **Not verified:** Lighthouse, a screen reader, a keyboard walk-through, real phone widths below 500 px (headless Chrome clamps), and the reduced-motion path in a browser (the CSS has the guards).
+
+## CRM contacts import and contact validation, 2026-11-01
+
+- **No new packages or assets.** Data only: `site/scripts/data/contacts_research.csv` (input) and the generated `site/src/app/crm/seed-contacts.json`.
+- **Provenance.** 89 public contact routes from the contact research of 2026-11-01, collected from organizations' own pages, UN/government directories and one press page (source types: 83 official_site, 3 un_or_gov_directory, 2 other, 1 press). No LinkedIn profiles (one organization's LinkedIn company page is mentioned in a `notes` field, as written in the research). Text is copied from the CSV by `scripts/generate-crm-data.mjs` (NFC check, accents kept, nothing retyped).
+- **Counts.** 89 contacts in 53 countries: 80 organization-level, 9 named leaders (10 contacts carry a person's name, shown with the role exactly as in the data); confidence 66 high, 21 medium, 2 low. 51 rows matched an existing organization by `org_in_crm_id`, 0 by country + name, and 38 new organizations (`research-<ISO2>-<slug>`) were added, so the seed is now **99 organizations** (61 + 38). The Somalia row of Windle Trust pointed at `public-SS-47` (South Sudan) and was given its own Somalia organization instead. On existing organizations only empty email, phone or website fields were filled from organization-level rows; nothing was overwritten. Three research websites were `http://` and were left out of `web` (their https source link is kept).
+- **Storage.** The CRM key moved to `tfc.crm.v3` (`{ version: 3, seedIds, organizations, contacts, countryNotes }`). v2 (`tfc.crm.v2`) and v1 are migrated on read; nothing a visitor saved is overwritten, new seed rows arrive once, and a deleted seed organization or contact does not return. Deleting an organization deletes its contacts. Visitors can add, edit and delete contacts (length limits, email format, https-only links, at least one route).
+- **Validate contact info.** Each contact, and each organization's own email/phone, has a status: Unverified (default), Verified, Invalid or Needs update, with the date it was set and an optional note. It is shown as an icon plus text. You can set it in the Contacts view, in the organization dialog and in the contact dialog. The Contacts view filters by country, status, confidence and kind, sorts, searches and exports CSV (formulas neutralised). The Overview "Needs verification" panel counts unverified vs verified contacts.
+- **Public exposure.** The CRM bundle is public: every visitor downloads all 89 contacts, including the named people taken from their organizations' own pages. Verification marks live only in each visitor's browser.
+
+### needs_review
+- 19 countries still have fewer than 2 contact records: Benin, Burkina Faso, Cape Verde, Comoros (0), Congo - Brazzaville, Côte d'Ivoire, Djibouti, Equatorial Guinea, Eritrea, Gabon, Gambia, Guinea, Guinea-Bissau, Mauritania (0), Niger, Seychelles, Sierra Leone, Togo, Zimbabwe (1 each unless noted).
+- A shared, verified CRM (one list of verification marks for the whole team) would need a backend with login and a database. The author decided against that for now.
+- Should named people stay in a public bundle? They are listed on their organizations' own public pages, but the author may prefer to keep only organization-level routes.

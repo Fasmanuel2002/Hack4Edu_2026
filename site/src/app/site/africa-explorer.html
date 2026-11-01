@@ -1,0 +1,143 @@
+<div class="workspace">
+  <section class="area" aria-label="Map of Africa">
+    <div class="controls">
+      <label class="search">
+        <span class="visually-hidden">Search country or language</span>
+        <input type="search" autocomplete="off" placeholder="Search country or language" [value]="query()" (input)="onQuery($event)" />
+      </label>
+      <select aria-label="Filter by region" [value]="region()" (change)="onRegion($event)">
+        <option value="">All regions</option>
+        @for (r of regions; track r) {
+          <option [value]="r" [selected]="r === region()">{{ r }}</option>
+        }
+      </select>
+      <select aria-label="What the pins show" [value]="metric()" (change)="onMetric($event)">
+        <option value="documentation" [selected]="metric() === 'documentation'">Pins: documentation in the sample</option>
+        <option value="internet" [selected]="metric() === 'internet'">Pins: internet use</option>
+      </select>
+      <button type="button" class="reset" aria-label="Reset search and filters" title="Reset search and filters" (click)="reset()">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7" /><path d="M20 4v5h-5" /></svg>
+      </button>
+    </div>
+
+    <div class="surface">
+      <!-- Pins repeat the country picker for mouse users; the picker is the keyboard and screen-reader path. -->
+      <img src="site/map-africa.webp" width="900" height="785" alt="Reference map of Africa" />
+      @for (c of filtered(); track c.name) {
+        <button
+          type="button"
+          class="pin"
+          tabindex="-1"
+          aria-hidden="true"
+          [class]="'pin ' + pinKind(c)"
+          [class.selected]="selected()?.name === c.name"
+          [style.left.%]="x(c.lon)"
+          [style.top.%]="y(c.lat)"
+          [title]="c.nameEn"
+          (click)="select(c)"
+        ></button>
+      }
+      <p class="count" role="status">{{ filtered().length }} countries and territories</p>
+    </div>
+
+    <ul class="legend" aria-label="Pin legend">
+      @for (item of legend(); track item.text) {
+        <li><i class="key" [class]="'key ' + item.kind" aria-hidden="true"></i>{{ item.text }}</li>
+      }
+    </ul>
+    <p class="caption">The image and pins are approximate. They are not official borders or precise geographic data.</p>
+  </section>
+
+  <section class="profile" aria-label="Country profile">
+    @if (selected(); as c) {
+      <p class="kicker">Country profile</p>
+      <div class="title">
+        <div>
+          <h3>{{ c.nameEn }}</h3>
+          <p>{{ c.region }} · {{ c.isTerritory ? 'Territory (listed separately)' : 'Country' }}</p>
+        </div>
+        <img [src]="flag(c)" width="42" height="30" alt="" />
+      </div>
+      <label class="picker">
+        <span>Country</span>
+        <select (change)="onPick($event)">
+          @for (o of filtered(); track o.name) {
+            <option [value]="o.name" [selected]="o.name === c.name">{{ o.nameEn }}</option>
+          }
+        </select>
+      </label>
+      <dl class="stats">
+        <div><dt>Population ({{ c.year || 'year not available' }})</dt><dd>{{ people(c.population) }}</dd></div>
+        <div><dt>Internet use ({{ c.internetYear || 'year not available' }})</dt><dd>{{ internet(c.internetPct) }}</dd></div>
+        <div><dt>Languages selected in the review</dt><dd>{{ languages().length }}</dd></div>
+        <div><dt>With no evidence in the sample</dt><dd>{{ c.unknownCount }}</dd></div>
+      </dl>
+      <h4>Selected languages</h4>
+      @if (tags().length) {
+        <ul class="tags">
+          @for (t of tags(); track t) {
+            <li>{{ t }}</li>
+          }
+        </ul>
+      } @else {
+        <p class="text">Not available</p>
+      }
+      <h4>Communities</h4>
+      <p class="text" lang="es">{{ c.peoples || 'Pending review.' }}</p>
+      @if (languages().length) {
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Documentation results for {{ c.nameEn }}">
+          <table>
+            <thead>
+              <tr><th scope="col">Language</th><th scope="col">ISO</th><th scope="col">Result</th><th scope="col">Reference</th></tr>
+            </thead>
+            <tbody>
+              @for (l of languages(); track l.language) {
+                <tr>
+                  <th scope="row">{{ l.language }}</th>
+                  <td>{{ l.iso || '—' }}</td>
+                  <td>{{ result(l.result) }}</td>
+                  <td>
+                    @if (https(modelLink(l)); as href) {
+                      <a [href]="href" target="_blank" rel="noopener noreferrer">Source<span class="visually-hidden"> for {{ l.language }} (opens in a new tab)</span></a>
+                    } @else {
+                      —
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+      <p class="caution">Results describe what a desk review found, not how well any model answers in that language.</p>
+      <div class="actions">
+        <a class="btn btn-primary" routerLink="/crm" [queryParams]="{ country: c.nameEn }">Open in CRM</a>
+      </div>
+      <p class="sources">
+        Sources:
+        @if (https(c.sources.population)) {
+          <a [href]="c.sources.population" target="_blank" rel="noopener noreferrer">Population<span class="visually-hidden"> (opens in a new tab)</span></a>
+        }
+        @if (https(c.sources.factbook)) {
+          <a [href]="c.sources.factbook" target="_blank" rel="noopener noreferrer">Language profile<span class="visually-hidden"> (opens in a new tab)</span></a>
+        }
+        <a href="https://data.worldbank.org/indicator/IT.NET.USER.ZS" target="_blank" rel="noopener noreferrer">Internet use<span class="visually-hidden"> (opens in a new tab)</span></a>
+      </p>
+    } @else {
+      <div class="empty">
+        <h3>No matches</h3>
+        <p>No country matches these filters. Try another language, change the region or reset the search.</p>
+        <button type="button" class="btn btn-quiet" (click)="reset()">Reset filters</button>
+      </div>
+    }
+  </section>
+</div>
+
+<section class="notes" aria-labelledby="read-title">
+  <h3 id="read-title">How to read this data</h3>
+  <ul>
+    @for (note of limitations; track note) {
+      <li>{{ note }}</li>
+    }
+  </ul>
+</section>

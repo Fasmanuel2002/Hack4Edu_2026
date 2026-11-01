@@ -1,0 +1,82 @@
+<dialog #dlg class="dlg" aria-labelledby="ct-dlg-title" (close)="closed.emit()">
+  <form class="form" novalidate (submit)="save($event)">
+    <header class="head">
+      <div>
+        <h2 id="ct-dlg-title">{{ contact() ? 'Edit contact' : 'Add contact' }}</h2>
+        <p class="muted">Saved only in this browser. Never invent a contact: record only what a public source shows.</p>
+      </div>
+      <button type="button" class="icon-btn" aria-label="Close" (click)="close()"><app-icon name="x" /></button>
+    </header>
+
+    <div class="body">
+      <fieldset class="group">
+        <legend><app-icon name="user" />Contact</legend>
+        <div class="gf">
+          <div class="field wide">
+            <label for="cf-orgId">Organization (required)</label>
+            <select id="cf-orgId" [attr.aria-invalid]="errors().orgId ? 'true' : null" [attr.aria-describedby]="errors().orgId ? 'ce-orgId' : null" (change)="set('orgId', $event)">
+              <option value="">Choose an organization</option>
+              @for (o of orgs(); track o.id) { <option [value]="o.id" [selected]="o.id === draft().orgId">{{ o.name }} · {{ o.country }}</option> }
+            </select>
+            @if (errors().orgId; as m) { <p class="err" id="ce-orgId">{{ m }}</p> }
+          </div>
+          @for (f of fields; track f.key) {
+            <div class="field" [class.wide]="f.wide">
+              <label [for]="'cf-' + f.key">{{ f.label }}</label>
+              <input [id]="'cf-' + f.key" [type]="f.type" [attr.maxlength]="limits[f.key]" [value]="draft()[f.key]" (input)="set(f.key, $event)"
+                [attr.aria-invalid]="errors()[f.key] ? 'true' : null" [attr.aria-describedby]="errors()[f.key] ? 'ce-' + f.key : null" />
+              @if (errors()[f.key]; as m) { <p class="err" [id]="'ce-' + f.key">{{ m }}</p> }
+            </div>
+          }
+          <div class="field">
+            <label for="cf-kind">Kind</label>
+            <select id="cf-kind" (change)="set('kind', $event)">
+              @for (k of kinds; track k) { <option [value]="k" [selected]="k === draft().kind">{{ kindLabel[k] }}</option> }
+            </select>
+          </div>
+          <div class="field">
+            <label for="cf-confidence">Confidence</label>
+            <select id="cf-confidence" (change)="set('confidence', $event)">
+              @for (c of confidences; track c) { <option [value]="c" [selected]="c === draft().confidence">{{ confidenceLabel[c] }}</option> }
+            </select>
+          </div>
+          <div class="field wide">
+            <label for="cf-notes">Notes</label>
+            <textarea id="cf-notes" rows="3" [attr.maxlength]="limits.notes" [value]="draft().notes" (input)="set('notes', $event)"></textarea>
+            @if (errors().notes; as m) { <p class="err">{{ m }}</p> }
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="group">
+        <legend><app-icon name="checkCircle" />Verification</legend>
+        <app-crm-verify-badge [value]="draft().verification" />
+        @if (draft().verification.note; as n) { <p class="muted">{{ n }}</p> }
+        <app-crm-verify [value]="draft().verification" label="this contact" (changed)="verify($event)" />
+      </fieldset>
+
+      @if (contact(); as c) {
+        @if (c.dateAccessed || c.whyRelevant) {
+          <section class="info" aria-labelledby="ct-info-title">
+            <h3 id="ct-info-title"><app-icon name="info" />About this record <span class="muted">(read-only)</span></h3>
+            <dl>
+              @if (c.whyRelevant) { <div><dt>Why relevant</dt><dd>{{ c.whyRelevant }}</dd></div> }
+              @if (c.sourceType) { <div><dt>Source type</dt><dd>{{ c.sourceType }}</dd></div> }
+              @if (c.dateAccessed) { <div><dt>Collected on</dt><dd>{{ c.dateAccessed }}</dd></div> }
+            </dl>
+          </section>
+        }
+      }
+    </div>
+
+    <footer class="foot">
+      <button type="submit" class="btn btn-primary"><app-icon name="check" /> Save</button>
+      <button type="button" class="btn btn-quiet" (click)="close()">Cancel</button>
+      @if (contact()) {
+        <button type="button" class="btn btn-quiet danger" (click)="remove()">
+          <app-icon name="trash" /> {{ confirmingDelete() ? 'Confirm delete' : 'Delete' }}
+        </button>
+      }
+    </footer>
+  </form>
+</dialog>

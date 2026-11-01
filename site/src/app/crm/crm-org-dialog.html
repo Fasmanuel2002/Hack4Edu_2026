@@ -1,0 +1,136 @@
+<dialog #dlg class="dlg" aria-labelledby="org-dlg-title" (close)="closed.emit()">
+  <form class="form" novalidate (submit)="save($event)">
+    <header class="head">
+      <div>
+        <h2 id="org-dlg-title">{{ org() ? 'Edit organization' : 'Add organization' }}</h2>
+        @if (org(); as o) { <p class="muted">{{ o.name }} · {{ o.country }}</p> }
+      </div>
+      <button type="button" class="icon-btn" aria-label="Close" (click)="close()"><app-icon name="x" /></button>
+    </header>
+
+    <div class="body">
+      @for (g of groups; track g.id) {
+      <fieldset class="group">
+        <legend><app-icon [name]="g.icon" />{{ g.label }}</legend>
+        <div class="gf">
+      @for (f of fields; track f.key) {
+        @if (f.group === g.id) {
+        <div class="field" [class.wide]="f.wide">
+          <label [for]="'f-' + f.key">{{ f.label }}</label>
+          @switch (f.kind) {
+            @case ('country') {
+              <select [id]="'f-' + f.key" [attr.aria-invalid]="errors()[f.key] ? 'true' : null" [attr.aria-describedby]="errors()[f.key] ? 'e-' + f.key : null" (change)="set(f.key, $event)">
+                <option value="">Choose a country</option>
+                @for (c of countries; track c) { <option [value]="c" [selected]="c === value(f.key)">{{ c }}</option> }
+              </select>
+            }
+            @case ('priority') {
+              <select [id]="'f-' + f.key" (change)="set(f.key, $event)">
+                @for (p of priorities; track p) { <option [value]="p" [selected]="p === value(f.key)">{{ priorityLabel[p] }}</option> }
+              </select>
+            }
+            @case ('status') {
+              <select [id]="'f-' + f.key" (change)="set(f.key, $event)">
+                @for (s of states; track s) { <option [value]="s" [selected]="s === value(f.key)">{{ stateLabel[s] }}</option> }
+              </select>
+            }
+            @case ('area') {
+              <textarea [id]="'f-' + f.key" rows="3" [attr.maxlength]="maxLen(f.key)" [value]="value(f.key)" (input)="set(f.key, $event)"
+                [attr.aria-invalid]="errors()[f.key] ? 'true' : null" [attr.aria-describedby]="errors()[f.key] ? 'e-' + f.key : null"></textarea>
+            }
+            @default {
+              <input [id]="'f-' + f.key" [type]="f.kind" [attr.maxlength]="maxLen(f.key)" [value]="value(f.key)" (input)="set(f.key, $event)"
+                [attr.aria-invalid]="errors()[f.key] ? 'true' : null" [attr.aria-describedby]="errors()[f.key] ? 'e-' + f.key : null"
+                [attr.autofocus]="f.key === 'name' ? '' : null" />
+            }
+          }
+          @if (errors()[f.key]; as m) { <p class="err" [id]="'e-' + f.key">{{ m }}</p> }
+        </div>
+        }
+      }
+        </div>
+      </fieldset>
+      }
+
+      @if (draft().email || draft().phone || orgContacts().length) {
+        <fieldset class="group">
+          <legend><app-icon name="checkCircle" />Validate contact info</legend>
+          @if (draft().email || draft().phone) {
+            <div class="vrow">
+              <span><strong>Organization email / phone</strong><small>{{ draft().email }}{{ draft().email && draft().phone ? ' · ' : '' }}{{ draft().phone }}</small></span>
+              <app-crm-verify-badge [value]="draft().verification ?? unverified" />
+              <app-crm-verify [value]="draft().verification ?? unverified" [label]="'email and phone of ' + (draft().name || 'this organization')" (changed)="verifyOrg($event)" />
+            </div>
+          }
+          @for (c of orgContacts(); track c.id) {
+            <div class="vrow">
+              <span><strong>{{ c.name || 'Organization contact' }}</strong><small>{{ c.role }}{{ c.role && (c.email || c.phone) ? ' · ' : '' }}{{ c.email || c.phone }}</small></span>
+              <app-crm-verify-badge [value]="c.verification" />
+              <app-crm-verify [value]="c.verification" [label]="(c.name || 'organization contact') + ' of ' + draft().name" (changed)="verifyContact(c.id, $event)" />
+            </div>
+          }
+          <p class="muted">Organization email and phone status is kept when you press Save; contact status is saved at once. Verification marks are saved only in this browser.</p>
+        </fieldset>
+      }
+
+      @if (org(); as o) {
+        @if (o.sourceUrl || o.orgType || o.researchStatus || o.origin) {
+          <section class="info" aria-labelledby="info-title">
+            <h3 id="info-title"><app-icon name="info" />About this record <span class="muted">(read-only)</span></h3>
+            <dl>
+              @if (o.orgType) { <div><dt>Organization type</dt><dd [attr.lang]="research(o) ? null : 'es'">{{ o.orgType }}</dd></div> }
+              @if (o.researchStatus) { <div><dt>Research status</dt><dd [attr.lang]="research(o) ? null : 'es'">{{ o.researchStatus }}</dd></div> }
+              @if (o.origin) { <div><dt>Record origin</dt><dd lang="es">{{ o.origin }}{{ o.researchDate ? ' (' + o.researchDate + ')' : '' }}</dd></div> }
+              @if (isHttps(o.sourceUrl)) {
+                <div><dt>Source</dt><dd><a [href]="o.sourceUrl" target="_blank" rel="noopener noreferrer">{{ o.sourceUrl }}<span class="visually-hidden"> (opens in a new tab)</span></a></dd></div>
+              }
+            </dl>
+            <p class="muted">Contact details come from public sources and were not re-verified: verify before contacting.</p>
+          </section>
+        }
+      }
+
+      <fieldset class="group history">
+        <legend><app-icon name="book" />Activity history</legend>
+        @if (draft().activities.length) {
+          <ul class="acts">
+            @for (a of draft().activities; track $index) {
+              <li>
+                <time class="date">{{ a.date || 'No date' }}</time>
+                <span class="txt">{{ a.text }}</span>
+                <button type="button" class="icon-btn" [attr.aria-label]="'Remove activity: ' + a.text" (click)="removeActivity($index)">
+                  <app-icon name="x" />
+                </button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="muted">No activity recorded yet.</p>
+        }
+        <div class="add">
+          <div class="field">
+            <label for="a-date">Date</label>
+            <input id="a-date" type="date" [value]="newDate()" (input)="newDate.set($any($event.target).value)" />
+          </div>
+          <div class="field grow">
+            <label for="a-text">What happened ({{ newText().length }}/{{ activityMax }})</label>
+            <input id="a-text" type="text" [attr.maxlength]="activityMax" [value]="newText()" (input)="newText.set($any($event.target).value)"
+              (keydown.enter)="$event.preventDefault(); addActivity()" />
+          </div>
+          <button type="button" class="btn btn-quiet" (click)="addActivity()"><app-icon name="plus" /> Add activity</button>
+        </div>
+        @if (activityError(); as m) { <p class="err">{{ m }}</p> }
+      </fieldset>
+    </div>
+
+    <footer class="foot">
+      <button type="submit" class="btn btn-primary"><app-icon name="check" /> Save</button>
+      <button type="button" class="btn btn-quiet" (click)="close()">Cancel</button>
+      @if (org()) {
+        <button type="button" class="btn btn-quiet danger" (click)="remove()">
+          <app-icon name="trash" /> {{ confirmingDelete() ? 'Confirm delete' : 'Delete' }}
+        </button>
+      }
+    </footer>
+  </form>
+</dialog>

@@ -1,0 +1,447 @@
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="head">
+  <div class="wrap bar">
+    <a class="brand" routerLink="/" aria-label="Twins for Change, home">
+      <app-logo [width]="44" />
+      <span class="brand-name" aria-hidden="true">Twins <small>for Change</small></span>
+    </a>
+
+    <button
+      type="button"
+      id="landing-menu-button"
+      class="icon-btn menu-btn"
+      aria-controls="landing-menu"
+      [attr.aria-expanded]="menuOpen()"
+      [attr.aria-label]="menuOpen() ? 'Close menu' : 'Open menu'"
+      (click)="toggleMenu()"
+    >
+      <app-icon [name]="menuOpen() ? 'x' : 'sidebar'" />
+    </button>
+
+    <div id="landing-menu" class="menu" [class.open]="menuOpen()">
+      <nav aria-label="Main">
+        <ul class="links">
+          <li><a href="#mision" (click)="closeMenu()">Mission</a></li>
+          <li><a href="#tutor" (click)="closeMenu()">Tutor</a></li>
+          <li><a href="#mapa" (click)="closeMenu()">Map</a></li>
+          <li><a href="#investigacion" (click)="closeMenu()">Research</a></li>
+          <li><a href="#colabora" (click)="closeMenu()">Collaborate</a></li>
+          <li><a href="#metodologia" (click)="closeMenu()">Method</a></li>
+        </ul>
+        <ul class="links pages">
+          <li><a routerLink="/practice" (click)="closeMenu()">Practice</a></li>
+          <li><a routerLink="/architecture" (click)="closeMenu()">How it works</a></li>
+          <li><a class="boxed" routerLink="/crm" (click)="closeMenu()">CRM</a></li>
+        </ul>
+      </nav>
+      <div class="tools">
+        <button
+          type="button"
+          class="icon-btn"
+          aria-label="Dark theme"
+          title="Dark theme"
+          [attr.aria-pressed]="theme.theme() === 'dark'"
+          (click)="theme.toggle()"
+        >
+          <app-icon [name]="theme.theme() === 'dark' ? 'sun' : 'moon'" />
+        </button>
+        <a class="btn btn-primary" routerLink="/app" (click)="closeMenu()">Open the tutor <app-icon name="arrowUpRight" /></a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+  <section id="inicio" class="hero" aria-labelledby="hero-title">
+    <picture>
+      <source
+        type="image/webp"
+        srcset="site/hero-photo-768.webp 768w, site/hero-photo.webp 1280w"
+        sizes="100vw"
+      />
+      <img
+        class="hero-img"
+        src="site/hero-photo.webp"
+        width="1280"
+        height="720"
+        alt="Children learning together around a tablet in a classroom"
+        fetchpriority="high"
+      />
+    </picture>
+    <div class="wrap hero-in">
+      <div class="hero-text">
+        <p class="kicker"><span class="kicker-dot" aria-hidden="true"></span>Education · Inclusion · Technology</p>
+        <h1 id="hero-title">Knowledge should have <em>no borders.</em></h1>
+        <p class="lead">
+          Twins for Change is an offline-first AI tutor for bilingual <span lang="yo">Yorùbá</span>–English
+          classrooms. It retrieves verified bilingual examples and gives them to the model, so it answers
+          from real data.
+        </p>
+        <div class="actions">
+          <a class="btn btn-white" routerLink="/app">Open the tutor <app-icon name="arrowUpRight" /></a>
+          <a class="btn btn-glass" href="#mapa">Explore the language map <app-icon name="arrowDown" /></a>
+        </div>
+      </div>
+      <div class="hero-side" aria-hidden="true">
+        <p class="hero-float">
+          <span class="hero-float-icon"><app-icon name="book" /></span>
+          <span><b><span lang="yo">Yorùbá</span> + English</b><small>Answers with verified sources</small></span>
+        </p>
+        <p class="vertical-label">Learning for everyone</p>
+      </div>
+    </div>
+    <div class="wrap hero-foot">
+      <span class="line" aria-hidden="true"></span>
+      <a href="#mision">Scroll to discover the project</a>
+      <span class="credit">Illustrative image.</span>
+    </div>
+  </section>
+
+  <section class="strip" aria-label="Twins for Change in numbers">
+    <div class="wrap strip-in">
+      <p><strong>One question, three verified sources.</strong> Each Twins for Change answer lists the top 3 documents it was given.</p>
+      <ul class="metrics">
+        <li><strong>15,791</strong><span>rows in the verified corpus</span></li>
+        <li><strong>5</strong><span>source datasets</span></li>
+        <li><strong>2</strong><span>languages: <span lang="yo">Yorùbá</span> and English</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="mision" class="section" aria-labelledby="mission-title">
+    <div class="wrap split">
+      <figure class="visual">
+        <picture>
+          <source
+            type="image/webp"
+            srcset="site/classroom-640.webp 640w, site/classroom.webp 1200w"
+            sizes="(min-width: 64rem) 560px, 100vw"
+          />
+          <img
+            src="site/classroom.webp"
+            width="1200"
+            height="676"
+            loading="lazy"
+            alt="A teacher helping students in a school classroom"
+          />
+        </picture>
+        <figcaption>Illustrative image.</figcaption>
+        <p class="bubble"><span aria-hidden="true">“</span><strong>Learning starts when we can understand each other.</strong></p>
+      </figure>
+      <div class="copy">
+        <p class="eyebrow">01 / Mission</p>
+        <h2 id="mission-title">Learning in your own language <em>can change everything.</em></h2>
+        <p class="lede">
+          Gemma 3 4B makes things up when it answers in <span lang="yo">Yorùbá</span>. We ground its answers
+          in a verified corpus of 15,791 rows and show the sources under every answer.
+        </p>
+        <ul class="checks">
+          <li>
+            <span class="tick" aria-hidden="true"><app-icon name="check" /></span>
+            <div>
+              <h3>Local languages</h3>
+              <p>Start from the language students already speak. This version supports <span lang="yo">Yorùbá</span> and English.</p>
+            </div>
+          </li>
+          <li>
+            <span class="tick" aria-hidden="true"><app-icon name="check" /></span>
+            <div>
+              <h3>Learning without a connection</h3>
+              <p>The same backend can run on one machine in a school. Internet is needed only once, to download the models and the search index.</p>
+            </div>
+          </li>
+          <li>
+            <span class="tick" aria-hidden="true"><app-icon name="check" /></span>
+            <div>
+              <h3>Research</h3>
+              <p>We also review how African languages are documented in open models. See the <a href="#mapa">language map</a>.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="tutor" class="section navy surface-navy" aria-labelledby="tutor-title">
+    <div class="wrap split tutor">
+      <div class="copy">
+        <p class="eyebrow">02 / The tutor</p>
+        <h2 id="tutor-title">A tutor that answers <em>from verified data.</em></h2>
+        <p class="lede">
+          Ask in <span lang="yo">Yorùbá</span> or English. The tutor searches the corpus, gives the best
+          matches to Gemma, and writes the main explanation in <span lang="yo">Yorùbá</span> with key terms in English.
+          Turn on compare mode to see plain Gemma and Gemma + RAG answer the same question side by side.
+        </p>
+        <ol class="steps">
+          <li><b>01</b><span><strong>Ask</strong><small>In the language you know.</small></span></li>
+          <li><b>02</b><span><strong>Understand</strong><small>Read the answer and check the top 3 verified sources.</small></span></li>
+          <li><b>03</b><span><strong>Practice</strong><small>Try multiple-choice questions from AfriMMLU.</small></span></li>
+        </ol>
+        <div class="actions">
+          <a class="btn btn-aqua" routerLink="/app">Open the tutor</a>
+          <a class="btn btn-ghost" routerLink="/practice">Practice questions</a>
+        </div>
+      </div>
+      <div class="demo">
+      <div class="try">
+        <div class="demo-top" aria-hidden="true">
+          <span class="demo-dots"><i></i><i></i><i></i></span>
+          <span>Twins for Change · tutor</span>
+          <span class="demo-status">Real corpus questions</span>
+        </div>
+        <div class="demo-body">
+        <div class="demo-intro">
+          <app-logo [width]="34" />
+          <div>
+            <h3>Try a real question</h3>
+            <p><span lang="yo">Báwo ni!</span> How can we learn together today?</p>
+          </div>
+        </div>
+        <p class="note">These are questions from the corpus. Clicking one opens the tutor and sends it. If no backend is connected, the answer is labelled Demo data.</p>
+        <ul class="starters">
+          @for (s of starters; track s.yo) {
+            <li>
+              <button type="button" (click)="ask(s)">
+                <span class="subject">{{ s.subject }}</span>
+                <span class="yo" lang="yo">{{ s.yo }}</span>
+                <span class="en">{{ s.en }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+        <a class="demo-input" routerLink="/app">
+          <span>Ask your own question in <span lang="yo">Yorùbá</span> or English</span>
+          <span class="demo-send" aria-hidden="true"><app-icon name="arrowUp" /></span>
+        </a>
+        </div>
+      </div>
+      <p class="floating-caption" aria-hidden="true">Every answer lists its top 3 sources</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="mapa" class="section tint" aria-labelledby="mapa-title">
+    <div class="wrap">
+      <div class="heading">
+        <div>
+          <p class="eyebrow">03 / Interactive map</p>
+          <h2 id="mapa-title">Africa: one continent, <em>many languages.</em></h2>
+          <p class="sub">
+            Explore countries, the languages reviewed, documentation gaps and connectivity. Twins for Change
+            tutors in <span lang="yo">Yorùbá</span> and English only. A language listed here is not a language the tutor supports.
+          </p>
+        </div>
+        <p class="sources-note">
+          Population: World Bank 2024.<br />
+          AI models: desk research, {{ analysisDate }}.<br />
+          Connectivity: ITU / World Bank, years shown.
+        </p>
+      </div>
+      @defer (on viewport) {
+        <app-africa-explorer />
+      } @placeholder {
+        <div class="ph map-ph"></div>
+      }
+    </div>
+  </section>
+
+  <section id="investigacion" class="section" aria-labelledby="research-title">
+    <div class="wrap">
+      <div class="heading">
+        <div>
+          <p class="eyebrow">04 / Countries and languages</p>
+          <h2 id="research-title">Research to <em>act with care.</em></h2>
+          <p class="sub">
+            {{ countryCount - 1 }} countries and Western Sahara, with a documentation matrix of selected
+            languages and open model catalogues.
+          </p>
+        </div>
+        <p class="bubble-stat"><strong>{{ recordCount }}</strong><span>country-language records</span></p>
+      </div>
+      @defer (on viewport) {
+        <app-research-table />
+      } @placeholder {
+        <div class="ph table-ph"></div>
+      }
+    </div>
+  </section>
+
+  <section id="colabora" class="section band" aria-labelledby="collab-title">
+    <div class="wrap">
+      <p class="eyebrow">05 / Building together</p>
+      <h2 id="collab-title">Change starts by <em>working together.</em></h2>
+      <p class="sub">
+        The project wants to connect people who know the ground with people who can build useful, accessible and
+        culturally relevant learning tools.
+      </p>
+      <ul class="cards">
+        <li>
+          <span class="collab-icon" aria-hidden="true"><app-icon name="user" /></span>
+          <h3>NGOs and associations</h3>
+          <p>To identify real needs, education partners and community projects.</p>
+        </li>
+        <li>
+          <span class="collab-icon" aria-hidden="true"><app-icon name="book" /></span>
+          <h3>Schools and teachers</h3>
+          <p>To adapt content to languages, ages and ways of learning.</p>
+        </li>
+        <li>
+          <span class="collab-icon" aria-hidden="true"><app-icon name="cpu" /></span>
+          <h3>Technology and research</h3>
+          <p>To explore open models, local deployment and responsible evaluation.</p>
+        </li>
+      </ul>
+      <a class="btn btn-white" routerLink="/crm">Open the partner CRM <app-icon name="arrowUpRight" /></a>
+    </div>
+  </section>
+
+  <section id="crm" class="section hub surface-navy" aria-labelledby="crm-title">
+    <div class="wrap hub-wrap">
+      <div class="heading">
+        <div>
+          <p class="eyebrow">06 / Partners</p>
+          <h2 id="crm-title">A CRM to connect <em>people, countries and ideas.</em></h2>
+          <p class="sub">
+            Keep track of the organizations you want to work with: status, priority and follow-ups.
+            Below is a read-only preview of the starting list of {{ orgs.length }} organizations.
+          </p>
+        </div>
+        <ul class="kpis" aria-label="CRM starting list">
+          <li><strong>{{ orgs.length }}</strong><span>organizations</span></li>
+          <li><strong>{{ orgCountries }}</strong><span>{{ orgCountries === 1 ? 'country' : 'countries' }}</span></li>
+          @if (followUps > 0) {
+            <li><strong>{{ followUps }}</strong><span>follow-ups scheduled</span></li>
+          }
+        </ul>
+      </div>
+      <div class="hub-controls">
+        <nav class="hub-quick" aria-label="CRM views">
+          <a routerLink="/crm" [queryParams]="{ view: 'countries' }">Countries and languages</a>
+          <a routerLink="/crm" [queryParams]="{ view: 'map' }">Interactive map</a>
+          <a routerLink="/crm" [queryParams]="{ view: 'orgs' }">Organizations</a>
+          <a routerLink="/crm" [queryParams]="{ view: 'followups' }">Follow-ups</a>
+        </nav>
+        <a class="btn btn-aqua" routerLink="/crm">Open the full CRM <app-icon name="arrowUpRight" /></a>
+      </div>
+      <div class="shell">
+      <div class="shell-top">
+        <span class="shell-label"><span class="live-dot" aria-hidden="true"></span>Twins for Change <span class="sep" aria-hidden="true">/</span> Partner CRM</span>
+        <span class="shell-note">Preview · saved in each browser</span>
+      </div>
+      <div class="holder" tabindex="0" role="region" aria-label="CRM starting list (scrollable)">
+        <table>
+          <caption class="visually-hidden">Starting list of partner organizations</caption>
+          <thead>
+            <tr>
+              <th scope="col">Organization</th>
+              <th scope="col">Country</th>
+              <th scope="col">Sector</th>
+              <th scope="col">Status</th>
+              <th scope="col">Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (o of preview; track $index) {
+              <tr>
+                <th scope="row">{{ o.name }}</th>
+                <td>{{ o.country }}</td>
+                <td>{{ o.sector }}</td>
+                <td><span class="status">{{ o.status }}</span></td>
+                <td>{{ o.priority }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      </div>
+      <div class="foot">
+        <p>
+          <strong>Open to everyone, editable by you.</strong> Anyone can explore the list and add their own
+          organizations. Changes are saved only in your own browser and are not shared between visitors.
+          Contact details come from public sources and were not re-verified: verify before contacting.
+          Showing {{ preview.length }} of {{ orgs.length }} organizations.
+        </p>
+        <a class="under-link" routerLink="/crm">Use the CRM on its own page <app-icon name="arrowUpRight" /></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="metodologia" class="section tint" aria-labelledby="method-title">
+    <div class="wrap split">
+      <div class="copy">
+        <p class="eyebrow">07 / Transparency</p>
+        <h2 id="method-title">Information matters. <em>So does context.</em></h2>
+        <p class="sub">
+          The goal of the research is to find learning and collaboration opportunities without
+          oversimplifying the reality of each community.
+        </p>
+      </div>
+      <ol class="method">
+        <li>
+          <b>01</b>
+          <div>
+            <h3>No evidence is not the same as not existing.</h3>
+            <p>A language missing from the reviewed models may be covered by other resources. The real quality of answers was not measured.</p>
+          </div>
+        </li>
+        <li>
+          <b>02</b>
+          <div>
+            <h3>Connectivity is not educational capacity.</h3>
+            <p>The share of people using the internet does not measure access to school materials or knowledge of other languages.</p>
+          </div>
+        </li>
+        <li>
+          <b>03</b>
+          <div>
+            <h3>Result labels are not tested ability.</h3>
+            <p>They show what a desk review found in open catalogues. No model was tested on these languages.</p>
+          </div>
+        </li>
+        <li>
+          <b>04</b>
+          <div>
+            <h3>Communities first.</h3>
+            <p>Tools must be validated with teachers, organizations and speakers of each language variety.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer class="foot-bar surface-navy">
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      <a class="foot-logo" routerLink="/" aria-label="Twins for Change, home">
+        <app-logo [width]="44" />
+        <span class="brand-name" aria-hidden="true">Twins <small>for Change</small></span>
+      </a>
+      <p>Knowledge should have no borders.</p>
+    </div>
+    <nav aria-label="Footer">
+      <ul>
+        <li><a routerLink="/chat">Chat</a></li>
+        <li><a routerLink="/practice">Practice</a></li>
+        <li><a routerLink="/architecture">How it works</a></li>
+        <li><a routerLink="/mapa">Map</a></li>
+        <li><a routerLink="/crm">CRM</a></li>
+      </ul>
+    </nav>
+    <div class="foot-sources">
+      <b>Sources</b>
+      <p>World Bank · population</p>
+      <p>ITU / World Bank · connectivity</p>
+      <p>CIA World Factbook and open model catalogues</p>
+      <small>Desk review of {{ analysisDate }}</small>
+    </div>
+  </div>
+  <div class="wrap copy-line">
+    <p>© 2026 Twins for Change. A research and education collaboration project.</p>
+    <p class="scope">
+      This version of the tutor supports <span lang="yo">Yorùbá</span> and English. More languages are
+      planned; none are available yet.
+    </p>
+  </div>
+</footer>

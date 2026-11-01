@@ -1,0 +1,413 @@
+<app-top-bar />
+
+<div class="shell">
+  <aside class="side surface-navy">
+    <nav aria-label="CRM sections">
+      <p class="side-intro" aria-hidden="true">Coordination space</p>
+      <ul>
+        @for (n of nav; track n.id) {
+          <li>
+            <a routerLink="/crm" [queryParams]="{ view: n.id }" [attr.aria-current]="view() === n.id ? 'page' : null" (click)="toView()">
+              <app-icon [name]="n.icon" /><span>{{ n.label }}</span>
+              @if (n.id === 'countries') { <small>{{ countryNames.length }}</small> }
+              @if (n.id === 'orgs') { <small>{{ orgs().length }}</small> }
+              @if (n.id === 'contacts') { <small>{{ allContacts().length }}</small> }
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+    <div class="snapshot">
+      <strong>Research · {{ analysisDate }}</strong>
+      <p>{{ summary.africanCountries }} countries and {{ summary.territories }} territory. Desk research, not a local assessment.</p>
+      <a routerLink="/">← Back to the website</a>
+    </div>
+  </aside>
+
+  <main id="main" class="page" tabindex="-1">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Knowledge base and partnership management</p>
+        <h1>Partner <em>CRM.</em></h1>
+        <p class="notice">
+          <app-icon name="info" /> Saved only in this browser. Not shared with other people or devices.
+        </p>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" (click)="add()"><app-icon name="plus" /> Add organization</button>
+        <button type="button" class="btn btn-quiet" (click)="exportJson()"><app-icon name="arrowDown" /> Export JSON</button>
+        <button type="button" class="btn btn-quiet" (click)="file.click()"><app-icon name="upload" /> Import JSON</button>
+        <input #file type="file" hidden accept=".json,application/json" aria-label="Import a JSON backup" (change)="importJson($event)" />
+        <button type="button" class="btn btn-quiet" (click)="reset()">{{ confirmingReset() ? 'Confirm reset' : 'Reset' }}</button>
+        @if (confirmingReset()) { <button type="button" class="btn btn-quiet" (click)="confirmingReset.set(false)">Cancel</button> }
+      </div>
+      @if (importMessage(); as m) { <p class="muted small">{{ m }}</p> }
+    </header>
+
+    <section aria-labelledby="view-title">
+      <div class="view-head">
+        <h2 id="view-title">{{ viewLabel() }}</h2>
+        <p class="muted">{{ lead[view()] }}</p>
+      </div>
+
+      @if (view() === 'countries' || view() === 'orgs' || view() === 'followups' || view() === 'activities') {
+        <div class="filters" role="search" aria-label="Filter {{ viewLabel() }}">
+          <div class="field grow">
+            <label for="q">Search</label>
+            <span class="search"><app-icon name="search" /><input id="q" type="search" [value]="filters().query" (input)="setFilter('query', $event)" /></span>
+          </div>
+          <div class="field">
+            <label for="fr">Region</label>
+            <select id="fr" (change)="setFilter('region', $event)">
+              <option value="">All regions</option>
+              @for (r of regions; track r) { <option [value]="r" [selected]="r === filters().region">{{ r }}</option> }
+            </select>
+          </div>
+          @if (view() === 'orgs') {
+            <div class="field">
+              <label for="fc">Country</label>
+              <select id="fc" (change)="setFilter('country', $event)">
+                <option value="">All countries</option>
+                @for (c of countryNames; track c) { <option [value]="c" [selected]="c === filters().country">{{ c }}</option> }
+              </select>
+            </div>
+            <div class="field">
+              <label for="fs">Status</label>
+              <select id="fs" (change)="setFilter('status', $event)">
+                <option value="">All statuses</option>
+                @for (s of states; track s) { <option [value]="s" [selected]="s === filters().status">{{ stateLabel[s] }}</option> }
+              </select>
+            </div>
+            <div class="field">
+              <label for="fp">Priority</label>
+              <select id="fp" (change)="setFilter('priority', $event)">
+                <option value="">All priorities</option>
+                @for (p of priorities; track p) { <option [value]="p" [selected]="p === filters().priority">{{ priorityLabel[p] }}</option> }
+              </select>
+            </div>
+            <div class="field">
+              <label for="fo">Sort by</label>
+              <select id="fo" (change)="setFilter('sort', $event)">
+                <option value="name" [selected]="filters().sort === 'name'">Name</option>
+                <option value="recent" [selected]="filters().sort === 'recent'">Recently updated</option>
+                <option value="followup" [selected]="filters().sort === 'followup'">Follow-up date</option>
+              </select>
+            </div>
+          }
+        </div>
+        @if (activeFilters().length) {
+          <div class="active" role="group" aria-label="Active filters">
+            <span class="muted small">Filtered by</span>
+            @for (f of activeFilters(); track f[0]) {
+              <button type="button" class="chip" (click)="removeFilter(f[0])">{{ f[1] }} <app-icon name="x" /><span class="visually-hidden"> (remove filter)</span></button>
+            }
+            <button type="button" class="link" (click)="clearFilters()">Clear all</button>
+          </div>
+        }
+      }
+
+      @switch (view()) {
+        @case ('overview') {
+          <app-crm-overview (edit)="edit($event)" />
+        }
+
+        @case ('countries') {
+          <p class="count" role="status">{{ countryRows().length }} of {{ countryNames.length }} profiles shown</p>
+          @if (countryRows().length) {
+            <ul class="tiles">
+              @for (c of countryRows(); track c.iso2) {
+                <li>
+                  <button type="button" class="tile" [style.--tone]="regionTone[c.region]" (click)="showCountry(c.nameEn)">
+                    <span class="top">
+                      <img [src]="flag(c.nameEn)" alt="" width="44" height="30" loading="lazy" />
+                      <span class="ttl"><strong>{{ c.nameEn }}</strong><small><i></i>{{ c.region }}{{ c.isTerritory ? ' · Territory' : '' }}</small></span>
+                    </span>
+                    <span class="nums">
+                      <span><b>{{ orgCounts().get(c.nameEn) ?? 0 }}</b>Organizations</span>
+                      <span><b>{{ c.languageCount }}</b>Languages</span>
+                      <span><b>{{ c.population === null ? 'No data' : (c.population | number) }}</b>Population</span>
+                    </span>
+                    @if (gaps(c)) { <span class="gap">{{ gaps(c) }} {{ gaps(c) === 1 ? 'language' : 'languages' }} without evidence in sample</span> }
+                  </button>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="empty">No countries match these filters.</p>
+          }
+        }
+
+        @case ('map') {
+          @defer {
+            <app-africa-explorer />
+          } @placeholder {
+            <p class="muted">Loading the map…</p>
+          }
+        }
+
+        @case ('orgs') {
+          <div class="bar">
+            <p class="count" role="status">{{ rows().length }} of {{ orgs().length }} organizations shown</p>
+            <div class="bar-actions">
+              <div class="seg" role="group" aria-label="Layout">
+                @for (l of layouts; track l.id) {
+                  <button type="button" [attr.aria-pressed]="layout() === l.id" (click)="layout.set(l.id)"><app-icon [name]="l.icon" />{{ l.label }}</button>
+                }
+              </div>
+              <button type="button" class="btn btn-quiet" [disabled]="!rows().length" (click)="exportCsv()"><app-icon name="arrowDown" /> Export CSV</button>
+            </div>
+          </div>
+          <p class="muted small note"><app-icon name="info" /> {{ contactNotice }}</p>
+          @if (!orgs().length) {
+            <p class="empty">No organizations yet. Use “Add organization” to create the first one.</p>
+          } @else if (!rows().length) {
+            <p class="empty">No organizations match these filters.</p>
+          } @else if (layout() === 'board') {
+            <div class="board" tabindex="0" role="region" aria-label="Board by status. Scroll sideways to see every stage.">
+              @for (l of lanes(); track l.state) {
+                <section class="lane" [style.--tone]="stateTone[l.state]" [attr.aria-labelledby]="'lane-' + $index">
+                  <h3 [id]="'lane-' + $index"><i></i>{{ stateLabel[l.state] }} <span>{{ l.list.length }}</span></h3>
+                  @for (o of l.list; track o.id) {
+                    <app-crm-org-card [org]="o" [flag]="flag(o.country)" compact (edit)="edit(o)" />
+                  } @empty {
+                    <p class="lane-empty">No organizations</p>
+                  }
+                </section>
+              }
+            </div>
+          } @else if (layout() === 'cards') {
+            <ul class="cards">
+              @for (o of rows(); track o.id) {
+                <li><app-crm-org-card [org]="o" [flag]="flag(o.country)" [region]="regionOf(o.country)" (edit)="edit(o)" /></li>
+              }
+            </ul>
+          } @else {
+            <table class="grid orgs">
+              <caption class="visually-hidden">Organizations</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Organization</th><th scope="col">Country</th><th scope="col">Stage</th>
+                  <th scope="col">Contact</th><th scope="col">Next step</th><th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (o of rows(); track o.id) {
+                  <tr [style.--tone]="priorityTone[o.priority]">
+                    <th scope="row" data-label="Organization">
+                      <span class="who">
+                        <app-crm-avatar [name]="o.name" />
+                        <span>{{ o.name }}<small [attr.lang]="seedRow(o) ? 'es' : null">{{ o.orgType || o.sector }}</small>@if (identityPending(o)) { <small class="pill warn">Identity pending verification</small> }</span>
+                      </span>
+                    </th>
+                    <td data-label="Country"><span class="ctry">@if (flag(o.country)) { <img [src]="flag(o.country)" alt="" width="22" height="15" loading="lazy" /> }{{ o.country }}</span></td>
+                    <td data-label="Stage"><span class="stage"><app-crm-status [status]="o.status" /><app-crm-priority [priority]="o.priority" /></span></td>
+                    <td data-label="Contact"><app-crm-routes [org]="o" /></td>
+                    <td data-label="Next step">
+                      {{ o.nextAction || 'None' }}
+                      @if (o.followUp) {
+                        <small class="date">{{ o.followUp }}@if (o.followUp < today && o.status !== 'Pausada' && o.status !== 'Descartada') { <span class="pill warn">Overdue</span> }</small>
+                      }
+                    </td>
+                    <td class="row-actions"><button type="button" class="icon-btn" [attr.aria-label]="'Edit ' + o.name" [title]="'Edit ' + o.name" (click)="edit(o)"><app-icon name="pencil" /></button></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        }
+
+        @case ('contacts') {
+          <div class="filters" role="search" aria-label="Filter contacts">
+            <div class="field grow">
+              <label for="cq">Search</label>
+              <span class="search"><app-icon name="search" /><input id="cq" type="search" [value]="contactFilters().query" (input)="setContactFilter('query', $event)" /></span>
+            </div>
+            <div class="field">
+              <label for="cc">Country</label>
+              <select id="cc" (change)="setContactFilter('country', $event)">
+                <option value="">All countries</option>
+                @for (c of contactCountries(); track c) { <option [value]="c" [selected]="c === contactFilters().country">{{ c }}</option> }
+              </select>
+            </div>
+            <div class="field">
+              <label for="cv">Verification</label>
+              <select id="cv" (change)="setContactFilter('verify', $event)">
+                <option value="">All statuses</option>
+                @for (v of verifyStates; track v) { <option [value]="v" [selected]="v === contactFilters().verify">{{ verifyLabel[v] }}</option> }
+              </select>
+            </div>
+            <div class="field">
+              <label for="cn">Confidence</label>
+              <select id="cn" (change)="setContactFilter('confidence', $event)">
+                <option value="">Any confidence</option>
+                @for (c of confidences; track c) { <option [value]="c" [selected]="c === contactFilters().confidence">{{ confidenceLabel[c] }}</option> }
+              </select>
+            </div>
+            <div class="field">
+              <label for="ck">Kind</label>
+              <select id="ck" (change)="setContactFilter('kind', $event)">
+                <option value="">All kinds</option>
+                @for (k of kinds; track k) { <option [value]="k" [selected]="k === contactFilters().kind">{{ kindLabel[k] }}</option> }
+              </select>
+            </div>
+            <div class="field">
+              <label for="cs">Sort by</label>
+              <select id="cs" (change)="setContactFilter('sort', $event)">
+                <option value="org" [selected]="contactFilters().sort === 'org'">Organization</option>
+                <option value="country" [selected]="contactFilters().sort === 'country'">Country</option>
+                <option value="confidence" [selected]="contactFilters().sort === 'confidence'">Confidence</option>
+                <option value="status" [selected]="contactFilters().sort === 'status'">Verification</option>
+              </select>
+            </div>
+          </div>
+          @if (activeContactFilters().length) {
+            <div class="active" role="group" aria-label="Active filters">
+              <span class="muted small">Filtered by</span>
+              @for (f of activeContactFilters(); track f[0]) {
+                <button type="button" class="chip" (click)="removeContactFilter(f[0])">{{ f[1] }} <app-icon name="x" /><span class="visually-hidden"> (remove filter)</span></button>
+              }
+              <button type="button" class="link" (click)="toView()">Clear all</button>
+            </div>
+          }
+          <div class="bar">
+            <p class="count" role="status">{{ contacts().length }} of {{ allContacts().length }} contacts shown</p>
+            <div class="bar-actions">
+              <button type="button" class="btn btn-quiet" (click)="editingContact.set({ contact: null })"><app-icon name="plus" /> Add contact</button>
+              <button type="button" class="btn btn-quiet" [disabled]="!contacts().length" (click)="exportContactsCsv()"><app-icon name="arrowDown" /> Export CSV</button>
+            </div>
+          </div>
+          <p class="muted small note"><app-icon name="info" /> {{ contactNotice }}</p>
+          @if (contacts().length) {
+            <table class="grid contacts">
+              <caption class="visually-hidden">Contacts</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Organization</th><th scope="col">Contact</th><th scope="col">Routes</th><th scope="col">Kind and confidence</th>
+                  <th scope="col">Verification</th><th scope="col">Source</th><th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (c of contacts(); track c.id) {
+                  <tr>
+                    <th scope="row" data-label="Organization">
+                      <span class="ctry">@if (flag(c.country)) { <img [src]="flag(c.country)" alt="" width="22" height="15" loading="lazy" /> }<button type="button" class="link" (click)="openById(c.orgId)">{{ c.org }}</button></span>
+                      <small>{{ c.country }}</small>
+                    </th>
+                    <td data-label="Contact">{{ c.name || 'Organization contact' }}@if (c.role) { <small>{{ c.role }}</small> }</td>
+                    <td data-label="Routes">
+                      <span class="routes">
+                        @if (c.email) { <a [href]="'mailto:' + c.email">{{ c.email }}</a> }
+                        @if (c.phone) { <a [href]="'tel:' + tel(c.phone)">{{ c.phone }}</a> }
+                        @if (isHttps(c.contactPageUrl)) { <a [href]="c.contactPageUrl" target="_blank" rel="noopener noreferrer">Contact page<span class="visually-hidden"> of {{ c.org }} (opens in a new tab)</span></a> }
+                        @if (!c.email && !c.phone && !isHttps(c.contactPageUrl)) { <small>No route recorded</small> }
+                      </span>
+                    </td>
+                    <td data-label="Kind and confidence"><small class="pill">{{ kindLabel[c.kind] }}</small><small class="pill">{{ confidenceLabel[c.confidence] }}</small></td>
+                    <td data-label="Verification">
+                      <app-crm-verify-badge [value]="c.verification" />
+                      @if (c.verification.note; as n) { <small>{{ n }}</small> }
+                      <app-crm-verify [value]="c.verification" [label]="(c.name || 'organization contact') + ' of ' + c.org" (changed)="verifyContact(c, $event)" />
+                    </td>
+                    <td data-label="Source">
+                      @if (isHttps(c.sourceUrl)) { <a [href]="c.sourceUrl" target="_blank" rel="noopener noreferrer">Source<span class="visually-hidden"> for {{ c.org }} (opens in a new tab)</span></a> } @else { None }
+                      @if (c.dateAccessed) { <small>{{ c.sourceType }}{{ c.sourceType ? ' · ' : '' }}{{ c.dateAccessed }}</small> }
+                    </td>
+                    <td class="row-actions"><button type="button" class="icon-btn" [attr.aria-label]="'Edit contact ' + (c.name || 'of ' + c.org)" [title]="'Edit contact'" (click)="editingContact.set({ contact: c })"><app-icon name="pencil" /></button></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else if (allContacts().length) {
+            <p class="empty">No contacts match these filters.</p>
+          } @else {
+            <p class="empty">No contacts recorded. Use “Add contact” to record a public contact route.</p>
+          }
+        }
+
+        @case ('followups') {
+          @for (g of [{ t: 'Overdue', l: due().overdue }, { t: 'Today', l: due().today }, { t: 'Upcoming', l: due().upcoming }]; track g.t) {
+            <section class="group" [attr.aria-label]="g.t">
+              <h3>{{ g.t }} ({{ g.l.length }})</h3>
+              @if (g.l.length) {
+                <ul class="plain">
+                  @for (o of g.l; track o.id) {
+                    <li>
+                      <span class="date">{{ o.followUp }}</span>
+                      <span><button type="button" class="link" (click)="edit(o)">{{ o.name }}</button><small>{{ o.country }} · {{ stateLabel[o.status] }} · {{ o.nextAction }}</small></span>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="muted">Nothing here.</p>
+              }
+            </section>
+          }
+          <p class="muted small">Paused and discarded organizations are not listed.</p>
+        }
+
+        @case ('activities') {
+          @if (feed().length) {
+            <ol class="timeline big">
+              @for (a of feed(); track $index) {
+                <li>
+                  <time class="date">{{ a.date || 'No date' }}</time>
+                  <span>
+                    <strong>{{ a.org }}</strong> · {{ a.country }}
+                    <small>{{ a.text }}</small>
+                  </span>
+                  <button type="button" class="btn btn-quiet" (click)="openById(a.orgId)">Open<span class="visually-hidden"> {{ a.org }}</span></button>
+                </li>
+              }
+            </ol>
+          } @else {
+            <p class="empty">No activity logged yet. Open an organization and add entries under “Activity history”.</p>
+          }
+        }
+
+        @case ('sources') {
+          <div class="cols">
+            <section class="card" aria-labelledby="src-how">
+              <h3 id="src-how">How this base was built</h3>
+              <p>Research closed on {{ analysisDate }}. It covers {{ summary.africanCountries }} African countries and {{ summary.territories }} separate territory. The unit of analysis is the country–language pair: {{ summary.languageCountryRows }} records and {{ summary.uniqueLanguages }} unique languages.</p>
+              <p class="callout"><strong>The dataset shows which corpora and models document a language, not tested proficiency.</strong> No inference or comprehension tests were run in local languages, so coverage says nothing about quality, safety or how well a tutor would serve real speakers.</p>
+              <h4>Cautions</h4>
+              <ul class="bullets">
+                @for (l of limitations; track l) { <li>{{ l }}</li> }
+              </ul>
+            </section>
+            <section class="card" aria-labelledby="src-orgs">
+              <h3 id="src-orgs">Organizations list</h3>
+              <p>The CRM starts with {{ seedCount }} organizations: 6 recovered from the original CRM (Nigeria), 55 from documentary research on 2026-11-01, and {{ seedCount - 61 }} added by the public contact research of the same day. The earlier list of 64 organizations could not be fully recovered, so this is a separate recovered and researched set, not that directory.</p>
+              <p>The Contacts view lists {{ allContacts().length }} contact routes from that research, collected from the organizations' own pages and public directories (no LinkedIn). Most are organization-level; a few named leaders appear exactly as their organization's page lists them. AFECO (Nigeria) has its identity pending verification. {{ contactNotice }}</p>
+              <p class="muted small">Population and internet figures can come from different years; each country profile shows the year and a source link. The offline-population number is an orientative estimate, not individual access to AI.</p>
+            </section>
+            <section class="card" aria-labelledby="src-list">
+              <h3 id="src-list">Main sources</h3>
+              <ul class="plain src">
+                @for (s of sources; track s.url) {
+                  <li>
+                    <span>
+                      <strong>{{ s.name }}</strong><small>{{ s.note }}</small>
+                      <a [href]="s.url" target="_blank" rel="noopener noreferrer">Open source<span class="visually-hidden">: {{ s.name }} (opens in a new tab)</span></a>
+                    </span>
+                  </li>
+                }
+              </ul>
+              <p class="callout">Missing data are not zeros. A language absent from the reviewed catalogues may still be supported by other models or by varieties that were not checked.</p>
+            </section>
+          </div>
+        }
+      }
+    </section>
+  </main>
+</div>
+
+@if (openCountry(); as c) {
+  <app-crm-country-drawer [country]="c" (closed)="showCountry(null)" (addOrg)="add($event)" (editOrg)="edit($event)" />
+}
+@if (editing(); as e) {
+  <app-crm-org-dialog [org]="e.org" [country]="e.country" (closed)="editing.set(null)" />
+}
+@if (editingContact(); as e) {
+  <app-crm-contact-dialog [contact]="e.contact" (closed)="editingContact.set(null)" />
+}

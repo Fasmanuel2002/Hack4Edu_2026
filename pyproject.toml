@@ -28,3 +28,11 @@ dependencies = [
 [tool.uv]
 # Intel Mac: newer onnxruntime (needed by fastembed) has no x86_64 macOS wheels
 required-environments = ["sys_platform == 'darwin' and platform_machine == 'x86_64'"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

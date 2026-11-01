@@ -1,0 +1,1693 @@
+[
+ {
+  "id": "c-AO-adpp-angola-1",
+  "orgId": "public-AO-01",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+244 954 620 468 / +244 927 359 402",
+  "contactPageUrl": "https://www.adpp-angola.org/en/who-we-are#contato",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.adpp-angola.org/en/who-we-are",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Runs teacher training and community education in Angola.",
+  "notes": "Address: Rua João de Barros 28, Luanda. Email hidden by spam protection. LinkedIn org page: linkedin.com/company/adpp-angola (linked from official site).",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-AO-alfalit-angola-1",
+  "orgId": "research-AO-alfalit-angola",
+  "name": "Pastor Maveza Mbiyeye Eduardo",
+  "role": "Executive Director (Angola)",
+  "email": "",
+  "phone": "+244 923-892-802",
+  "contactPageUrl": "https://alfalit.org/angola/",
+  "kind": "named_leader",
+  "sourceUrl": "https://alfalit.org/angola/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Adult literacy programmes in 8 Angolan provinces (3,622 students in 2025).",
+  "notes": "Main office: Rua do Abacate 137, Sapu 2, Belas, Luanda. Email not readable on page.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-CM-education-for-all-foundation-efa-1",
+  "orgId": "public-CM-08",
+  "name": "",
+  "role": "",
+  "email": "info@weareefa.org",
+  "phone": "+237 6 51 04 64 36",
+  "contactPageUrl": "https://weareefa.org/contact-us/",
+  "kind": "org_generic",
+  "sourceUrl": "https://weareefa.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Cameroonian education foundation based in Douala.",
+  "notes": "Address: 8552 Douala. Team page: https://weareefa.org/our-team (not read).",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-CM-sil-cameroon-1",
+  "orgId": "research-CM-sil-cameroon",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+237 677 50 04 27 / +237 675 47 90 78",
+  "contactPageUrl": "https://www.silcam.org/about/contact",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.silcam.org/about/contact",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Mother-tongue literacy and language development work in Cameroon.",
+  "notes": "Head office Mvan Tropicana, PO Box 1299, Yaoundé. Email on page is obfuscated, not recorded.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-TD-enfants-du-monde-edm-chad-1",
+  "orgId": "research-TD-enfants-du-monde-edm-chad",
+  "name": "Souleymane Ouedraogo",
+  "role": "Country Director (Chad)",
+  "email": "bureauedmtchad@edm.ch",
+  "phone": "+235 65 28 82 02",
+  "contactPageUrl": "https://edm.ch/en/chad/",
+  "kind": "named_leader",
+  "sourceUrl": "https://edm.ch/en/chad/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Teacher and literacy-facilitator training and multilingual education in Chad, including Sudanese refugee children.",
+  "notes": "Office: Cuvette Saint Martin, Avenue Ahmat Lamine, PO Box 7481, N'Djamena.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-TD-jesuit-refugee-service-chad-1",
+  "orgId": "public-TD-09",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+1 202-462-5200 (JRS/USA main line, not a Chad office)",
+  "contactPageUrl": "https://www.jrsusa.org/contact-us/",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.jrsusa.org/country/jrs-chad/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Education-centred refugee programmes in N'Djamena, Abéché, Iriba, Guéréda, Farchana and Goz Beïda.",
+  "notes": "No Chad-specific email/phone published; route is JRS/USA contact page. JRS West Africa Facebook page linked: https://www.facebook.com/JesuitRefugeeServiceWestAfrica/",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-GA-afriyan-gabon-1",
+  "orgId": "public-GA-16",
+  "name": "",
+  "role": "",
+  "email": "mbolo@afriyanga.org",
+  "phone": "+241 077 44 97 50",
+  "contactPageUrl": "https://afriyanga.org/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://afriyanga.org/contact/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Gabonese youth network reachable in Libreville.",
+  "notes": "Address: Derrière le palais de justice, Libreville. Page lists template-like leader testimonials; no leader recorded.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-GQ-fundacion-identic-1",
+  "orgId": "public-GQ-20",
+  "name": "Sylvia Bosibori Makario",
+  "role": "Directora Gerente (Managing Director)",
+  "email": "",
+  "phone": "+240 222 955 019",
+  "contactPageUrl": "https://identicge.org/contacto/",
+  "kind": "named_leader",
+  "sourceUrl": "https://identicge.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Equatorial Guinean foundation developing youth technology skills and digital transformation.",
+  "notes": "WhatsApp: https://wa.me/+240222955019. Hours Mon-Thu 9-17, Fri 9-15. No email published.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-CD-congo-education-partners-cep-1",
+  "orgId": "public-CD-36",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+1 919-813-0083",
+  "contactPageUrl": "https://www.congoeducationpartners.org/",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.congoeducationpartners.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Supports Djolu Technical College in Tshuapa Province, DRC.",
+  "notes": "US phone and PO Box 813, Hillsborough NC 27278. Email obfuscated; no dedicated contact page.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-CD-congo-mennonite-literacy-project-mennoni-1",
+  "orgId": "research-CD-congo-mennonite-literacy-project-mennoni",
+  "name": "",
+  "role": "",
+  "email": "info@mennonitemission.net",
+  "phone": "1-866-866-2872 / 316-283-0454",
+  "contactPageUrl": "https://www.mennonitemission.net/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.mennonitemission.net/contact/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Trains adult-literacy educators in Kinshasa and Kikwit.",
+  "notes": "Contact is the Mennonite Mission Network general line (US), not a DRC office.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-CF-jesuit-refugee-service-central-african-r-1",
+  "orgId": "public-CF-37",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "",
+  "contactPageUrl": "https://www.facebook.com/JesuitRefugeeServiceWestAfrica/",
+  "kind": "org_generic",
+  "sourceUrl": "https://jrs.net/en/country/central-african-republic/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "low",
+  "whyRelevant": "Education support in Bangui, Haut Kotto and Ouaka (with UNICEF, ECW).",
+  "notes": "Only public contact route on page is the JRS West Africa Facebook page; no email/phone.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-CF-finn-church-aid-kirkon-ulkomaanapu-1",
+  "orgId": "research-CF-finn-church-aid-kirkon-ulkomaanapu",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+358 20 787 1201",
+  "contactPageUrl": "https://www.kirkonulkomaanapu.fi/en/contacts",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.kirkonulkomaanapu.fi/en/contacts",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Works with CAR Ministry of Education; EUR 15M education project announced Aug 2024.",
+  "notes": "Helsinki HQ phone; no CAR country-office contact published on pages read. Staff emails follow a pattern and were deliberately not recorded.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-CG-reiper-1",
+  "orgId": "public-CG-38",
+  "name": "Joseph Bikie Likibi",
+  "role": "National Coordinator (Coordinateur national)",
+  "email": "contact@reiper.org",
+  "phone": "+242 05 556 5123",
+  "contactPageUrl": "https://www.reiper.org/",
+  "kind": "named_leader",
+  "sourceUrl": "https://www.reiper.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Network of 21 member organizations in Brazzaville, Pointe-Noire and Bouenza working with vulnerable youth.",
+  "notes": "Location: Batignole, Brazzaville. LinkedIn link present on site (not opened).",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ST-instituto-marques-de-valle-flor-imvf-sao-1",
+  "orgId": "research-ST-instituto-marques-de-valle-flor-imvf-sao",
+  "name": "António Lima",
+  "role": "Contact person, STP office",
+  "email": "imvf.stp@imvf.org",
+  "phone": "+239 2222 199",
+  "contactPageUrl": "https://www.imvf.org/#contactos",
+  "kind": "named_leader",
+  "sourceUrl": "https://www.imvf.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Runs education and teacher-training projects with São Tomé's Ministry of Education.",
+  "notes": "Office: Avenida marginal 12 de julho, casa 100Z, CP 280. HQ Lisbon info@imvf.org, +351 213 256 300.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ST-missao-dimix-1",
+  "orgId": "public-ST-40",
+  "name": "",
+  "role": "",
+  "email": "associacao@missaodimix.org",
+  "phone": "+239 9961435 (WhatsApp)",
+  "contactPageUrl": "https://missaodimix.org/contatos",
+  "kind": "org_generic",
+  "sourceUrl": "https://missaodimix.org/contatos",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Community work with children in Santana, São Tomé, including computer classes.",
+  "notes": "Field site: EN nº2, Santana. HQ Lisbon. Other role emails exist on page; not recorded.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-BW-stepping-stones-international-1",
+  "orgId": "public-BW-04",
+  "name": "",
+  "role": "",
+  "email": "info@ssint.org",
+  "phone": "+267 393 9943 / +267 573 9858",
+  "contactPageUrl": "https://steppingstonesintl.org/contact-us/",
+  "kind": "org_generic",
+  "sourceUrl": "https://steppingstonesintl.org/contact-us/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Gaborone-based youth empowerment organization.",
+  "notes": "",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-BW-sentebale-botswana-1",
+  "orgId": "research-BW-sentebale-botswana",
+  "name": "",
+  "role": "",
+  "email": "info@sentebale.org",
+  "phone": "+267 78801281",
+  "contactPageUrl": "https://sentebale.org/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://sentebale.org/contact/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Youth programmes in Botswana and Lesotho; also media@sentebale.org for press.",
+  "notes": "Phone listed for Sentebale Botswana. Page warns of fraudulent accounts using the founder's name.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SZ-all-out-africa-foundation-1",
+  "orgId": "research-SZ-all-out-africa-foundation",
+  "name": "",
+  "role": "",
+  "email": "info@alloutafrica.org",
+  "phone": "+268 241 62260",
+  "contactPageUrl": "https://www.alloutafrica.org/contact-us",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.alloutafrica.org/contact-us",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Education projects in Eswatini communities (Ezulwini).",
+  "notes": "Address: Roki Centre, Main Road, Ezulwini. Digital literacy not confirmed on the page read.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SZ-swazi-kids-1",
+  "orgId": "public-SZ-14",
+  "name": "",
+  "role": "",
+  "email": "swazikids@gmail.com",
+  "phone": "250-309-2522",
+  "contactPageUrl": "https://swazikids.org/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://swazikids.org/contact/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Education projects for vulnerable children in eSwatini.",
+  "notes": "Email is the organization's published Gmail account. Board page: https://swazikids.org/board/ (not read).",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-LS-kick4life-1",
+  "orgId": "public-LS-23",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+266 5250 5501",
+  "contactPageUrl": "https://www.kick4life.org/contact-us/",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.kick4life.org/contact-us/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Maseru-based youth organization.",
+  "notes": "Address: Lesotho Football for Hope Centre, Nightingale Road, Old Europa, Maseru. Contact form available.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-LS-help-lesotho-1",
+  "orgId": "research-LS-help-lesotho",
+  "name": "",
+  "role": "",
+  "email": "info@helplesotho.org",
+  "phone": "+266 28400809 / +266 28330581",
+  "contactPageUrl": "https://helplesotho.org/contact",
+  "kind": "org_generic",
+  "sourceUrl": "https://helplesotho.org/contact",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Education and youth programmes in Leribe, Hlotse and Pitseng.",
+  "notes": "Media: communications@helplesotho.org.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-NA-physically-active-youth-pay-1",
+  "orgId": "public-NA-33",
+  "name": "",
+  "role": "",
+  "email": "info@paynamibia.org",
+  "phone": "+264 81 286 7339 (WhatsApp)",
+  "contactPageUrl": "https://www.paynamibia.org/contact-us",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.paynamibia.org/contact-us",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Katutura after-school education centre.",
+  "notes": "Office on Bondel Street, Windhoek.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-NA-star-for-life-namibia-1",
+  "orgId": "research-NA-star-for-life-namibia",
+  "name": "Isabel N. Mendes-Siyamba",
+  "role": "Leads the Namibia work (per official page)",
+  "email": "adminnam@starforlife.org",
+  "phone": "+264 (0)61 264 800",
+  "contactPageUrl": "https://starforlife.org/star-for-life-namibia",
+  "kind": "named_leader",
+  "sourceUrl": "https://starforlife.org/star-for-life-namibia",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "School-based education programme across Namibia.",
+  "notes": "Address: 8 Goshawk Street, Hockland Park, Windhoek.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ZA-ikamvayouth-1",
+  "orgId": "public-ZA-45",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "021 820 7444 (Cape Town) / 012 753 2166 (Pretoria)",
+  "contactPageUrl": "https://ikamvayouth.org/contact-us/",
+  "kind": "org_generic",
+  "sourceUrl": "https://ikamvayouth.org/contact-us/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Peer-led learning programmes for under-resourced communities.",
+  "notes": "Only donations@ikamvayouth.org seen; not recorded as general contact. Cape Town: 47 Westminster Rd, Salt River.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ZA-nal-ibali-trust-1",
+  "orgId": "research-ZA-nal-ibali-trust",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+27 (0)21 448 6000",
+  "contactPageUrl": "https://www.nalibali.org/contact-us",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.nalibali.org/contact-us",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "National reading-for-enjoyment and literacy campaign.",
+  "notes": "WhatsApp +27 60 044 2254. Multilingual focus not stated on the page read; contact form only, no email.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-DZ-association-algerienne-d-alphabetisation-1",
+  "orgId": "research-DZ-association-algerienne-d-alphabetisation",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "(213) 21 73 52 47",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://achpr.au.int/index.php/fr/ngos/association-algerienne-dalphabetisation",
+  "sourceType": "un_or_gov_directory",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "National literacy association in Algeria, a fit for a low-connectivity tutor.",
+  "notes": "Phone and postal address (04 rue Wargnier, Alger; BP 377 Ben Aknoun) from the African Commission on Human and Peoples' Rights NGO directory; website iqraa.asso.dz did not resolve on 2026-11-01; email hidden in directory, not recorded.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-DZ-association-sidra-algerie-1",
+  "orgId": "public-DZ-02",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "0552 99 98 31",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.tsa-algerie.com/?p=213783",
+  "sourceType": "press",
+  "dateAccessed": "2026-11-01",
+  "confidence": "low",
+  "whyRelevant": "Algerian youth and education association (UNESCO-labelled 2013, school-supplies campaigns).",
+  "notes": "Phone from a 2021 TSA donation-points list (Centre Culturel Lakhdar Rebbah, Belouizdad, Alger); may be outdated. sidra.dz did not resolve. CRM gmail address not used.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-EG-educate-me-foundation-1",
+  "orgId": "public-EG-12",
+  "name": "",
+  "role": "",
+  "email": "info@educateme-foundation.org",
+  "phone": "+201028762703",
+  "contactPageUrl": "https://educateme-foundation.org/contacts/",
+  "kind": "org_generic",
+  "sourceUrl": "https://educateme-foundation.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Egyptian education NGO based in Cairo.",
+  "notes": "Address: Building 4, Street 275, Maadi 11742, Cairo.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-EG-amideast-egypt-1",
+  "orgId": "research-EG-amideast-egypt",
+  "name": "",
+  "role": "",
+  "email": "Egypt@amideast.org",
+  "phone": "+20223222701",
+  "contactPageUrl": "https://www.amideast.org/egypt",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.amideast.org/egypt",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Runs English and skills education programmes in Giza and Alexandria.",
+  "notes": "Phone 19263 within Egypt; main office 38 Mohie El Din Abou El Ezz St, Dokki-Giza.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-LY-moomken-organization-1",
+  "orgId": "public-LY-25",
+  "name": "",
+  "role": "",
+  "email": "info@moomken.org",
+  "phone": "",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://new.moomken.org/en",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Tripoli youth NGO teaching technical media skills.",
+  "notes": "Contact link on site is a mailto; no phone published.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-LY-norwegian-refugee-council-nrc-libya-1",
+  "orgId": "research-LY-norwegian-refugee-council-nrc-libya",
+  "name": "",
+  "role": "",
+  "email": "ly.cfm@nrc.no",
+  "phone": "",
+  "contactPageUrl": "https://www.nrc.no/countries/africa/libya/",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.nrc.no/countries/africa/libya/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Runs literacy and numeracy education programmes in Libya.",
+  "notes": "Media hotline +47 90 56 23 29 / media@nrc.no; switchboard +47 23 10 98 00 / nrc@nrc.no (organisation-wide).",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-MA-education-for-all-morocco-1",
+  "orgId": "public-MA-29",
+  "name": "",
+  "role": "",
+  "email": "info@efaassociation.org",
+  "phone": "",
+  "contactPageUrl": "https://www.efaassociation.org/contact",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.efaassociation.org/contact",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Rural education NGO in the Atlas region.",
+  "notes": "CRM lists info@efamorocco.org; the site's contact page publishes info@efaassociation.org (used here). Also volunteer@efaassociation.org. Address: Lotissement Amane, Asni, Al Haouz.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-MA-amideast-morocco-1",
+  "orgId": "research-MA-amideast-morocco",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+212-537-67-50-75",
+  "contactPageUrl": "https://www.amideast.org/morocco",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.amideast.org/morocco",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Education and English-learning provider in Rabat and Casablanca.",
+  "notes": "No Morocco-specific email; HQ inquiries@amideast.org. Casablanca phone +212-522-25-93-93.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SD-norwegian-refugee-council-nrc-sudan-1",
+  "orgId": "research-SD-norwegian-refugee-council-nrc-sudan",
+  "name": "",
+  "role": "",
+  "email": "SD.info@nrc.no",
+  "phone": "",
+  "contactPageUrl": "https://www.nrc.no/countries/africa/sudan/",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.nrc.no/countries/africa/sudan/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Large education-in-emergencies programme in Sudan.",
+  "notes": "Media hotline +47 90 56 23 29 / media@nrc.no; switchboard +47 23 10 98 00.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SD-windle-trust-international-1",
+  "orgId": "public-SD-46",
+  "name": "",
+  "role": "",
+  "email": "info@windle.org.uk",
+  "phone": "+44 1865 712900",
+  "contactPageUrl": "https://www.windle.org.uk/contact-us",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.windle.org.uk/contact-us",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Supports students and teachers in Sudan.",
+  "notes": "UK office, 37a Oxford Road, Oxford OX4 2EN; media: communications@windle.org.uk.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-EH-cisp-comitato-internazionale-per-lo-svil-1",
+  "orgId": "public-EH-48",
+  "name": "",
+  "role": "",
+  "email": "cisp@cisp-ngo.org",
+  "phone": "(+39) 06 321 54 98",
+  "contactPageUrl": "https://cisp.ngo/contattaci",
+  "kind": "org_generic",
+  "sourceUrl": "https://cisp.ngo/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Runs an inclusive-education project in Sahrawi refugee camps.",
+  "notes": "Territory (Western Sahara); camps are in southwest Algeria. Contact page link read as relative /contattaci on the homepage; /contatti/ returned 404.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-EH-sandblast-arts-1",
+  "orgId": "research-EH-sandblast-arts",
+  "name": "Danielle Smith",
+  "role": "Founding director",
+  "email": "commssandblast@gmail.com",
+  "phone": "",
+  "contactPageUrl": "",
+  "kind": "named_leader",
+  "sourceUrl": "https://sandblast-arts.org/about-us",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Trains refugee women to teach English and music to Sahrawi children.",
+  "notes": "Email is the organisation's communications address in the site footer (Gmail-hosted, not a personal address). Name/role from the About page. Programme details (Desert Voicebox, Boudjour camp) come from search results, not the fetched page.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-TN-education-for-employment-tunisia-efe-tun-1",
+  "orgId": "public-TN-51",
+  "name": "",
+  "role": "",
+  "email": "info@efetunisie.org",
+  "phone": "+216 71 860 090",
+  "contactPageUrl": "https://www.efe.org/contact-us",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.efe.org/contact-us",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Youth skills training network with a Tunis office.",
+  "notes": "Hours Mon-Fri 9:00-18:00.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-TN-amideast-tunisia-1",
+  "orgId": "research-TN-amideast-tunisia",
+  "name": "",
+  "role": "",
+  "email": "tunisia@amideast.org",
+  "phone": "+216 71 145 700",
+  "contactPageUrl": "https://www.amideast.org/tunisia",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.amideast.org/tunisia",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Education and English-learning provider in Tunis and Sousse.",
+  "notes": "Main office 33 Rue Ahmed Ramy, Tunis-Belvédère.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-BJ-benin-education-fund-1",
+  "orgId": "public-BJ-03",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "(229) 23 03 02 13; (229) 90 93 42 59",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.benineducation-fund.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Supports schooling in northern Benin, a rural education setting.",
+  "notes": "No email published; US office phone (571) 326-2907; Benin office B.P. 676 Natitingou",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-BF-plan-international-burkina-faso-1",
+  "orgId": "public-BF-05",
+  "name": "",
+  "role": "",
+  "email": "Burkina.CO@plan-international.org",
+  "phone": "+226 25 37 87 33",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://plan-international.org/burkina-faso/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Large child-rights NGO with education programmes in Burkina Faso.",
+  "notes": "Page returned 403 to fetch; details from search result summary of the official page; verify before sending",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-CV-my-cape-verde-1",
+  "orgId": "public-CV-07",
+  "name": "",
+  "role": "",
+  "email": "mycapeverdecharity@gmail.com",
+  "phone": "",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://mycapeverde.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Welfare charity working in Cape Verde; education link is indirect.",
+  "notes": "Organisation-published gmail address (not an individual); weak education focus",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-CI-apprendre-cote-d-ivoire-1",
+  "orgId": "public-CI-11",
+  "name": "",
+  "role": "",
+  "email": "info@apprendre-ci.org",
+  "phone": "+225 27 30 65 99 42",
+  "contactPageUrl": "https://apprendre-ci.org/contacts",
+  "kind": "org_generic",
+  "sourceUrl": "https://apprendre-ci.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Education-focused organisation based in Yamoussoukro.",
+  "notes": "Address: Quartier Kokrenou, BPM 155 Yamoussoukro",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-GM-childfund-the-gambia-1",
+  "orgId": "public-GM-17",
+  "name": "",
+  "role": "",
+  "email": "GambiaInfo@childfund.org",
+  "phone": "+220 437 8087 / 4391450",
+  "contactPageUrl": "https://childfundgambia.org/about-us/contact-us/",
+  "kind": "org_generic",
+  "sourceUrl": "https://childfundgambia.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Runs early childhood centres and community libraries in The Gambia.",
+  "notes": "",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-GH-soronko-academy-1",
+  "orgId": "public-GH-18",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "",
+  "contactPageUrl": "https://soronkoacademy.com/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://soronkoacademy.com/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Digital skills academy for young people in Accra.",
+  "notes": "Contact form page only; WhatsApp link on site footer",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-GH-gillbt-ghana-institute-of-linguistics-li-1",
+  "orgId": "research-GH-gillbt-ghana-institute-of-linguistics-li",
+  "name": "",
+  "role": "",
+  "email": "communication_gillbt@gillbt.org",
+  "phone": "(050) 1329 465 / (037) 2099 031",
+  "contactPageUrl": "https://www.gillbt.org/contact-us",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.gillbt.org/contact-us",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Mother-tongue literacy work in 47 Ghanaian languages.",
+  "notes": "Also admin_gillbt@gillbt.org; Accra office Plot 71/72 Adjiringanor, East Legon; mailto links on page point to a different address, so use displayed ones",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-GN-guinee-education-benevolat-1",
+  "orgId": "public-GN-19",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "",
+  "contactPageUrl": "https://gebeducation.org/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://gebeducation.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Guinean education volunteer organisation.",
+  "notes": "Only a contact page URL found; no email/phone published on homepage",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-GW-fec-fundacao-fe-e-cooperacao-1",
+  "orgId": "public-GW-21",
+  "name": "",
+  "role": "",
+  "email": "geral@fecongd.org",
+  "phone": "+245 966190338",
+  "contactPageUrl": "https://www.fecongd.org/contactos/",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.fecongd.org/contactos/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Runs education and training projects, with an office in Bissau.",
+  "notes": "Phone is the Bissau office (Rua 10, Severino Gomes de Pina, Chão de Papel); email is Lisbon HQ (+351 218 855 478)",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-LR-teach-for-liberia-1",
+  "orgId": "public-LR-24",
+  "name": "",
+  "role": "",
+  "email": "info@teachforliberia.org",
+  "phone": "+231555318591; +231776003364",
+  "contactPageUrl": "https://teachforliberia.org/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://teachforliberia.org/contact/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Places teachers in Liberian classrooms.",
+  "notes": "UN Drive, Mamba Point, Monrovia",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-LR-achievement-center-for-youth-and-childre-1",
+  "orgId": "research-LR-achievement-center-for-youth-and-childre",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+231886751587",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.sportanddev.org/group/482",
+  "sourceType": "other",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Educational NGO serving disadvantaged and orphaned children in Liberia.",
+  "notes": "Directory listing (sportanddev); no email published there; 1st Floor East, Fofana Building, 26 Benson St, Monrovia",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ML-mali-rising-foundation-1",
+  "orgId": "public-ML-28",
+  "name": "",
+  "role": "",
+  "email": "info@malirisingfdn.org",
+  "phone": "801-810-4525",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.malirising.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Builds schools and supports education in Mali.",
+  "notes": "US contact details (PO Box 277 Salt Lake City, UT 84110)",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ML-cerdepe-cercle-de-developpement-particip-1",
+  "orgId": "research-ML-cerdepe-cercle-de-developpement-particip",
+  "name": "Mamadou Traore",
+  "role": "Contact person (as listed in UNCCD directory)",
+  "email": "cerdepe@yahoo.fr",
+  "phone": "0022344232032",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.unccd.int/cso/cercle-de-developpement-participatif-pour-lenfance-cerdepe-0",
+  "sourceType": "un_or_gov_directory",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Bamako child-development NGO accredited in a UN directory.",
+  "notes": "Established 1995; directory entry may be dated; Kalabancoura, Rue 207 Porte 284; no mission text, education focus unconfirmed",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-NG-teach-for-nigeria-1",
+  "orgId": "seed-1",
+  "name": "",
+  "role": "",
+  "email": "info@teachfornigeria.org",
+  "phone": "+234 909 860 0713",
+  "contactPageUrl": "https://teachfornigeria.org/contact",
+  "kind": "org_generic",
+  "sourceUrl": "https://teachfornigeria.org/contact",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Places fellows in under-served Nigerian schools.",
+  "notes": "Also partnership@teachfornigeria.org for partners; Obalende, Lagos",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-NG-slum2school-africa-1",
+  "orgId": "seed-3",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+2348142828750",
+  "contactPageUrl": "https://slum2school.org/contact",
+  "kind": "org_generic",
+  "sourceUrl": "https://slum2school.org/contact",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Provides schooling and learning programmes in Lagos slum communities.",
+  "notes": "Email hidden by site protection (CRM has info@slum2school.org, not re-verified); Innovation Hub, 13 Babatope Bejide Crescent, Lekki",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-NE-pencils-for-kids-1",
+  "orgId": "public-NE-35",
+  "name": "",
+  "role": "",
+  "email": "info@pencilsforkids.com",
+  "phone": "",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://pencilsforkids.com/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Runs education, scholarship and training programmes in Niger.",
+  "notes": "No phone published",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SN-asenia-1",
+  "orgId": "public-SN-41",
+  "name": "",
+  "role": "",
+  "email": "contact@asenia.sn",
+  "phone": "+221 78 782 7070",
+  "contactPageUrl": "https://asenia.sn/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://asenia.sn/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Dakar non-profit in the social and solidarity economy; digital angle.",
+  "notes": "N° 333, SCI Binal 115, ZAC Mbao, Dakar; education focus not confirmed",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SN-anafa-association-nationale-pour-l-alpha-1",
+  "orgId": "research-SN-anafa-association-nationale-pour-l-alpha",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "(221) 33-855 94 50",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://achpr.au.int/fr/taxonomy/term/771",
+  "sourceType": "un_or_gov_directory",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "National adult-literacy association based in Dakar.",
+  "notes": "African Commission directory entry; emails obfuscated there; Villa 17a, Patte d'Oie Builders; may be dated",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SL-educaid-sierra-leone-1",
+  "orgId": "public-SL-43",
+  "name": "",
+  "role": "",
+  "email": "hello@educaid.org.uk",
+  "phone": "",
+  "contactPageUrl": "https://www.educaid.org.uk/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.educaid.org.uk/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Runs schools and teacher development in Sierra Leone for 30 years.",
+  "notes": "Replies usually within 3-5 working days",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-TG-togorer-1",
+  "orgId": "public-TG-50",
+  "name": "",
+  "role": "",
+  "email": "secretariat@togorer.tg",
+  "phone": "+228 91 02 55 55",
+  "contactPageUrl": "https://togorer.tg/#contact",
+  "kind": "org_generic",
+  "sourceUrl": "https://togorer.tg/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "National research and education network connecting institutions in Togo.",
+  "notes": "Bâtiment CENETI, Quartier Administratif, Lomé; not an NGO strictly",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-BI-burundi-education-foundation-1",
+  "orgId": "public-BI-06",
+  "name": "",
+  "role": "",
+  "email": "chantalndikumana@burundieducation.org",
+  "phone": "+44 7790828606",
+  "contactPageUrl": "https://burundieducationfoundation.org/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://burundieducationfoundation.org/contact/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Education charity for Burundian schools and learners.",
+  "notes": "Email is published on the Contact page but looks like an individual's mailbox; the page gives no role. Phone is a UK number.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-BI-bibliotheques-sans-frontieres-libraries-1",
+  "orgId": "research-BI-bibliotheques-sans-frontieres-libraries",
+  "name": "",
+  "role": "",
+  "email": "info@bibliosansfrontieres.org",
+  "phone": "01 84 16 19 03",
+  "contactPageUrl": "https://www.bibliosansfrontieres.org/en/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.bibliosansfrontieres.org/en/contact/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Offline digital media libraries for education and literacy, with a Burundi project.",
+  "notes": "Burundi project seen on https://cooperation.gouv.mc/en/Priorities/Mapping-of-current-projects/East-and-Southern-Africa/Burundi/Ideas-Box-A-portable-media-library-for-street-children-and-young-adult-in-Bujumbura-and-N-Gozi . Email is listed on the contact page for data-protection requests; phone is HQ Montreuil (France). Press space: https://www.bibliosansfrontieres.org/espace-presse/",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ER-eritrean-development-foundation-1",
+  "orgId": "public-ER-13",
+  "name": "",
+  "role": "",
+  "email": "eridevelopmentfoundation@gmail.com",
+  "phone": "(502) 403- 7539",
+  "contactPageUrl": "https://www.eridevelopmentfoundation.com/blank-2",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.eridevelopmentfoundation.com/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Diaspora foundation supporting development in Eritrea.",
+  "notes": "Organisation-published Gmail address and US phone; relevance to education not verified on the page.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ET-ethiopia-reads-1",
+  "orgId": "research-ET-ethiopia-reads",
+  "name": "",
+  "role": "",
+  "email": "addis@ethiopiareads.org",
+  "phone": "",
+  "contactPageUrl": "https://www.ethiopiareads.org/contact-us/",
+  "kind": "org_generic",
+  "sourceUrl": "https://ethiopiareads.org/contact",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Trains teachers and librarians for mother-tongue and English literacy.",
+  "notes": "US office: info@ethiopiareads.org. Addis Ababa main office email addis@ethiopiareads.org.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ET-together-we-learn-ethiopia-1",
+  "orgId": "research-ET-together-we-learn-ethiopia",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+251 (0)118 932 417",
+  "contactPageUrl": "https://twlethiopia.org/contact-us/",
+  "kind": "org_generic",
+  "sourceUrl": "https://twlethiopia.org/contact-us/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Teacher-training NGO working with regional education bureaus.",
+  "notes": "Phones: Gondar +251 (0)582 110 080; UK +44 (0)208 617 3393. Email is hidden behind email protection on the page.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-KE-akirachix-1",
+  "orgId": "public-KE-22",
+  "name": "",
+  "role": "",
+  "email": "info@akirachix.com",
+  "phone": "",
+  "contactPageUrl": "https://akirachix.com/get-in-touch/",
+  "kind": "org_generic",
+  "sourceUrl": "https://akirachix.com/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Digital inclusion and tech training for girls in Kenya.",
+  "notes": "Address on site: 616 Korongo Road, Off Ndege Road, Karen. Contact page path /get-in-touch/ taken from the site link.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-KE-kakenya-s-dream-1",
+  "orgId": "research-KE-kakenya-s-dream",
+  "name": "",
+  "role": "",
+  "email": "info@kakenyasdream.org",
+  "phone": "+254 721 505 236",
+  "contactPageUrl": "https://kakenyasdream.org/connect-with-us",
+  "kind": "org_generic",
+  "sourceUrl": "https://kakenyasdream.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Rural school education NGO that also connects schools to the internet.",
+  "notes": "US phone +1 (571) 527-4960. Connectivity project seen on https://kakenyasdream.org/2026/08/ (search result).",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-MG-education-for-madagascar-1",
+  "orgId": "public-MG-26",
+  "name": "",
+  "role": "",
+  "email": "contact@educationformadagascar.org",
+  "phone": "",
+  "contactPageUrl": "https://www.educationformadagascar.org/contact",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.educationformadagascar.org/contact",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "NGO supporting schooling in Madagascar.",
+  "notes": "Contact form on page; no phone published.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-MG-passerelles-numeriques-madagascar-1",
+  "orgId": "research-MG-passerelles-numeriques-madagascar",
+  "name": "",
+  "role": "",
+  "email": "info.madagasikara@passerellesnumeriques.org",
+  "phone": "+ 261 38 11 192 82",
+  "contactPageUrl": "https://www.passerellesnumeriques.org/en/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.passerellesnumeriques.org/en/contact/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Digital education and employability programme for young Malagasy.",
+  "notes": "Address: ASFOR Building, Ampandrianomby. HQ Paris: contact@passerellesnumeriques.org.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-MW-rays-of-hope-malawi-1",
+  "orgId": "public-MW-27",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "",
+  "contactPageUrl": "https://raysofhopemalawi.org/contact-us/",
+  "kind": "org_generic",
+  "sourceUrl": "https://raysofhopemalawi.org/contact",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Malawian NGO already in our CRM.",
+  "notes": "Only a contact form is published (no email or phone). Education focus not re-verified on the page.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-MW-dvv-international-malawi-programme-1",
+  "orgId": "research-MW-dvv-international-malawi-programme",
+  "name": "",
+  "role": "",
+  "email": "info@dvv-international.de",
+  "phone": "0228/97569-0",
+  "contactPageUrl": "https://www.dvv-international.de/en/contact",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.dvv-international.de/en/contact",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Adult education NGO with a Malawi programme in Lilongwe.",
+  "notes": "Contact is the HQ in Bonn; the Malawi office was seen only on a directory (https://ngobase.org/profile/315748) and no Malawi-specific contact was found.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-MU-fondation-pour-l-enfance-terre-de-paix-1",
+  "orgId": "public-MU-30",
+  "name": "",
+  "role": "",
+  "email": "terredepaix@terredepaix.org",
+  "phone": "(+230) 238 41 96",
+  "contactPageUrl": "https://terredepaix.org/contact-us/",
+  "kind": "org_generic",
+  "sourceUrl": "https://terredepaix.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Mauritian foundation working with children and education.",
+  "notes": "Address: Camp Créole, Albion.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-MU-a-p-e-d-e-d-association-pour-l-education-1",
+  "orgId": "research-MU-a-p-e-d-e-d-association-pour-l-education",
+  "name": "",
+  "role": "",
+  "email": "apeded_mu@yahoo.com",
+  "phone": "(230) 670 19 43",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.actogether.mu/find-an-ngo/a-p-e-d-e-d-association-pour-l-education-des-enfants-defavorises/",
+  "sourceType": "other",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Education and literacy support for disadvantaged children and parents.",
+  "notes": "Organisation email (Yahoo) as listed in the ACTogether NGO directory; other phones: (230) 5 773 64 43 / 5 773 53 03. Directory: info@actogether.mu.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-MZ-adpp-mozambique-1",
+  "orgId": "public-MZ-32",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+258 82 309 2050",
+  "contactPageUrl": "https://www.adpp-mozambique.org/more/contact-us",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.adpp-mozambique.org/more/contact-us",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Runs teacher training colleges and education programmes.",
+  "notes": "Address: Massacre de Wiriamo Ave., 258, Matola. The CRM email adpp@adpp-mozambique.org was not shown on the page (hidden by JavaScript), so it is not repeated here.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-MZ-alfalit-mocambique-1",
+  "orgId": "research-MZ-alfalit-mocambique",
+  "name": "Zefanias A. Chihulume",
+  "role": "Executive Director",
+  "email": "",
+  "phone": "+(258) 21 092403",
+  "contactPageUrl": "https://alfalit.org/mozambique/",
+  "kind": "named_leader",
+  "sourceUrl": "https://alfalit.org/mozambique/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Adult literacy organisation based in Maputo.",
+  "notes": "Address: Rua de Aleurites Nº 9 R/C Maputo. Email hidden on the page.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-RW-komera-1",
+  "orgId": "public-RW-39",
+  "name": "",
+  "role": "",
+  "email": "info@komera.org",
+  "phone": "",
+  "contactPageUrl": "https://komera.org/contact-us",
+  "kind": "org_generic",
+  "sourceUrl": "https://komera.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Supports girls' secondary education in Rwanda.",
+  "notes": "Contact page path /contact-us taken from the homepage link.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-RW-caritas-rwanda-1",
+  "orgId": "research-RW-caritas-rwanda",
+  "name": "",
+  "role": "",
+  "email": "info@caritasrwanda.org",
+  "phone": "(+250) 252 574 344",
+  "contactPageUrl": "https://caritasrwanda.org/contact",
+  "kind": "org_generic",
+  "sourceUrl": "https://new.caritasrwanda.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "National NGO with education and digital literacy campaigns.",
+  "notes": "Second phone (+250) 252 574 295. HQ: 3 KN 76 St, Kigali.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SC-un-youth-seychelles-1",
+  "orgId": "public-SC-42",
+  "name": "",
+  "role": "",
+  "email": "unyouthseychelles@gmail.com",
+  "phone": "248 2513195",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.unyouthseychelles.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Youth organisation in Seychelles, already in our CRM.",
+  "notes": "Organisation-published Gmail address, found by decoding the site's obfuscated contact link. P.O. Box 8015.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SO-abaarso-network-1",
+  "orgId": "public-SO-44",
+  "name": "",
+  "role": "",
+  "email": "info@abaarsonetwork.org",
+  "phone": "",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.abaarsonetwork.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Network of schools in Somaliland.",
+  "notes": "Based in Hargeisa (Somaliland).",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SO-windle-trust-international-1",
+  "orgId": "research-SO-windle-trust-international",
+  "name": "",
+  "role": "",
+  "email": "info@windle.org.uk",
+  "phone": "+44 1865 712900",
+  "contactPageUrl": "https://www.windle.org.uk/contact-us",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.windle.org.uk/contact-us",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Supports students and teachers in Somaliland.",
+  "notes": "Media: communications@windle.org.uk. WhatsApp +44 7933 349 375. Somaliland, not southern Somalia.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SS-windle-trust-international-1",
+  "orgId": "public-SS-47",
+  "name": "",
+  "role": "",
+  "email": "info@windle.org.uk",
+  "phone": "+44 1865 712900",
+  "contactPageUrl": "https://www.windle.org.uk/contact-us",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.windle.org.uk/contact-us",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Supports students and teachers across South Sudan.",
+  "notes": "Media: communications@windle.org.uk. WhatsApp +44 7933 349 375.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-SS-hope-for-ariang-foundation-1",
+  "orgId": "research-SS-hope-for-ariang-foundation",
+  "name": "",
+  "role": "",
+  "email": "info@hopeforariang.org",
+  "phone": "",
+  "contactPageUrl": "https://hopeforariang.org/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://hopeforariang.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Teacher training and school support in a rural South Sudan community.",
+  "notes": "Small US-based foundation (P.O. Box 569, Syracuse NY); supports three primary schools.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-TZ-room-to-read-tanzania-1",
+  "orgId": "research-TZ-room-to-read-tanzania",
+  "name": "",
+  "role": "",
+  "email": "tz.info@roomtoread.org",
+  "phone": "+255-22-277-2388",
+  "contactPageUrl": "https://www.roomtoread.org/countries/tanzania/local-information",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.roomtoread.org/countries/tanzania/local-information",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Early-grade literacy programmes in Tanzania.",
+  "notes": "Office: Mlimani City Office Park Block 5, Sam Nujoma Road, Dar es Salaam.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-TZ-twaweza-east-africa-1",
+  "orgId": "research-TZ-twaweza-east-africa",
+  "name": "",
+  "role": "",
+  "email": "info@twaweza.org",
+  "phone": "+255 22 266 4301",
+  "contactPageUrl": "https://twaweza.org/contact/",
+  "kind": "org_generic",
+  "sourceUrl": "https://twaweza.org/contact/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Tanzanian NGO working on learning outcomes.",
+  "notes": "Second phone +255 712 333 332. Education focus (Uwezo) comes from the search result, not the contact page.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-UG-educate-1",
+  "orgId": "public-UG-52",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+256 393 266 074",
+  "contactPageUrl": "https://www.experienceeducate.org/contactus",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.experienceeducate.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Skills education for young people in Ugandan schools.",
+  "notes": "Uganda office: 414 Ring Road, Mutungo Hill, Kampala. No email published on the homepage; the /contactus path comes from the site's link.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-UG-finnish-refugee-council-suomen-pakolaisa-1",
+  "orgId": "research-UG-finnish-refugee-council-suomen-pakolaisa",
+  "name": "Alice Quagliato",
+  "role": "Country Director, Uganda",
+  "email": "",
+  "phone": "+256 31 226 6642",
+  "contactPageUrl": "https://pakolaisapu.fi/en/contact/",
+  "kind": "named_leader",
+  "sourceUrl": "https://pakolaisapu.fi/en/contact/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Refugee adult-literacy programmes in Uganda.",
+  "notes": "General donor email donorservice@refugeecouncil.fi (not Uganda-specific).",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-DJ-caritas-djibouti-1",
+  "orgId": "public-DJ-53",
+  "name": "",
+  "role": "",
+  "email": "caritas.djibouti@gmail.com",
+  "phone": "+253 021353981",
+  "contactPageUrl": "",
+  "kind": "org_generic",
+  "sourceUrl": "https://caritasmona.org/djibouti/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Established NGO in Djibouti, already in our CRM.",
+  "notes": "Organisation-published Gmail address. Address: Capitaine Briard Street, B.P. 94. Education focus not verified.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ZM-zambia-open-community-schools-1",
+  "orgId": "public-ZM-54",
+  "name": "",
+  "role": "",
+  "email": "info@zocs.org.zm",
+  "phone": "+260211253841",
+  "contactPageUrl": "https://zocs.org.zm/contact-us/",
+  "kind": "org_generic",
+  "sourceUrl": "https://zocs.org.zm/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Community schooling for out-of-school children.",
+  "notes": "",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ZM-room-to-read-zambia-1",
+  "orgId": "research-ZM-room-to-read-zambia",
+  "name": "",
+  "role": "",
+  "email": "",
+  "phone": "+260-211-264691",
+  "contactPageUrl": "https://www.roomtoread.org/countries/zambia/local-information/",
+  "kind": "org_generic",
+  "sourceUrl": "https://www.roomtoread.org/countries/zambia/local-information/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "high",
+  "whyRelevant": "Early-grade literacy programmes in Zambia.",
+  "notes": "Other phones +260-211-262216, +260-971-054190, +260-966-003346. Plot 5763 Kabompo Close, Kalundu, Lusaka. No email published on that page.",
+  "verification": {
+   "status": "unverified"
+  }
+ },
+ {
+  "id": "c-ZW-higherlife-foundation-1",
+  "orgId": "research-ZW-higherlife-foundation",
+  "name": "",
+  "role": "",
+  "email": "info@higherlifefoundation.com",
+  "phone": "(+263) 772 222 922",
+  "contactPageUrl": "https://higherlifefoundation.com/contact",
+  "kind": "org_generic",
+  "sourceUrl": "https://higherlifefoundation.org/",
+  "sourceType": "official_site",
+  "dateAccessed": "2026-11-01",
+  "confidence": "medium",
+  "whyRelevant": "Zimbabwean foundation with digital learning platform and learning hubs.",
+  "notes": "Domain redirects from .com to .org; contact page path /contact taken from the site link.",
+  "verification": {
+   "status": "unverified"
+  }
+ }
+]

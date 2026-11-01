@@ -2,7 +2,19 @@ import { Routes } from '@angular/router';
 import { ChatPage } from './chat/chat-page';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'chat' },
+  {
+    path: '',
+    pathMatch: 'full',
+    title: 'Twins for Change · A bilingual Yorùbá–English AI tutor',
+    loadComponent: () => import('./site/landing-page').then((m) => m.LandingPage),
+  },
+  // The landing page links here; the tutor itself stays at /chat.
+  { path: 'app', pathMatch: 'full', redirectTo: 'chat' },
+  {
+    path: 'mapa',
+    title: 'Language map · Twins for Change',
+    loadComponent: () => import('./site/map-page').then((m) => m.MapPage),
+  },
   {
     path: 'chat',
     title: 'Chat · Twins for Change',
@@ -18,6 +30,11 @@ export const routes: Routes = [
     path: 'architecture',
     title: 'How it works · Twins for Change',
     loadComponent: () => import('./architecture/architecture-page').then((m) => m.ArchitecturePage),
+  },
+  {
+    path: 'crm',
+    title: 'Partner CRM · Twins for Change',
+    loadComponent: () => import('./crm/crm-page').then((m) => m.CrmPage),
   },
   { path: '**', redirectTo: 'chat' },
 ];
