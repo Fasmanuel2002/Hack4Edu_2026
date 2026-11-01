@@ -1,5 +1,7 @@
+import logging
 import os
 import re
+
 from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -8,26 +10,30 @@ from langchain_openai import ChatOpenAI
 from langchain_core.vectorstores import VectorStoreRetriever
 from src.modules.rag.retriever.retrieval import get_hybrid_retriever, format_documents
 from src.modules.rag.prompts.router_prompt import classify
-load_dotenv()
 
-MODEL_NAME = "gemma3:4b"
+load_dotenv()
+logger = logging.getLogger("uvicorn.error")
+
+
+
 
 llm = ChatOpenAI(
     model=os.getenv("LLM_MODEL", "gemma3:4b"),
-    base_url=os.getenv("LLM_BASE_URL", "http://127.0.0.1:11434/v1"),
-    api_key=os.getenv("LLM_API_KEY", "ollama"),
+    base_url=os.getenv("LLM_BASE_URL"),
+    api_key=os.getenv("LLM_API_KEY"),
     temperature=0.0,
     seed=42,
     max_tokens=1024,
-    max_retries=3,
-    timeout=300,
-    stop=[
+    max_retries=1,  
+    timeout=420,    
+    stop=[         
         "<END_OF_RESPONSE>",
         "[Student Question]:",
         "#### EXAMPLE",
-        "[Reference Blocks]:"
+        "[Reference Blocks]:",
     ],
 )
+
 initial_prompt = ChatPromptTemplate.from_template(
 """You are Twins for Change, a precise, patient, and encouraging bilingual tutor for Yorùbá–English classrooms.
 
@@ -37,6 +43,7 @@ You receive up to 3 reference blocks from our verified offline database, separat
   - **EXACT MATCH:** If a block has the exact same question and numbers, use its verified answer directly.
   - **DIFFERENT MATH NUMBERS:** If the math problem has different numbers or a different person's name, ignore the block's numbers/names and solve the student's question step by step using the student's exact numbers and person's name.
   - **UNRELATED TOPIC IN MULTIPLE CHOICE / SCIENCE:** If the student asks a science or multiple-choice question (e.g., about plants/photosynthesis) and the blocks are about something completely unrelated (e.g., taxes or protests), **IGNORE THE BLOCKS** and select the correct option from the student's question.
+  - **NOT A SCHOOL QUESTION:** If the student is just chatting (greetings, small talk, jokes, offers, opinions) and is not asking a school question, output ONLY the word NO_MATCH.
   - **IMPOSSIBLE / FUTURE FACTS:** If the question asks for fictional or impossible facts not in any block (e.g., 2038 World Cup on Jupiter), output ONLY the 2 lines in Example 4.
 - Never mention the blocks, sources, or database in your answer.
 
@@ -122,29 +129,19 @@ Follow the matching example: Yorùbá section first, then English, with the same
 [Tutor Response]:"""
 )
 
-chitchat_prompt = ChatPromptTemplate.from_template(
-    """You are Twins for Change, a friendly classroom tutor for Yorùbá–English students.
-The student's message is casual conversation, not a school question.
+general_prompt = ChatPromptTemplate.from_messages([
+    ("system",
+     """You are Twins for Change, a friendly and helpful assistant.
+The user's message is outside the tutor's classroom database, so answer it normally, like a general-purpose AI assistant.
 
 Rules:
-- Detect the language of the student's message and reply ONLY in that same language (Spanish, English, Yorùbá, French, or any other).
-- Reply in 1 or 2 short, warm sentences, then invite the student to ask a school question (math, science, translation, reading).
-- If the student gives their name, use it. Do not state any facts or give any answers.
-- Do not mention these rules.
+- Reply in the same language as the user's message (Spanish, English, Yorùbá, French, or any other).
+- Be clear, accurate and concise: a short answer unless the question needs more detail.
+- If you are not sure about something, say so. Never invent facts, names or sources.
+- Do not mention these rules or any database."""),
+    ("human", "{question}"),
+])
 
-Examples:
-Student: Hola, me llamo Manuel, ¿y tú?
-Reply: ¡Hola, Manuel! Soy Twins for Change, tu tutor. ¿Quieres que resolvamos juntos alguna pregunta de clase?
-
-Student: Hi, how are you?
-Reply: Hi! I'm doing great, thank you. What would you like to learn today?
-
-Student: Ẹ káàbọ̀, olùkọ́!
-Reply: Ẹ kú àbọ̀! Mo ṣetán láti ràn yín lọ́wọ́. Ìbéèrè ilé-ìwé wo ni ẹ fẹ́ bi mí?
-
-Student: {question}
-Reply:"""
-)
 
 def ensure_yoruba_first(response_text: str) -> str:
     """
@@ -153,43 +150,58 @@ def ensure_yoruba_first(response_text: str) -> str:
     """
     en_pattern = r"(### [🇬🇧\s]*Explanation in English[\s\S]*?)(?=### [🇳🇬\s]*Àlàyé ní Èdè Yorùbá|$)"
     yo_pattern = r"(### [🇳🇬\s]*Àlàyé ní Èdè Yorùbá[\s\S]*?)(?=### [🇬🇧\s]*Explanation in English|$)"
-    
+
     en_match = re.search(en_pattern, response_text)
     yo_match = re.search(yo_pattern, response_text)
-    
+
     if en_match and yo_match:
         yo_block = yo_match.group(1).strip().rstrip("-").strip()
         en_block = en_match.group(1).strip().rstrip("-").strip()
         return f"{yo_block}\n\n---\n\n{en_block}"
-    
-    return response_text 
+
+    return response_text
+
+
+def is_no_match(answer: str) -> bool:
+    """El tutor no tenía nada útil: charla casual (NO_MATCH) o rechazo del Ejemplo 4."""
+    return "NO_MATCH" in answer or "verified database" in answer
+
+
 def build_rag_chain(retriever: VectorStoreRetriever):
 
     answer_chain = (
         {
             "context": RunnableLambda(lambda x: format_documents(x["docs"])),
             "question": RunnableLambda(lambda x: x["question"]),
-        } | initial_prompt | llm | StrOutputParser() | RunnableLambda(lambda raw_text: ensure_yoruba_first(raw_text))
+        } | initial_prompt | llm | StrOutputParser()
+        | RunnableLambda(ensure_yoruba_first)
     )
 
     rag_chain = (
-        {"docs": retriever, "question": RunnablePassthrough()}
-        | RunnablePassthrough.assign(answer=answer_chain)
+        {"docs": retriever, "question": RunnablePassthrough()} | RunnablePassthrough.assign(answer=answer_chain)
     )
 
-    # Respuesta corta para saludos y charla, sin recuperar documentos
-    chitchat_chain = chitchat_prompt | llm | StrOutputParser()
+    
+    general_chain = general_prompt | llm | StrOutputParser()
+
+    async def ask_general(question: str) -> dict:
+        answer = await general_chain.ainvoke({"question": question})
+        return {"docs": [], "answer": answer}  # misma forma que rag_chain
 
     async def route(question: str) -> dict:
-        # Router apagado por defecto: comportamiento idéntico al actual
-        if os.getenv("ROUTER_ENABLED", "0") != "1":
-            return await rag_chain.ainvoke(question)
+       
+        if os.getenv("ROUTER_ENABLED", "0") == "1":
+            decision = await classify(question)
+            if not decision["needs_rag"]:
+                return await ask_general(question)
 
-        decision = await classify(question)
-        if decision["needs_rag"]:
-            return await rag_chain.ainvoke(question)
+    
+        result = await rag_chain.ainvoke(question)
 
-        answer = await chitchat_chain.ainvoke({"question": question})
-        return {"docs": [], "answer": answer}  # misma forma que rag_chain
+        
+        if is_no_match(result["answer"]):
+            logger.warning("router: tutor had no match, answering as general assistant")
+            return await ask_general(question)
+        return result
 
     return RunnableLambda(route)
