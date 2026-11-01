@@ -30,10 +30,19 @@ export interface AnswerSlot {
   readonly receivedAt?: number;
 }
 
-/** A file the student attached. Only its name and size are kept: files are not sent. */
+/** A file the student attached and uploaded (POST /upload/file). Only its name and size are kept. */
 export interface AttachmentInfo {
   readonly name: string;
   readonly size: number;
+  /** True in mock mode: nothing was uploaded. */
+  readonly demo?: boolean;
+}
+
+/** What POST /upload/file returns. `demo` is true in mock mode. */
+export interface UploadResult {
+  readonly filename: string;
+  readonly chunks: number;
+  readonly demo: boolean;
 }
 
 /** A question and its answer (or two answers in compare mode). */
@@ -48,6 +57,8 @@ export interface Turn {
 
 export interface Conversation {
   readonly id: string;
+  /** Sent as `session_id` to upload files and to search them. Matches [A-Za-z0-9_-]{1,64}. */
+  readonly sessionId: string;
   readonly title: string;
   readonly createdAt: number;
   readonly updatedAt: number;

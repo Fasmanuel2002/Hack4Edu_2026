@@ -22,9 +22,22 @@
           } @else {
             Found by hybrid search over the corpus, best match first.
           }
+          @if (hasUpload()) {
+            "Your file" items come from files you uploaded. They are not verified corpus data.
+          }
         </p>
         <ol class="list">
           @for (item of items(); track item.rank) {
+            @if (item.upload) {
+            <li class="source">
+              <p class="source-head">
+                <span class="rank"><span class="visually-hidden">Rank </span>{{ item.rank }}</span>
+                <span class="subject">Your file: {{ item.search_context }}</span>
+              </p>
+              <p class="field">Text from your file</p>
+              <p class="upload-text">{{ item.pedagogical_answer }}</p>
+            </li>
+            } @else {
             <li class="source">
               <p class="source-head">
                 <span class="rank"><span class="visually-hidden">Rank </span>{{ item.rank }}</span>
@@ -65,6 +78,7 @@
                 }
               </div>
             </li>
+            }
           }
         </ol>
       </div>

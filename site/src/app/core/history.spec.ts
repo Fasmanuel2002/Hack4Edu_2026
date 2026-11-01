@@ -16,6 +16,7 @@ import { STARTERS } from './starters';
 function conversation(id: string, updatedAt: number, question = STARTERS[3].yo): Conversation {
   return {
     id,
+    sessionId: `session-${id}`,
     title: question,
     createdAt: updatedAt,
     updatedAt,
@@ -197,5 +198,38 @@ describe('ChatStore and saved history', () => {
 
     expect(store.generating()).toBe(false);
     expect(savedConversations()[0].turns[0].rag.status).toBe('stopped');
+  });
+});
+
+describe('conversation session ids', () => {
+  it('gives each new chat a valid session id and keeps it in saved history', () => {
+    const store = TestBed.inject(ChatStore);
+    const draft = store.sessionId();
+    store.ask(STARTERS[0].yo);
+    const saved = savedConversations()[0].sessionId;
+    expect(saved).toBe(draft);
+    expect(saved).toMatch(/^[A-Za-z0-9_-]{1,64}$/);
+    expect(store.sessionId()).toBe(saved);
+    store.newChat();
+    expect(store.sessionId()).not.toBe(saved);
+  });
+
+  it('adds a session id to chats saved before uploads existed', () => {
+    const { sessionId, ...old } = conversation('old', 1000);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify({ version: 1, conversations: [old] }));
+    expect(sessionId).toBeDefined();
+    expect(TestBed.inject(HistoryStorage).load()[0].sessionId).toMatch(/^[A-Za-z0-9_-]{1,64}$/);
+  });
+
+  it('asks /ask/rag with the session id only after files were attached', async () => {
+    vi.useFakeTimers();
+    const api = TestBed.inject(ApiService);
+    const ask = vi.spyOn(api, 'ask');
+    const store = TestBed.inject(ChatStore);
+    store.ask(STARTERS[0].yo);
+    await vi.advanceTimersByTimeAsync(10_000);
+    store.ask(STARTERS[2].yo, [{ name: 'notes.txt', size: 5 }]);
+    expect(ask.mock.calls[0][3]).toBeUndefined();
+    expect(ask.mock.calls[1][3]).toBe(store.active()?.sessionId);
   });
 });

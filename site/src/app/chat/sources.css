@@ -140,6 +140,13 @@
   font-size: 0.8125rem;
 }
 
+/* A chunk of the student's own file: plain text, kept as written. */
+.upload-text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .field {
   margin: 0.75rem 0 0.2rem;
   color: var(--text-muted);

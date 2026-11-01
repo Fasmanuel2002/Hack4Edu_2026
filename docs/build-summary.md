@@ -102,9 +102,17 @@ from real `dataset_rag.csv` rows), Lighthouse 12.8.2 (through `npx`), fontTools 
    word with a blinking cursor and a Stop button.
 2. **Subject filter: removed** at the author's request. It could come back once the backend
    supports filtering, for example a `source_dataset` filter on `/ask/rag`.
-3. **File uploads.** No upload endpoint. Attachments get chips, validation messages and a "not
-   sent" notice. My choices: a 10 MB limit per file, and `.jpeg` accepted along with `.jpg`.
-4. **Health of Ollama and Qdrant.** `/health/health` only shows that the API process is up.
+3. **Health of Ollama and Qdrant.** `/health/health` only shows that the API process is up.
+
+**File uploads (now supported).** Attachments are `.pdf`, `.docx` and `.txt`, up to 10 MB. Each
+chat has a `sessionId` (`crypto.randomUUID()`, saved with the chat in localStorage). Files upload
+when the user sends: `POST /upload/file?session_id=...` runs first for each file, and a failed
+upload shows the backend's `detail` message on the chip and does not send the question. Once a
+chat has uploaded files, `/ask/rag` also sends `session_id`; `/ask/plain` never does. In the
+sources drawer, `user_upload` rows show as "Your file: <name>" with the chunk text and a note that
+they are not verified corpus data. In mock mode nothing is uploaded: the chips and the sent
+message say "Demo data". Note: CLAUDE.md still says the backend cannot receive files and lists
+`.csv/.md/.png/.jpg/.webp`; it needs the author's update.
 
 "Retrieved sources" is no longer a gap: the drawer shows the backend's `sources` (see "What
 changed").
@@ -301,13 +309,13 @@ toasts. Behaviour, data flow, services and stores are unchanged.
   gap) with the CLAUDE.md labels and their own loading states, stacked when the thread is
   narrower than 640 px; only the RAG column has the track.
 - **Composer.** One 24px-radius box (mid-strength border, soft shadow; the border turns the focus
-  colour while typing): attachment chips on top (extension badge or thumbnail, name, size,
+  colour while typing): attachment chips on top (extension badge, name, size, upload status,
   remove), the tone-mark strip as one slim row (it scrolls sideways on phones instead of
   wrapping to 3 rows), the text box (52–200px), then "+", the Compare and Tone marks chips, the
   "Enter to send · Shift + Enter new line" hint (on focus, wide boxes only; also the text box's
   description) and the round Send/Stop button in brand blue (sky on navy). Docked on a solid
   canvas strip with no gradient fade. Drag and drop shows a full-window overlay with a dashed box
-  and "Attachments are not sent yet: the backend has no upload endpoint."
+  and "PDF, DOCX or TXT, up to 10 MB each."
 - **Practice.** Centred title and line, "Question N of 25" with the subject as an accent tag, a
   bordered question card, four option rows with 28px letter badges, and after an answer an
   outcome card: round icon, "Correct" or "Not quite", "Verified answer (AfriMMLU): …", then
@@ -483,7 +491,7 @@ sources drawer stops following, with `scroll-padding` equal to the docked compos
 - **Chat**: welcome screen with the four starters, messages with avatars, times, Copy and
   Regenerate, progressive display with Stop, compare mode, the sources drawer, Markdown with the
   answer polish (language blocks, answer callout, equations, the calm out-of-database note), error
-  messages with Retry, and the composer (tone mark bar, attachments that are not sent, Enter and
+  messages with Retry, and the composer (tone mark bar, attachments that upload on send, Enter and
   Shift + Enter). One polite live region announces each finished answer once.
 - **Practice**: the plain quiz described above. **How it works**: pipeline, settings, deployment,
   corpus table, API and the remaining backend gaps.

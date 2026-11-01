@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { API_CONFIG, isLocalApi } from './config';
 import { DEMO_ANSWERS } from './demo-data';
-import { AnswerKind, AskResult, CorpusSource } from './models';
+import { AnswerKind, AskResult, CorpusSource, UploadResult } from './models';
 
 /** Client timeout for one answer. CLAUDE.md: never below 120 seconds (laptop CPUs are slow). */
 export const REQUEST_TIMEOUT_MS = 300_000;
@@ -56,11 +56,50 @@ export function questionKey(question: string): string {
 export class ApiService {
   private readonly config = inject(API_CONFIG);
 
-  /** POST /ask/rag or /ask/plain with exactly {"question": ...}. No chat history is sent. */
-  ask(kind: AnswerKind, question: string, signal?: AbortSignal): Promise<AskResult> {
+  /**
+   * POST /ask/rag or /ask/plain with {"question": ...}. No chat history is sent. `sessionId` goes
+   * only to /ask/rag, and only when the chat has uploaded files.
+   */
+  ask(kind: AnswerKind, question: string, signal?: AbortSignal, sessionId?: string): Promise<AskResult> {
     return this.config.useMock
       ? this.askDemo(kind, question, signal)
-      : this.askBackend(kind, question, signal);
+      : this.askBackend(kind, question, signal, sessionId);
+  }
+
+  /** POST /upload/file?session_id=... (multipart, field "file"). In mock mode nothing is sent. */
+  async upload(file: File, sessionId: string, signal?: AbortSignal): Promise<UploadResult> {
+    if (this.config.useMock) {
+      return { filename: file.name, chunks: 0, demo: true };
+    }
+    const timeout = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
+    const combined = signal ? AbortSignal.any([signal, timeout]) : timeout;
+    const form = new FormData();
+    form.append('file', file);
+    let response: Response;
+    try {
+      response = await fetch(
+        `${this.config.apiBaseUrl}/upload/file?session_id=${encodeURIComponent(sessionId)}`,
+        { method: 'POST', body: form, signal: combined },
+      );
+    } catch {
+      throw signal?.aborted
+        ? new ApiError('aborted', 'Stopped.')
+        : new ApiError('network', `Could not upload ${file.name}: the API at ${this.config.apiBaseUrl} is not reachable.`);
+    }
+    if (!response.ok) {
+      // The backend explains 400, 413 and 422 in {"detail": string}.
+      const detail = ((await response.json().catch(() => null)) as { detail?: unknown } | null)?.detail;
+      throw new ApiError(
+        'http',
+        `${file.name} was not uploaded (${response.status})${typeof detail === 'string' ? `: ${detail}` : '.'}`,
+        response.status,
+      );
+    }
+    const body = (await response.json().catch(() => null)) as { filename?: unknown; chunks?: unknown } | null;
+    if (typeof body?.filename !== 'string' || typeof body.chunks !== 'number') {
+      throw new ApiError('bad-response', 'The API sent an unexpected response to the upload.');
+    }
+    return { filename: body.filename, chunks: body.chunks, demo: false };
   }
 
   /** GET /health/health. Only says that the API process is up, not Ollama or Qdrant. */
@@ -86,6 +125,7 @@ export class ApiService {
     kind: AnswerKind,
     question: string,
     signal?: AbortSignal,
+    sessionId?: string,
   ): Promise<AskResult> {
     const controller = new AbortController();
     let timedOut = false;
@@ -128,7 +168,7 @@ export class ApiService {
         response = await fetch(`${this.config.apiBaseUrl}/ask/${kind}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question }),
+          body: JSON.stringify(kind === 'rag' && sessionId ? { question, session_id: sessionId } : { question }),
           signal: controller.signal,
         });
       } catch {

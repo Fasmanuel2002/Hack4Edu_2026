@@ -2,7 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { ApiError, ApiService } from './api.service';
 import { Announcer, MediaQueries } from './browser';
 import { answerLabel } from './corpus';
-import { HistoryStorage, groupConversations } from './history';
+import { HistoryStorage, groupConversations, newSessionId } from './history';
 import { AnswerKind, AnswerSlot, AttachmentInfo, Conversation, Turn } from './models';
 import { shortenAtWord } from './yoruba';
 
@@ -81,6 +81,8 @@ export class ChatStore {
   private revealTimer: ReturnType<typeof setInterval> | null = null;
   private clockTimer: ReturnType<typeof setInterval> | null = null;
   private loaded = false;
+  /** Session id of the chat that does not exist yet: files can be uploaded before the first question. */
+  private draftSession: string | null = null;
   /** A question to ask in a new chat when /chat opens ("Ask Twins for Change to explain"). */
   private queued: string | null = null;
 
@@ -94,6 +96,12 @@ export class ChatStore {
 
   newChat(): void {
     this.activeId.set(null);
+    this.draftSession = null;
+  }
+
+  /** The `session_id` for uploads: the open chat's, or the one the next new chat will use. */
+  sessionId(): string {
+    return this.active()?.sessionId ?? (this.draftSession ??= newSessionId());
   }
 
   queueQuestion(question: string): void {
@@ -158,6 +166,7 @@ export class ChatStore {
     } else {
       conversation = {
         id: newId(),
+        sessionId: this.draftSession ?? newSessionId(),
         title: shortenAtWord(text, TITLE_LENGTH),
         createdAt: now,
         updatedAt: now,
@@ -165,6 +174,7 @@ export class ChatStore {
       };
       this.conversations.update((list) => [conversation as Conversation, ...list]);
       this.activeId.set(conversation.id);
+      this.draftSession = null;
     }
     this.persist();
     const compare = turn.plain !== null;
@@ -225,7 +235,12 @@ export class ChatStore {
     this.controllers.set(key, controller);
     this.startClock();
     try {
-      const result = await this.api.ask(kind, question, controller.signal);
+      // Search the uploaded files only when this chat has some.
+      const conversation = this.conversations().find((c) => c.id === conversationId);
+      const sessionId = conversation?.turns.some((t) => t.attachments.length)
+        ? conversation.sessionId
+        : undefined;
+      const result = await this.api.ask(kind, question, controller.signal, sessionId);
       this.updateSlot(conversationId, turnId, kind, () => ({
         kind,
         status: 'done',

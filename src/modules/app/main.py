@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse
 from ..rag.build_rag_runtime import build_rag_runtime
 from .src.ask_rag import ask_route
 from .src.health import health_route
+from .src.upload_files import upload_route
 
 
 @asynccontextmanager
@@ -32,6 +33,7 @@ app.add_middleware(
 
 app.include_router(ask_route)
 app.include_router(health_route)
+app.include_router(upload_route)
 
 # Built Angular app (copied in by the Dockerfile). Absent when running the API alone.
 SITE_DIR = Path(__file__).resolve().parents[3] / "site_dist"

@@ -1,23 +1,29 @@
 <form class="composer" aria-label="Ask a question" (submit)="onSubmit($event)">
   @if (files().length) {
     <div class="attachments">
-      <ul class="files" aria-label="Attachments, not sent">
+      <ul class="files" aria-label="Attachments">
         @for (file of files(); track file.id) {
           <li class="file">
-            @if (file.previewUrl) {
-              <img class="thumb" [src]="file.previewUrl" alt="" width="30" height="30" />
-            } @else {
-              <span class="thumb ext" aria-hidden="true">{{ extOf(file.name) }}</span>
-            }
+            <span class="thumb ext" aria-hidden="true">{{ extOf(file.name) }}</span>
             <span class="file-text">
               <span class="file-name" [title]="file.name">{{ file.name }}</span>
-              <span class="file-size">{{ formatSize(file.size) }}</span>
+              <span class="file-size" [class.file-error]="file.status === 'error'">
+                {{ formatSize(file.size) }}
+                @if (file.status === 'uploading') {
+                  · Uploading…
+                } @else if (file.status === 'error') {
+                  · Upload failed
+                } @else if (file.session) {
+                  · Ready
+                }
+              </span>
             </span>
             <button
               type="button"
               class="act file-remove"
               [attr.aria-label]="'Remove ' + file.name"
               title="Remove"
+              [disabled]="file.status === 'uploading'"
               (click)="removeFile(file)"
             >
               <app-icon name="x" />
@@ -25,7 +31,13 @@
           </li>
         }
       </ul>
-      <p class="not-sent">Attachments are not sent: the backend cannot receive files yet.</p>
+      <p class="not-sent">
+        @if (mockMode) {
+          Demo data: files are not uploaded in demo mode.
+        } @else {
+          Files upload when you send. Twins for Change then also searches them (PDF, DOCX or TXT, up to 10 MB).
+        }
+      </p>
     </div>
   }
 
@@ -70,7 +82,7 @@
       type="button"
       class="icon-btn attach"
       aria-label="Attach files"
-      title="Attach files (not sent yet)"
+      title="Attach PDF, DOCX or TXT files"
       (click)="picker.click()"
     >
       <app-icon name="plus" />
@@ -115,7 +127,7 @@
       [class.stop]="store.generating()"
       [attr.aria-label]="store.generating() ? 'Stop generating' : 'Send question'"
       [title]="store.generating() ? 'Stop generating' : 'Send'"
-      [disabled]="!store.generating() && !canSend()"
+      [disabled]="uploading() || (!store.generating() && !canSend())"
     >
       @if (store.generating()) {
         <app-icon class="swap" name="stop" />
@@ -133,7 +145,7 @@
     <div class="drop-box">
       <app-icon name="upload" />
       <p class="drop-title">Drop files to attach</p>
-      <p class="drop-text">Attachments are not sent yet: the backend has no upload endpoint.</p>
+      <p class="drop-text">PDF, DOCX or TXT, up to 10 MB each.</p>
     </div>
   </div>
 }

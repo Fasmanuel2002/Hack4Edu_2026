@@ -17,6 +17,9 @@ import { Icon } from '../shared/icon';
 /** Fired (bubbling) when a sources drawer opens, so the thread stops following new text. */
 export const SOURCES_OPEN_EVENT = 'sourcesopen';
 
+/** `source_dataset` of chunks from the student's own files (not corpus rows). */
+const USER_UPLOAD = 'user_upload';
+
 /** "Verified sources (top 3)": the rows retrieved for a Twins for Change answer. */
 @Component({
   selector: 'app-sources',
@@ -39,11 +42,13 @@ export class Sources {
   protected readonly items = computed(() =>
     this.sources().map((source) => ({
       ...source,
+      upload: source.source_dataset === USER_UPLOAD,
       subject: subjectOf(source.source_dataset),
       context: splitSearchContext(source.search_context, source.source_dataset),
       segments: parsePedagogicalAnswer(source.pedagogical_answer),
     })),
   );
+  protected readonly hasUpload = computed(() => this.items().some((item) => item.upload));
   protected readonly count = computed(() => {
     const n = this.items().length;
     return n === 1 ? '1 document' : `${n} documents`;

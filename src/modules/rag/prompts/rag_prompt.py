@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+from operator import itemgetter
 
 from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
@@ -10,6 +11,8 @@ from langchain_openai import ChatOpenAI
 from langchain_core.vectorstores import VectorStoreRetriever
 from src.modules.rag.retriever.retrieval import get_hybrid_retriever, format_documents
 from src.modules.rag.prompts.router_prompt import classify
+import pymupdf, unicodedata
+
 
 load_dotenv()
 logger = logging.getLogger("uvicorn.error")
@@ -166,6 +169,13 @@ def is_no_match(answer: str) -> bool:
     """El tutor no tenía nada útil: charla casual (NO_MATCH) o rechazo del Ejemplo 4."""
     return "NO_MATCH" in answer or "verified database" in answer
 
+def load_pdf(path) -> str:
+    text = ""
+    with pymupdf.open(path) as doc:
+        for page in doc:
+            text += page.get_text()
+    return unicodedata.normalize("NFKC", text)
+
 
 def build_rag_chain(retriever: VectorStoreRetriever):
 
@@ -177,8 +187,12 @@ def build_rag_chain(retriever: VectorStoreRetriever):
         | RunnableLambda(ensure_yoruba_first)
     )
 
+    async def gather_docs(x: dict) -> list:
+        # The teacher's uploaded chunks go first, then the verified corpus.
+        return x["extra_docs"] + await retriever.ainvoke(x["question"])
+
     rag_chain = (
-        {"docs": retriever, "question": RunnablePassthrough()} | RunnablePassthrough.assign(answer=answer_chain)
+        {"docs": RunnableLambda(gather_docs), "question": itemgetter("question")} | RunnablePassthrough.assign(answer=answer_chain)
     )
 
     
@@ -188,15 +202,15 @@ def build_rag_chain(retriever: VectorStoreRetriever):
         answer = await general_chain.ainvoke({"question": question})
         return {"docs": [], "answer": answer}  # misma forma que rag_chain
 
-    async def route(question: str) -> dict:
-       
+    async def route(inp: dict) -> dict:
+        question = unicodedata.normalize("NFC", inp["question"])
         if os.getenv("ROUTER_ENABLED", "0") == "1":
             decision = await classify(question)
             if not decision["needs_rag"]:
                 return await ask_general(question)
 
     
-        result = await rag_chain.ainvoke(question)
+        result = await rag_chain.ainvoke({"question": question, "extra_docs": inp["extra_docs"]})
 
         
         if is_no_match(result["answer"]):

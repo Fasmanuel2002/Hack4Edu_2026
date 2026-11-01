@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 class AskRequest(BaseModel):
     question : str
+    session_id : str | None = None  # set to also search the files uploaded in that session
 
 class AskResponse(BaseModel):
     answer : str

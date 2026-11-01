@@ -1,27 +1,18 @@
+import unicodedata, pymupdf, docx
+from fastapi import HTTPException
+import io
 
-from langchain_openai import OpenAI
-from src.modules.rag.prompts.router_prompt import CLASSIFIER_SYSTEM_PROMPT, DEFAULT_ROUTE
-
-def classify_prompt(text: str, model: str, client: OpenAI) -> dict:
-    local_only = {}
-    try:
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": CLASSIFIER_SYSTEM_PROMPT},
-                {"role": "user", "content": text},
-            ],
-            response_format={"type": "json_object"},
-            **local_only,
-        )
-        data = json.loads(response.choices[0].message.content or "")
-    except Exception as error:  # a routing failure must not kill the turn
-        print(f"Clasificador: respuesta no válida ({type(error).__name__}: {error}); se usa la ruta por defecto.")
-        return dict(DEFAULT_ROUTE)
-    wants_code = bool(data.get("wants_code", False))
-    return {
-        # Generated code must follow the repository's conventions, so it always retrieves.
-        "needs_rag": bool(data.get("needs_rag", True)) or wants_code,
-        "wants_code": wants_code,
-        "suggested_filename": data.get("suggested_filename") or None,
-    }
+def extract_text(file_bytes: bytes, filename: str) -> str:
+    name = filename.lower()
+    if name.endswith(".pdf"):
+        text = "".join(p.get_text() for p in pymupdf.open(stream=file_bytes, filetype="pdf"))
+    elif name.endswith(".docx"):
+        text = "\n".join(p.text for p in docx.Document(io.BytesIO(file_bytes)).paragraphs)
+    elif name.endswith(".txt"):
+        text = file_bytes.decode("utf-8", errors="replace")
+    else:
+        raise HTTPException(400, "the format is not supported. Only support PDF, DOCX and TXT")
+    text = unicodedata.normalize("NFC", text).strip()
+    if len(text) < 50:
+        raise HTTPException(422, "No se pudo leer texto (¿PDF escaneado?)")
+    return text

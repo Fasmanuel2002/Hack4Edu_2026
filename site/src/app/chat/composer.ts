@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   ElementRef,
   computed,
   inject,
@@ -9,13 +8,15 @@ import {
   viewChild,
   viewChildren,
 } from '@angular/core';
+import { ApiService } from '../core/api.service';
+import { API_CONFIG } from '../core/config';
 import { ChatStore } from '../core/chat-store';
 import { formatSize } from '../core/format';
 import { TONE_MARKS, insertAtCursor, looksYoruba } from '../core/yoruba';
 import { Icon } from '../shared/icon';
 
-export const ACCEPTED_EXTENSIONS = ['.pdf', '.csv', '.txt', '.md', '.png', '.jpg', '.jpeg', '.webp'];
-const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp'];
+/** The types the backend can read (POST /upload/file). */
+export const ACCEPTED_EXTENSIONS = ['.pdf', '.docx', '.txt'];
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const MAX_HEIGHT_PX = 200;
 
@@ -23,7 +24,11 @@ interface PendingFile {
   readonly id: number;
   readonly name: string;
   readonly size: number;
-  readonly previewUrl: string | null;
+  readonly file: File;
+  /** The session the file was uploaded to; null until it is uploaded. */
+  readonly session: string | null;
+  readonly status: 'ready' | 'uploading' | 'error';
+  readonly error?: string;
 }
 
 function extensionOf(name: string): string {
@@ -50,6 +55,7 @@ function hasFiles(event: DragEvent): boolean {
 })
 export class Composer {
   protected readonly store = inject(ChatStore);
+  private readonly api = inject(ApiService);
   protected readonly marks = TONE_MARKS;
   /** ẹ́ (e with dot below and high tone), shown on the tone bar toggle. */
   protected readonly toneGlyph = '\u1EB9\u0301';
@@ -65,6 +71,7 @@ export class Composer {
   protected readonly toneIndex = signal(0);
   protected readonly message = signal('');
   protected readonly dragging = signal(false);
+  protected readonly uploading = computed(() => this.files().some((f) => f.status === 'uploading'));
   protected readonly canSend = computed(() => this.text().trim().length > 0);
   protected readonly yoruba = computed(() => looksYoruba(this.text()));
 
@@ -72,10 +79,8 @@ export class Composer {
   private readonly toneKeys = viewChildren<ElementRef<HTMLButtonElement>>('toneKey');
   private dragDepth = 0;
   private nextFileId = 0;
-
-  constructor() {
-    inject(DestroyRef).onDestroy(() => this.revokePreviews(this.files()));
-  }
+  private readonly mock = inject(API_CONFIG).useMock;
+  protected readonly mockMode = this.mock;
 
   focus(): void {
     this.input().nativeElement.focus();
@@ -92,7 +97,7 @@ export class Composer {
       return;
     }
     event.preventDefault();
-    this.send();
+    void this.send();
   }
 
   /** The round button: Send, or Stop while an answer is on its way. */
@@ -101,22 +106,42 @@ export class Composer {
     if (this.store.generating()) {
       this.store.stop();
     } else {
-      this.send();
+      void this.send();
     }
   }
 
-  private send(): void {
-    if (!this.canSend() || this.store.generating()) {
+  /** Uploads the attached files to this chat's session, then asks. A failed upload stops the send. */
+  private async send(): Promise<void> {
+    if (!this.canSend() || this.store.generating() || this.uploading()) {
       return;
     }
-    const attachments = this.files().map(({ name, size }) => ({ name, size }));
+    const sessionId = this.store.sessionId();
+    for (const file of this.files().filter((f) => f.session !== sessionId)) {
+      this.setFile(file.id, { status: 'uploading', error: undefined });
+      this.message.set(`Uploading ${file.name}…`);
+      try {
+        await this.api.upload(file.file, sessionId);
+        this.setFile(file.id, { status: 'ready', session: sessionId });
+      } catch (error) {
+        const reason = error instanceof Error ? error.message : `${file.name} was not uploaded.`;
+        this.setFile(file.id, { status: 'error', error: reason });
+        this.message.set(`${reason} The question was not sent. Remove the file or try again.`);
+        return;
+      }
+    }
+    const attachments = this.files().map(({ name, size }) => ({
+      name,
+      size,
+      ...(this.mock ? { demo: true } : {}),
+    }));
     this.store.ask(this.text(), attachments);
     this.setText('');
-    this.revokePreviews(this.files());
     this.files.set([]);
     this.message.set(
       attachments.length
-        ? 'Question sent. The attachments were not sent: the backend cannot receive files yet.'
+        ? this.mock
+          ? 'Question sent. Demo data: the files were not uploaded.'
+          : `Question sent with ${attachments.length === 1 ? '1 file' : `${attachments.length} files`}.`
         : '',
     );
   }
@@ -161,7 +186,6 @@ export class Composer {
   }
 
   protected removeFile(file: PendingFile): void {
-    this.revokePreviews([file]);
     this.files.update((list) => list.filter((f) => f.id !== file.id));
     this.message.set(`Removed ${file.name}.`);
     this.focus();
@@ -173,7 +197,7 @@ export class Composer {
     for (const file of list) {
       const extension = extensionOf(file.name);
       if (!ACCEPTED_EXTENSIONS.includes(extension)) {
-        notes.push(`${file.name} was not added: use PDF, CSV, TXT, MD, PNG, JPG or WEBP files.`);
+        notes.push(`${file.name} was not added: use PDF, DOCX or TXT files.`);
       } else if (file.size > MAX_FILE_BYTES) {
         notes.push(`${file.name} was not added: it is ${formatSize(file.size)}, and the limit is 10 MB.`);
       } else {
@@ -181,14 +205,16 @@ export class Composer {
           id: ++this.nextFileId,
           name: file.name,
           size: file.size,
-          previewUrl: IMAGE_EXTENSIONS.includes(extension) ? URL.createObjectURL(file) : null,
+          file,
+          session: null,
+          status: 'ready',
         });
       }
     }
     if (added.length) {
       this.files.update((current) => [...current, ...added]);
       notes.push(
-        `${added.length === 1 ? '1 file' : `${added.length} files`} attached. Attachments are not sent yet.`,
+        `${added.length === 1 ? '1 file' : `${added.length} files`} attached. ${this.mock ? 'Demo data: files are not uploaded.' : 'They upload when you send.'}`,
       );
     }
     this.message.set(notes.join(' '));
@@ -240,11 +266,7 @@ export class Composer {
     element.style.height = `${Math.min(element.scrollHeight, MAX_HEIGHT_PX)}px`;
   }
 
-  private revokePreviews(files: readonly PendingFile[]): void {
-    for (const file of files) {
-      if (file.previewUrl) {
-        URL.revokeObjectURL(file.previewUrl);
-      }
-    }
+  private setFile(id: number, change: Partial<PendingFile>): void {
+    this.files.update((list) => list.map((f) => (f.id === id ? { ...f, ...change } : f)));
   }
 }

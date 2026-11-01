@@ -6,6 +6,11 @@ import { AnswerSlot, Conversation, CorpusSource, Turn } from './models';
 /** localStorage key. History lives only in this browser; the backend never sees it. */
 export const HISTORY_KEY = 'tfc.chats.v1';
 
+/** A new `session_id` for one conversation. randomUUID needs a secure context (plain http on a school LAN has none). */
+export function newSessionId(): string {
+  return globalThis.crypto?.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+}
+
 const RELOADED = 'The page was reloaded before this answer arrived.';
 
 @Injectable({ providedIn: 'root' })
@@ -44,13 +49,17 @@ export function parseHistory(raw: string | null): Conversation[] {
   if (!Array.isArray(list)) {
     return [];
   }
-  return list.filter(isConversation).map((c) => ({ ...c, turns: c.turns.map(settleTurn) }));
+  // Chats saved before uploads existed have no session id: give them one.
+  return list
+    .filter(isConversation)
+    .map((c) => ({ ...c, sessionId: c.sessionId ?? newSessionId(), turns: c.turns.map(settleTurn) }));
 }
 
-function isConversation(value: unknown): value is Conversation {
+function isConversation(value: unknown): value is Omit<Conversation, 'sessionId'> & { sessionId?: string } {
   const c = value as Conversation | null;
   return (
     typeof c?.id === 'string' &&
+    (c.sessionId === undefined || typeof c.sessionId === 'string') &&
     typeof c.title === 'string' &&
     typeof c.createdAt === 'number' &&
     typeof c.updatedAt === 'number' &&

@@ -110,13 +110,13 @@ describe('Composer sending', () => {
     const big = new File(['x'], 'notes.pdf');
     Object.defineProperty(big, 'size', { value: 11 * 1024 * 1024 });
 
-    component.addFiles([new File(['x'], 'tool.exe'), big, new File(['hello'], 'notes.txt')]);
+    component.addFiles([new File(['x'], 'pic.png'), big, new File(['hello'], 'notes.txt')]);
     fixture.detectChanges();
 
     const message = root.querySelector('[aria-live="polite"]')?.textContent ?? '';
-    expect(message).toContain('tool.exe was not added');
+    expect(message).toContain('pic.png was not added');
     expect(message).toContain('notes.pdf was not added');
     expect(root.querySelectorAll('.file').length).toBe(1);
-    expect(root.textContent).toContain('Attachments are not sent');
+    expect(root.textContent).toContain('Demo data: files are not uploaded');
   });
 });
