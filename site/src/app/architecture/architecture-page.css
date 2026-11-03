@@ -3,7 +3,7 @@
 }
 
 .page {
-  max-width: 52rem;
+  max-width: 64rem;
   margin: 0 auto;
   padding: 2.75rem 1.5rem 3rem;
 }
@@ -12,16 +12,27 @@
   outline: none;
 }
 
-/* Centred serif title and one muted paragraph. */
-.hero {
-  text-align: center;
+/* Left-aligned editorial hero, like the map and comparison pages. */
+.eyebrow {
+  margin: 0 0 1rem;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: clamp(2.25rem, 1.5rem + 2.6vw, 3.625rem);
+  line-height: 1.06;
+  letter-spacing: -0.045em;
 }
 
 .sub {
-  max-width: 38rem;
-  margin: 0.75rem auto 0;
+  max-width: 42rem;
+  margin: 1.25rem 0 0;
   color: var(--text-muted);
-  font-size: 1.03125rem;
+  font-size: 1.125rem;
   text-wrap: pretty;
 }
 
@@ -437,5 +448,58 @@ td .dataset {
   }
   .product:hover {
     transform: none;
+  }
+}
+
+/* The pipeline reads left to right on wide screens: five numbered steps joined by an arrow. */
+@media (min-width: 52rem) {
+  .steps {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.75rem;
+    counter-reset: step;
+  }
+
+  .steps li {
+    position: relative;
+    align-items: stretch;
+    counter-increment: step;
+  }
+
+  .steps .between {
+    display: none;
+  }
+
+  .step {
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .step::before {
+    content: '0' counter(step);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  .steps li + li::after {
+    content: '→';
+    content: '→' / '';
+    position: absolute;
+    top: 50%;
+    left: -0.75rem;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--action-fg);
+    font-size: 0.75rem;
   }
 }

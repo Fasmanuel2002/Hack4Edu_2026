@@ -30,6 +30,26 @@ const EQUATION = new RegExp(
   'gu',
 );
 
+/**
+ * Flag emoji (two regional indicators, such as the Nigerian and British flags the tutor prompt
+ * puts in its headings) show as plain letters on Windows, so they are swapped for the bundled
+ * PNG flags in public/site/flags. A code with no file keeps its emoji.
+ */
+const FLAG_PAIR = /([\u{1F1E6}-\u{1F1FF}])([\u{1F1E6}-\u{1F1FF}])/gu;
+const FLAG_FILES = new Set(
+  'AO BF BI BJ BW CD CF CG CI CM CV DJ DZ EG EH ER ET GA GB GH GM GN GQ GW KE KM LR LS LY MA MG ML MR MU MW MZ NA NE NG RW SC SD SL SN SO SS ST SZ TD TG TN TZ UG ZA ZM ZW'.split(' '),
+);
+
+/** Replaces flag emoji with <img class="flag"> (decorative: the heading text names the language). */
+export function flagImages(html: string): string {
+  return html.replace(FLAG_PAIR, (pair, a: string, b: string) => {
+    const code = String.fromCharCode(a.codePointAt(0)! - 0x1f1e6 + 65, b.codePointAt(0)! - 0x1f1e6 + 65);
+    return FLAG_FILES.has(code)
+      ? `<img class="flag" src="site/flags/${code}.png" alt="" height="16" decoding="async">`
+      : pair;
+  });
+}
+
 /** marked's own escaping: entities such as &amp; are kept, everything else is escaped. */
 const ESCAPE = /[<>"']|&(?!(?:#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g;
 const ESCAPES: Record<string, string> = {
@@ -118,7 +138,7 @@ const md = new Marked({
         return this.parser.parseInline(token.tokens);
       }
       // Text inside raw HTML is escaped too: model output is never parsed as HTML.
-      return markEquations(token.text);
+      return flagImages(markEquations(token.text));
     },
   },
 });

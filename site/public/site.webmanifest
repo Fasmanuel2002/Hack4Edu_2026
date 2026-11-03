@@ -1,0 +1,14 @@
+{
+  "name": "Twins for Change",
+  "short_name": "Twins",
+  "description": "An offline-first bilingual Yorùbá–English AI tutor.",
+  "start_url": "/chat",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#052d4b",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

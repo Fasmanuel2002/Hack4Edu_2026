@@ -41,5 +41,9 @@ export const routes: Routes = [
     title: 'Partner CRM · Twins for Change',
     loadComponent: () => import('./crm/crm-page').then((m) => m.CrmPage),
   },
-  { path: '**', redirectTo: 'chat' },
+  {
+    path: '**',
+    title: 'Page not found · Twins for Change',
+    loadComponent: () => import('./not-found/not-found-page').then((m) => m.NotFoundPage),
+  },
 ];

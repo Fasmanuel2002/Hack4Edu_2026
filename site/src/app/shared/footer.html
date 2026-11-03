@@ -1,0 +1,40 @@
+<footer class="foot">
+  <div class="inner">
+    <div class="brand">
+      <a class="logo" routerLink="/" aria-label="Twins for Change, home">
+        <app-logo [width]="40" />
+        <span class="name" aria-hidden="true">Twins for Change</span>
+      </a>
+      <p>Knowledge should have no borders.</p>
+      <p class="small">An offline-first AI tutor for Yorùbá–English classrooms. More languages are coming.</p>
+    </div>
+
+    <nav aria-label="Product">
+      <h2>Product</h2>
+      <ul>
+        <li><a routerLink="/chat">Open the tutor</a></li>
+        <li><a routerLink="/practice">Practice</a></li>
+        <li><a routerLink="/architecture">How it works</a></li>
+        <li><a routerLink="/difference">What sets us apart</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="Research">
+      <h2>Research</h2>
+      <ul>
+        <li><a routerLink="/mapa">Language map</a></li>
+        <li><a routerLink="/crm">Partner CRM</a></li>
+      </ul>
+    </nav>
+
+    <div class="corpus">
+      <h2>Verified corpus</h2>
+      <p>15,791 rows from AfriMGSM, GSM8K, AfriMMLU, Belebele and MAFAND.</p>
+    </div>
+  </div>
+
+  <div class="legal">
+    <p>© {{ year }} Twins for Change. Built for Hack4Edu 2026.</p>
+    <p>Answers come from verified examples, shown under each reply.</p>
+  </div>
+</footer>

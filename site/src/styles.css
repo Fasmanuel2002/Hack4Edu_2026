@@ -583,6 +583,20 @@ kbd {
  * fade-up for new messages, and a pop for icons that swap in place. "backwards" only fills the
  * delay, so nothing keeps a transform afterwards.
  */
+/* Scroll reveal (see shared/reveal.ts): the class is only added to blocks below the fold. */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.6s var(--ease) var(--reveal-delay, 0ms),
+    transform 0.6s var(--ease) var(--reveal-delay, 0ms);
+}
+
+.reveal.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -768,6 +782,17 @@ kbd {
   letter-spacing: 0.08em;
   line-height: 1.55;
   vertical-align: 0.15em;
+}
+
+/* Flag PNGs that stand in for flag emoji: inline with the heading text, with a hairline edge. */
+.md .flag {
+  display: inline-block;
+  width: auto;
+  height: 0.95em;
+  margin-inline-end: 0.4rem;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--border-mid);
+  vertical-align: -0.1em;
 }
 
 /* The final-answer line: its own callout band. The text is exactly what Gemma wrote. */

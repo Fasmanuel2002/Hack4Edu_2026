@@ -23,6 +23,7 @@
   <!-- Grid rows: the 56px top bar, then the stage that scrolls (thread and docked composer). -->
   <div class="main-col" [attr.inert]="drawerOpen() ? '' : null">
     <app-top-bar
+      variant="app"
       [menu]="menu()"
       [showBrand]="!sidebarShown()"
       [showNewChat]="!sidebarShown()"

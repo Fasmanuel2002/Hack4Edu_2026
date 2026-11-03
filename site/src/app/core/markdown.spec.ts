@@ -1,4 +1,4 @@
-import { isFallbackAnswer, renderLines, renderMarkdown, separateFinalAnswers } from './markdown';
+import { flagImages, isFallbackAnswer, renderLines, renderMarkdown, separateFinalAnswers } from './markdown';
 import { STARTERS } from './starters';
 
 // Yorùbá test strings are written as escapes, copied from the tutor prompt's examples.
@@ -191,5 +191,19 @@ describe('out-of-database answer', () => {
     expect(yo.textContent).toBe(FALLBACK.split('\n')[0]);
     expect(en.hasAttribute('lang')).toBe(false);
     expect(en.textContent).toBe('Sorry, this question is not in our verified database yet.');
+  });
+});
+
+describe('flagImages', () => {
+  it('swaps flag emoji for the bundled PNG flags', () => {
+    const html = flagImages('\u{1F1F3}\u{1F1EC} Yor\u00f9b\u00e1 \u{1F1EC}\u{1F1E7} English');
+    expect(html).toContain('src="site/flags/NG.png"');
+    expect(html).toContain('src="site/flags/GB.png"');
+    expect(html).not.toMatch(/[\u{1F1E6}-\u{1F1FF}]/u);
+  });
+
+  it('keeps a flag that has no file, and lone indicators', () => {
+    expect(flagImages('\u{1F1EB}\u{1F1F7}')).toBe('\u{1F1EB}\u{1F1F7}');
+    expect(flagImages('\u{1F1F3}')).toBe('\u{1F1F3}');
   });
 });

@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, DOCUMENT, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Announcer } from './core/browser';
+import { ScrollProgress } from './shared/scroll-progress';
 
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ScrollProgress],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

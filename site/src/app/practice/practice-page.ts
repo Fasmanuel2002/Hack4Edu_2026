@@ -14,6 +14,7 @@ import { Announcer, MediaQueries } from '../core/browser';
 import { ChatStore } from '../core/chat-store';
 import { LETTERS, Letter, subjectLabel } from '../core/quiz';
 import { QUIZ_BANK } from '../core/quiz-bank';
+import { Footer } from '../shared/footer';
 import { Icon } from '../shared/icon';
 import { TopBar } from '../shared/top-bar';
 
@@ -24,7 +25,7 @@ import { TopBar } from '../shared/top-bar';
 @Component({
   selector: 'app-practice-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TopBar, Icon],
+  imports: [TopBar, Icon, Footer],
   templateUrl: './practice-page.html',
   styleUrl: './practice-page.css',
 })

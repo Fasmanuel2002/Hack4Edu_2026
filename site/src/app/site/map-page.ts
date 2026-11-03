@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Footer } from '../shared/footer';
 import { TopBar } from '../shared/top-bar';
 import { ANALYSIS_DATE } from './research';
 import { AfricaExplorer } from './africa-explorer';
@@ -7,7 +8,7 @@ import { AfricaExplorer } from './africa-explorer';
 @Component({
   selector: 'app-map-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TopBar, AfricaExplorer],
+  imports: [TopBar, Footer, AfricaExplorer],
   templateUrl: './map-page.html',
   styleUrl: './map-page.css',
 })

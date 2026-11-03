@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ThemeService } from '../core/browser';
 import { HealthService } from '../core/health.service';
@@ -37,9 +37,14 @@ const STATUS_TITLE = {
   styleUrl: './top-bar.css',
   host: { '(window:scroll)': 'onWindowScroll()' },
 })
-export class TopBar {
+export class TopBar implements OnInit {
   protected readonly theme = inject(ThemeService);
   protected readonly health = inject(HealthService);
+  /**
+   * 'site' is the website header (How it works, What sets us apart, the map, Open the tutor).
+   * 'app' is the slim header of the tutor workspace (Chat, Practice, API status).
+   */
+  readonly variant = input<'site' | 'app'>('site');
   /** The open-sidebar button; null when the sidebar (or no sidebar) needs none. */
   readonly menu = input<MenuButtonState | null>(null);
   /** Show the mark and name here (when the sidebar, which also shows them, is hidden). */
@@ -56,9 +61,11 @@ export class TopBar {
   protected readonly statusText = computed(() => STATUS_TEXT[this.health.status()]);
   protected readonly statusTitle = computed(() => STATUS_TITLE[this.health.status()]);
 
-  constructor() {
-    // The status pill shows on every route; polling starts once (browser only).
-    this.health.start();
+  ngOnInit(): void {
+    // The status pill belongs to the workspace; polling starts once (browser only).
+    if (this.variant() === 'app') {
+      this.health.start();
+    }
   }
 
   protected onWindowScroll(): void {

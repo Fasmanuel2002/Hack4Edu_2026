@@ -14,44 +14,54 @@
     </button>
   }
   @if (showBrand()) {
-    <a class="brand" routerLink="/chat">
+    <a class="brand" routerLink="/" title="Home">
       <span class="logo-tile"><app-logo [width]="22" /></span>
       <span class="name" aria-hidden="true">Twins for Change</span>
     </a>
   }
   <!-- Text links when there is room; icons with the same accessible names when narrow. -->
   <nav class="topnav" aria-label="Main">
-    <a routerLink="/" title="Home"><app-icon name="home" /><span class="nav-text">Home</span></a>
-    <a routerLink="/chat" routerLinkActive="current" ariaCurrentWhenActive="page" title="Chat">
-      <app-icon name="chat" /><span class="nav-text">Chat</span>
-    </a>
-    <a routerLink="/practice" routerLinkActive="current" ariaCurrentWhenActive="page" title="Practice">
-      <app-icon name="target" /><span class="nav-text">Practice</span>
-    </a>
-    <a routerLink="/architecture" routerLinkActive="current" ariaCurrentWhenActive="page" title="How it works">
-      <app-icon name="layers" /><span class="nav-text">How it works</span>
-    </a>
-    <a routerLink="/difference" routerLinkActive="current" ariaCurrentWhenActive="page" title="What sets us apart">
-      <app-icon name="columns" /><span class="nav-text">What sets us apart</span>
-    </a>
+    @if (variant() === 'app') {
+      <a routerLink="/chat" routerLinkActive="current" ariaCurrentWhenActive="page" title="Chat">
+        <app-icon name="chat" /><span class="nav-text">Chat</span>
+      </a>
+      <a routerLink="/practice" routerLinkActive="current" ariaCurrentWhenActive="page" title="Practice">
+        <app-icon name="target" /><span class="nav-text">Practice</span>
+      </a>
+    } @else {
+      <a routerLink="/architecture" routerLinkActive="current" ariaCurrentWhenActive="page" title="How it works">
+        <app-icon name="layers" /><span class="nav-text">How it works</span>
+      </a>
+      <a routerLink="/difference" routerLinkActive="current" ariaCurrentWhenActive="page" title="What sets us apart">
+        <app-icon name="columns" /><span class="nav-text">What sets us apart</span>
+      </a>
+      <a routerLink="/mapa" routerLinkActive="current" ariaCurrentWhenActive="page" title="Language map">
+        <app-icon name="globe" /><span class="nav-text">Language map</span>
+      </a>
+      <a class="boxed" routerLink="/crm" routerLinkActive="current" ariaCurrentWhenActive="page" title="Partner CRM">
+        <app-icon name="grid" /><span class="nav-text">CRM</span>
+      </a>
+    }
   </nav>
   <span class="gap"></span>
-  @if (health.status() === 'offline') {
-    <button
-      type="button"
-      class="status"
-      aria-label="API offline. Check again"
-      [title]="statusTitle()"
-      (click)="health.check()"
-    >
-      <span class="dot" data-state="offline" aria-hidden="true"></span>
-      <span class="status-text" aria-hidden="true">{{ statusText() }}</span>
-    </button>
-  } @else {
-    <p class="status" [title]="statusTitle()">
-      <span class="dot" [attr.data-state]="health.status()" aria-hidden="true"></span>
-      <span class="visually-hidden">API: </span><span class="status-text">{{ statusText() }}</span>
-    </p>
+  @if (variant() === 'app') {
+    @if (health.status() === 'offline') {
+      <button
+        type="button"
+        class="status"
+        aria-label="API offline. Check again"
+        [title]="statusTitle()"
+        (click)="health.check()"
+      >
+        <span class="dot" data-state="offline" aria-hidden="true"></span>
+        <span class="status-text" aria-hidden="true">{{ statusText() }}</span>
+      </button>
+    } @else {
+      <p class="status" [title]="statusTitle()">
+        <span class="dot" [attr.data-state]="health.status()" aria-hidden="true"></span>
+        <span class="visually-hidden">API: </span><span class="status-text">{{ statusText() }}</span>
+      </p>
+    }
   }
   @if (showNewChat()) {
     <button type="button" class="icon-btn" aria-label="New chat" title="New chat" (click)="newChatRequest.emit()">
@@ -71,4 +81,9 @@
     <app-icon name="sun" class="sun" />
     <app-icon name="moon" class="moon" />
   </button>
+  @if (variant() === 'site') {
+    <a class="cta" routerLink="/chat" title="Open the tutor">
+      <span class="nav-text">Open the tutor</span><app-icon name="arrowUpRight" />
+    </a>
+  }
 </header>

@@ -1,16 +1,40 @@
 <app-top-bar />
 
-<main id="main" class="page" tabindex="-1">
-  <header class="hero">
-    <h1>What sets us apart</h1>
+<main id="main" tabindex="-1">
+  <header class="hero wrap">
+    <p class="eyebrow">Cost comparison</p>
+    <h1>What sets us <em>apart.</em></h1>
     <p class="sub">
       A school in rural Sub-Saharan Africa can't count on a satellite link or a per-token bill. Twins for
       Change runs on one small computer in the classroom, so the cost stays flat while cloud AI keeps
       charging.
     </p>
+    <div class="cta">
+      <a class="btn primary" routerLink="/chat">Open the tutor <app-icon name="arrowUpRight" /></a>
+      <a class="btn" routerLink="/architecture">How it works</a>
+    </div>
   </header>
 
-  <section aria-labelledby="chart-title">
+  <section class="wrap" aria-labelledby="facts-title">
+    <h2 id="facts-title" class="visually-hidden">Key numbers</h2>
+    <dl class="facts">
+      <div>
+        <dt><span [appCountUp]="74.8" [decimals]="1"></span>–<span [appCountUp]="86.1" [decimals]="1"></span>%</dt>
+        <dd>lower five-year cost than the cloud setups with an API ($1,005 vs $3,996 – $7,222)</dd>
+      </div>
+      <div>
+        <dt>$0</dt>
+        <dd>a year for tokens and internet. Only maintenance remains ($35 a year)</dd>
+      </div>
+      <div>
+        <dt><span [appCountUp]="4.8" [decimals]="1"></span> months</dt>
+        <dd>to pay back the hardware against the satellite option</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="band" aria-labelledby="chart-title"><div class="wrap">
+    <p class="eyebrow">The benchmark</p>
     <h2 id="chart-title">Total cost of ownership per school</h2>
     <p class="lede">Hardware, solar kit, connectivity, tokens and upkeep, in US dollars. Shorter is cheaper.</p>
 
@@ -29,7 +53,6 @@
           <li>
             <button type="button" [attr.aria-pressed]="focus() === s.id" (click)="toggleFocus(s.id)">
               <span class="swatch" [attr.data-sys]="s.id" aria-hidden="true"></span>{{ s.name }}
-              @if (s.ours) { <strong class="us">Ours</strong> }
             </button>
           </li>
         }
@@ -57,48 +80,208 @@
         }
       </div>
       <figcaption>
-        Source: financial model <code>investigacion_financiera_deeplanguage_africa.xlsx</code>. Estimates for a
-        40-student classroom (400 questions a day), not measured results. TCO = initial hardware + n years of
-        running costs.
+        Source: the cost study's financial model. Estimates for a 40-student classroom (400 questions a day),
+        not measured results. TCO = initial hardware + n years of running costs.
       </figcaption>
     </figure>
-  </section>
+  </div></section>
 
-  <section aria-labelledby="facts-title">
-    <h2 id="facts-title">What the numbers say</h2>
-    <dl class="facts">
-      <div>
-        <dt>74.8% – 86.1%</dt>
-        <dd>lower five-year cost than the cloud setups with an API ($1,005 vs $3,996 – $7,222)</dd>
-      </div>
-      <div>
-        <dt>$0</dt>
-        <dd>a year for tokens and internet. Only maintenance remains ($35 a year)</dd>
-      </div>
-      <div>
-        <dt>4.8 months</dt>
-        <dd>to pay back the hardware against the satellite option</dd>
-      </div>
-    </dl>
-  </section>
+  <section class="wrap calc" aria-labelledby="calc-title">
+    <p class="eyebrow">Savings calculator</p>
+    <h2 id="calc-title">What would your network save?</h2>
+    <p class="lede">Pick how many schools and how long. Costs scale from the per-school figures above.</p>
 
-  <section aria-labelledby="why-title">
-    <h2 id="why-title">Why it works offline</h2>
-    <p class="lede">
-      After a one-time setup, everything runs on the classroom machine: Gemma 3 4B for answers and hybrid
-      search over 15,791 verified Yorùbá–English rows, so answers come from real data.
-      <a routerLink="/architecture">See how it works</a>.
+    <div class="calc-grid" appReveal>
+      <div class="calc-controls">
+        <div class="field">
+          <label for="schools"><span>Schools</span><output for="schools">{{ calc().n }}</output></label>
+          <input
+            id="schools"
+            type="range"
+            min="0"
+            [max]="schoolSteps.length - 1"
+            step="1"
+            [value]="schoolIdx()"
+            [attr.aria-valuetext]="calc().n + (calc().n === 1 ? ' school' : ' schools')"
+            (input)="setSchools($event)"
+          />
+          <span class="ticks" aria-hidden="true">
+            @for (n of schoolSteps; track n) { <i>{{ n }}</i> }
+          </span>
+        </div>
+        <div class="field">
+          <span id="span-label" class="label">Time</span>
+          <div class="seg" role="group" aria-labelledby="span-label">
+            @for (y of yearsLabel; track y; let i = $index) {
+              <button type="button" [attr.aria-pressed]="horizonIdx() === i" (click)="horizonIdx.set(i)">{{ y }}</button>
+            }
+          </div>
+        </div>
+        <div class="field">
+          <span id="rival-label" class="label">Compared with</span>
+          <div class="seg wrap-seg" role="group" aria-labelledby="rival-label">
+            @for (r of rivals; track r.id) {
+              <button type="button" [attr.aria-pressed]="rivalId() === r.id" (click)="rivalId.set(r.id)">{{ r.name.replace('Cloud · ', '') }}</button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-result">
+        <p class="kicker">You would save</p>
+        <p class="save">{{ usd(calc().saved) }}</p>
+        <p class="result-line" role="status">
+          {{ calc().pct.toFixed(1) }}% less over {{ calc().years }} across {{ calc().n }}
+          {{ calc().n === 1 ? 'school' : 'schools' }}, compared with {{ calc().rival.replace('Cloud · ', '') }}.
+        </p>
+        <div class="duel" aria-hidden="true">
+          <div class="duel-row"><span>Twins for Change</span><b>{{ usd(calc().ours) }}</b></div>
+          <div class="duel-track"><i class="ours-bar" [style.width.%]="calc().ourWidth"></i></div>
+          <div class="duel-row"><span>{{ calc().rival.replace('Cloud · ', '') }}</span><b>{{ usd(calc().theirs) }}</b></div>
+          <div class="duel-track"><i class="their-bar"></i></div>
+        </div>
+      </div>
+    </div>
+    <p class="note">
+      A simple scaling of the Ryzen setup against the chosen cloud setup. The study's own 100-school cash
+      flow uses a more conservative case, so some of its totals differ. Estimates, not measured results.
     </p>
   </section>
 
-  <section aria-labelledby="next-title">
-    <h2 id="next-title">Keep exploring</h2>
-    <ul class="cards">
-      @for (l of links; track l.to) {
+  <section class="wrap tokens" aria-labelledby="tokens-title">
+    <p class="eyebrow">Tokens</p>
+    <h2 id="tokens-title">In the cloud, every question has a price. Here it is $0.</h2>
+    <p class="lede">
+      A cloud tutor bills for every token it reads and writes. Each question carries the tutor
+      instructions, worked examples, the 3 retrieved sources and the question itself, so a school's bill
+      grows with every student who asks.
+    </p>
+
+    <dl class="traffic" appReveal>
+      @for (t of traffic; track t.value) {
+        <div><dt>{{ t.value }}</dt><dd>{{ t.label }}</dd></div>
+      }
+    </dl>
+
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Number of schools">
+        @for (sc of scales; track sc.n) {
+          <button type="button" [attr.aria-pressed]="scale() === sc.n" (click)="scale.set(sc.n)">{{ sc.label }}</button>
+        }
+      </div>
+      <p class="hint">Token bill for one year, by model.</p>
+    </div>
+
+    <ul class="bills" aria-label="Yearly token bill" appReveal>
+      @for (b of bills(); track b.id) {
+        <li class="bill" [class.ours]="b.ours">
+          <span class="who"><strong>{{ b.name }}</strong><small>{{ b.vendor }}</small></span>
+          <span class="track"><span class="fill" [style.width.%]="b.width"></span></span>
+          <span class="amount">{{ money(b.total, scale() === 1) }}@if (b.ours) { <small>no token fees</small> }</span>
+        </li>
+      }
+    </ul>
+
+    <div class="table-wrap" role="region" aria-labelledby="tok-caption" tabindex="0" appReveal>
+      <table>
+        <caption id="tok-caption">Token prices and what one school pays (1,200 tokens in, 350 out per question)</caption>
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col">Input, per 1M tokens</th>
+            <th scope="col">Output, per 1M tokens</th>
+            <th scope="col">Per question</th>
+            <th scope="col">Per month</th>
+            <th scope="col">Per year</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of models; track m.id) {
+            <tr [class.ours]="m.ours">
+              <th scope="row">{{ m.name }}</th>
+              <td>{{ money(m.rate[0], true) }}</td>
+              <td>{{ money(m.rate[1], true) }}</td>
+              <td>{{ m.perQuestion === 0 ? '$0' : '$' + m.perQuestion.toFixed(5) }}</td>
+              <td>{{ money(m.year / 12, true) }}</td>
+              <td>{{ money(m.year, true) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="note">
+      Source: the cost study (section 4.1), at published API prices. Twins for Change runs Gemma 3 4B,
+      Qdrant and BGE-M3 under free licences, so tokens cost nothing.
+    </p>
+
+    <h3 class="sub-h">Cheap tokens are not the whole bill</h3>
+    <p class="lede">
+      A small cloud model looks affordable per token, but it only works if the school has a permanent
+      internet link. That link is the real cost.
+    </p>
+    <ul class="hidden" appReveal>
+      @for (h of hidden; track h.value) {
+        <li><b>{{ h.value }}</b><span>{{ h.text }}</span></li>
+      }
+    </ul>
+  </section>
+
+  <section class="wrap why" aria-labelledby="why-title">
+    <div>
+      <p class="eyebrow">Why it works</p>
+      <h2 id="why-title">Built for classrooms that are offline.</h2>
+      <p class="lede">
+        The savings aren't a trick of pricing. They come from removing the two things a rural school can't
+        rely on: a connection and a bill that grows with every question.
+        <a routerLink="/architecture">See the architecture</a>.
+      </p>
+    </div>
+    <ul class="points" appReveal>
+      @for (pt of points; track pt.title) {
         <li>
-          <a [routerLink]="l.to"><strong>{{ l.title }}</strong><span>{{ l.text }}</span></a>
+          <span class="badge"><app-icon [name]="pt.icon" /></span>
+          <div><h3>{{ pt.title }}</h3><p>{{ pt.text }}</p></div>
         </li>
       }
     </ul>
   </section>
+
+  <section class="wrap built" aria-labelledby="built-title" appReveal>
+    <h2 id="built-title" class="eyebrow">Built on open tools</h2>
+    <ul class="built-row">
+      <li><span class="tile"><img src="brand/ollama.png" alt="" height="22" width="16" /></span>Ollama</li>
+      <li><span class="tile"><img src="brand/qdrant-mark.png" alt="" height="22" width="19" /></span>Qdrant</li>
+      <li>Gemma 3 4B</li>
+      <li>BGE-M3</li>
+      <li>FastAPI</li>
+      <li>Angular</li>
+      <li>Hack4Edu 2026</li>
+    </ul>
+  </section>
+
+  <section class="wrap faq" aria-labelledby="faq-title">
+    <p class="eyebrow">FAQ</p>
+    <h2 id="faq-title">Questions, answered.</h2>
+    <div class="faq-list" appReveal>
+      @for (item of faq; track item.q) {
+        <details name="faq">
+          <summary>{{ item.q }}</summary>
+          <p>{{ item.a }}</p>
+        </details>
+      }
+    </div>
+  </section>
+
+  <section class="closing" aria-labelledby="closing-title">
+    <div class="wrap">
+      <h2 id="closing-title">Knowledge should have no borders.</h2>
+      <p>Ask a question in Yorùbá or English and compare it with plain Gemma.</p>
+      <div class="cta">
+        <a class="btn light" routerLink="/chat">Open the tutor <app-icon name="arrowUpRight" /></a>
+        <a class="btn ghost" routerLink="/mapa">Explore the language map</a>
+      </div>
+    </div>
+  </section>
 </main>
+
+<app-footer />
