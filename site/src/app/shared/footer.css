@@ -102,6 +102,22 @@ a:focus-visible {
   margin: 0;
 }
 
+@media (max-width: 51.98rem) {
+  .inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 1rem;
+  }
+  .brand,
+  .corpus {
+    grid-column: 1 / -1;
+  }
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.5rem;
+  }
+}
+
 @media (min-width: 52rem) {
   .inner {
     grid-template-columns: 1.6fr 1fr 1fr 1.2fr;

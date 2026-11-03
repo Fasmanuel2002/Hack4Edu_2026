@@ -1,7 +1,7 @@
-// Serves the production build (dist/site/browser) the way Vercel does with vercel.json:
+// Serves the production build (dist/site/browser) the way the FastAPI app does in production:
 // existing files first (including architecture/index.html), then every other path, such as
 // /chat or an unknown URL, falls back to the client-side app shell, index.csr.html.
-// Text files are compressed (brotli or gzip) like on Vercel, so Lighthouse numbers are comparable.
+// Text files are compressed (brotli or gzip), so Lighthouse numbers are comparable.
 // No dependencies and no internet needed. Usage: node scripts/serve-dist.mjs  (PORT=4300 default)
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';

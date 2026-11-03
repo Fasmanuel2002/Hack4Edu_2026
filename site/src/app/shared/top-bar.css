@@ -251,10 +251,85 @@ button.status:hover {
   outline-offset: 2px;
 }
 
-@container (max-width: 31.98rem) {
+
+/* Website header on a phone: a labelled menu replaces the row of icons. */
+.menu-btn {
+  display: none;
+  margin-inline-start: 0.125rem;
+}
+
+@container (max-width: 41.98rem) {
+  .site .menu-btn {
+    display: inline-grid;
+  }
+  .site .topnav {
+    display: none;
+  }
+  .site .topnav.open {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    z-index: 4;
+    display: grid;
+    gap: 0.125rem;
+    padding: 0.5rem 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    box-shadow: 0 18px 30px -18px rgb(5 35 69 / 0.35);
+  }
+  .site .topnav.open a {
+    justify-content: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    height: 2.875rem;
+    padding: 0 0.75rem;
+    font-size: 1rem;
+  }
+  .site .topnav.open a.boxed {
+    border: 0;
+  }
+  .site .topnav.open app-icon {
+    display: inline-flex;
+  }
+  .site .topnav.open .nav-text {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+  }
+}
+
+/* Touch screens: controls are at least 44px. */
+@media (pointer: coarse) {
+  .topnav a {
+    min-width: 2.75rem;
+    height: 2.75rem;
+  }
   .cta {
+    height: 2.75rem;
+  }
+  .theme app-icon,
+  .thumb {
     width: 2.25rem;
-    padding: 0;
-    justify-content: center;
+    height: 2.25rem;
+  }
+  .theme[aria-pressed='true'] .thumb {
+    transform: translateX(2.25rem);
+  }
+}
+
+/* The narrowest phones (320px): a little less padding so the header never overflows. */
+@container (max-width: 23.98rem) {
+  .site .cta {
+    margin-inline-start: 0;
+    padding: 0 0.75rem;
+  }
+  .site .menu-btn {
+    margin-inline-start: 0;
+  }
+  .site .theme {
+    margin-inline-start: 0;
   }
 }

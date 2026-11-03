@@ -35,7 +35,7 @@ const STATUS_TITLE = {
   imports: [RouterLink, RouterLinkActive, Icon, Logo],
   templateUrl: './top-bar.html',
   styleUrl: './top-bar.css',
-  host: { '(window:scroll)': 'onWindowScroll()' },
+  host: { '(window:scroll)': 'onWindowScroll()', '(document:keydown.escape)': 'closeMenu()' },
 })
 export class TopBar implements OnInit {
   protected readonly theme = inject(ThemeService);
@@ -66,6 +66,17 @@ export class TopBar implements OnInit {
     if (this.variant() === 'app') {
       this.health.start();
     }
+  }
+
+  /** The website header's menu on a phone (the app header has only two links and needs none). */
+  protected readonly menuOpen = signal(false);
+
+  protected toggleMenu(): void {
+    this.menuOpen.update((open) => !open);
+  }
+
+  protected closeMenu(): void {
+    this.menuOpen.set(false);
   }
 
   protected onWindowScroll(): void {

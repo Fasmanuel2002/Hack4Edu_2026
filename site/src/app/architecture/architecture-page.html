@@ -179,14 +179,14 @@
       <section class="panel" aria-labelledby="cloud-title">
         <h3 id="cloud-title">Cloud demo</h3>
         <ol class="chain">
-          <li><strong>Vercel</strong><span>Angular frontend, static files</span></li>
+          <li><strong>Caddy</strong><span>HTTPS in front of everything, on one VPS</span></li>
           <li>
             <app-icon class="between" name="chevronDown" />
-            <strong>RunPod GPU pod</strong><span>FastAPI with the REST API and RAG logic, reached over HTTPS</span>
+            <strong>FastAPI</strong><span>Serves this website, the REST API and the RAG logic</span>
           </li>
           <li>
             <app-icon class="between" name="chevronDown" />
-            <strong>Ollama and Qdrant</strong><span>LLM inference and the vector database, on the same pod</span>
+            <strong>Ollama and Qdrant</strong><span>LLM inference and the vector database, in Docker on the same server</span>
           </li>
         </ol>
       </section>
@@ -259,7 +259,7 @@
     <div class="table-wrap" role="region" aria-labelledby="api-caption" tabindex="0">
       <table>
         <caption id="api-caption">
-          FastAPI endpoints: port 8000 on a local machine, the RunPod HTTPS address in the cloud
+          FastAPI endpoints: port 8000 on a local machine, the site's own address in the cloud
         </caption>
         <thead>
           <tr>
@@ -300,7 +300,7 @@
       <li>The full answer arrives in one response. The chat reveals it word by word in the browser.</li>
       <li>
         An answer can take a few seconds on a GPU and much longer on a laptop CPU, so the chat waits up
-        to 5 minutes. The RunPod proxy closes requests after about 100 seconds.
+        to 5 minutes.
       </li>
       <li>
         Errors: 422 for an invalid body, 500 when Ollama or Qdrant is unavailable. The chat shows a

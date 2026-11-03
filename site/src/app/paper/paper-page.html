@@ -10,7 +10,7 @@
     </p>
     <div class="cta">
       <a class="btn primary" [href]="pdf" download>Download the PDF <app-icon name="arrowDown" /></a>
-      <a class="btn" href="#read">Read it on this page</a>
+      <a class="btn" href="/paper#read" (click)="scrollToReader($event)">Read it on this page</a>
     </div>
   </header>
 

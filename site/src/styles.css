@@ -363,6 +363,19 @@ kbd {
     color 0.15s ease;
 }
 
+/* Touch screens: 44px icon buttons, and 16px form text so iPhones do not zoom in on focus. */
+@media (pointer: coarse) {
+  .icon-btn {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+  input:not([type='range'], [type='checkbox'], [type='radio']),
+  textarea,
+  select {
+    font-size: 1rem !important;
+  }
+}
+
 /* 30px message actions: Copy, Regenerate. */
 .act {
   --icon-size: 1rem;

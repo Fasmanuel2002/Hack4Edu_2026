@@ -1,4 +1,4 @@
-<header class="topbar" [class.lined]="lined()" [class.extra]="!!menu()">
+<header class="topbar" [class.lined]="lined()" [class.extra]="!!menu()" [class.site]="variant() === 'site'">
   @if (menu(); as state) {
     <button
       type="button"
@@ -20,7 +20,7 @@
     </a>
   }
   <!-- Text links when there is room; icons with the same accessible names when narrow. -->
-  <nav class="topnav" aria-label="Main">
+  <nav id="site-nav" class="topnav" aria-label="Main" [class.open]="menuOpen()" (click)="closeMenu()">
     @if (variant() === 'app') {
       <a routerLink="/chat" routerLinkActive="current" ariaCurrentWhenActive="page" title="Chat">
         <app-icon name="chat" /><span class="nav-text">Chat</span>
@@ -83,7 +83,17 @@
   </button>
   @if (variant() === 'site') {
     <a class="cta" routerLink="/chat" title="Open the tutor">
-      <span class="nav-text">Open the tutor</span><app-icon name="arrowUpRight" />
+      Open the tutor <app-icon name="arrowUpRight" />
     </a>
+    <button
+      type="button"
+      class="icon-btn menu-btn"
+      aria-controls="site-nav"
+      [attr.aria-expanded]="menuOpen()"
+      [attr.aria-label]="menuOpen() ? 'Close menu' : 'Open menu'"
+      (click)="toggleMenu()"
+    >
+      <app-icon [name]="menuOpen() ? 'x' : 'menu'" />
+    </button>
   }
 </header>

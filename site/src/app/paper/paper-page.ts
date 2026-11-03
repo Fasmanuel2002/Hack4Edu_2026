@@ -46,6 +46,13 @@ export class PaperPage {
     },
   ] as const;
 
+  /** With <base href="/"> a bare #read link would leave the page, so scroll to the reader directly. */
+  protected scrollToReader(event: Event): void {
+    event.preventDefault();
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('read')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+
   protected width(value: number): number {
     return Math.max(value, 0.6);
   }

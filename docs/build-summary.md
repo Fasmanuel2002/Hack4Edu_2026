@@ -24,7 +24,7 @@ and backend are unchanged.
   links. One quiet line says the tutor supports only Yorùbá and English. Pins are mouse-only
   (`tabindex="-1"`, `aria-hidden`); the list is the keyboard and screen-reader path.
 - Both are client-rendered (the `**` server route); direct visits work through `index.csr.html`
-  (`vercel.json`, `serve-dist.mjs`, FastAPI fallback). Nothing in `app.routes.server.ts` changed.
+  (`serve-dist.mjs`, FastAPI fallback). Nothing in `app.routes.server.ts` changed.
 - Shared files touched: `shared/top-bar.html` (one "Home" link in the main nav), `shared/icon.ts`
   (a `home` icon), `tsconfig.json` (`resolveJsonModule`), `app.routes.ts` (three routes).
 - The Spanish landing text was rewritten in English. Removed or softened: the "millions of people lack
@@ -133,8 +133,8 @@ them. The author can delete them.
 
 | File | Why |
 |---|---|
-| `site/vercel.json` | Needed for routing: in static output mode `/chat` and `/practice` have no HTML file, so a direct visit or reload would 404 on Vercel. The rules send `/architecture` to its prerendered page and every other path that is not a real file to the app shell `index.csr.html`. Vercel serves existing files (including `/fonts/*`) before rewrites. Unchanged. |
-| `site/scripts/serve-dist.mjs` | Local preview of the production build with the same fallback rules and brotli/gzip compression as Vercel. Node built-ins only, offline. **This pass** added the `font/woff2` content type. |
+| `site/vercel.json` | Left over from an earlier plan to host on Vercel. Production runs on a VPS, where the FastAPI app does this routing (`src/modules/app/main.py`), so the file is not used and can be deleted. |
+| `site/scripts/serve-dist.mjs` | Local preview of the production build with the same fallback rules as the FastAPI server and brotli/gzip compression. Node built-ins only, offline. **This pass** added the `font/woff2` content type. |
 | `site/scripts/generate-demo-data.py` | Python standard library only. Regenerates `starters.ts`, `demo-data.ts` and `quiz-bank.ts` (in `src/app/core/`) from `CLAUDE.md` and `dataset_rag.csv` (read only), so Yorùbá text is copied, never retyped. Unchanged in this pass. |
 
 Tools used only for checks, outside the repository: headless Chrome over the DevTools protocol (a
@@ -209,14 +209,9 @@ changed").
 
 ### Deployment and configuration
 
-10. **Mock mode is off in both environment files (author's change).** `environment.ts` (the Vercel
-    build) still has the placeholder `https://<pod-id>-8000.proxy.runpod.net` with
-    `useMock: false`: every question fails with "Could not reach the API at …" (with Retry), and
-    the status shows "API offline". CLAUDE.md (Deployment) says the production build should stay in
-    mock mode until the RunPod URL exists. Decide before deploying: put the real pod URL there
-    (always `https://`), or set `useMock: true` for the Vercel build until the pod exists.
+10. **Production is same-origin.** `environment.ts` has an empty `apiBaseUrl` and `useMock: false`, because the FastAPI app on the VPS serves the site and the API. (An earlier plan used a RunPod URL; it is no longer used.)
 11. **Angular 22 with a global CLI 21.** Inside `site/` the global `ng` delegates to the local CLI
-    22. Angular 22 needs Node ^22.22.3, ^24.15.0 or >= 26: choose Node 22.x or 24.x in Vercel.
+    22. Angular 22 needs Node ^22.22.3, ^24.15.0 or >= 26; the Dockerfile builds the site with Node 22 (`node:22-slim`).
 12. npm 11 on this laptop skipped the install scripts of `fsevents`, `lmdb` and
     `msgpackr-extract` (optional native helpers). The build and the tests work without them.
 
@@ -566,7 +561,7 @@ npm run serve:dist                # same as: node scripts/serve-dist.mjs
 ```
 
 It serves `dist/site/browser` at **http://localhost:4300** (another port: `PORT=4301 npm run
-serve:dist`). Stop it with Ctrl + C. Routing matches `vercel.json`: existing files are served as
+serve:dist`). Stop it with Ctrl + C. Routing matches the FastAPI server: existing files are served as
 they are (including `architecture/index.html` and the fonts); every other path, such as `/`,
 `/chat`, `/practice` or `/any/unknown/path`, returns the app shell `index.csr.html` with status
 200, and the Angular router shows the right page (redirecting `/` and unknown paths to `/chat`).
@@ -583,24 +578,17 @@ Only the two environment files change.
   (uvicorn on port 8000), keep `apiBaseUrl: 'http://localhost:8000'` and `useMock: false` in
   `environment.development.ts`, and run `ng serve`. The status row shows "API online" and, opened,
   "Backend: local, no internet needed after setup". The drawer then shows the real top 3 sources.
-- **Stage 3, RunPod + Vercel:** in `environment.ts` set `apiBaseUrl` to
-  `https://<real-pod-id>-8000.proxy.runpod.net` and `useMock: false` (see item 10). Never use
-  `http://` there (mixed content). Rebuild and deploy.
+- **Stage 3, the VPS:** the production build calls its own origin (`apiBaseUrl: ''`, `useMock: false`). The Dockerfile builds the site and the FastAPI app serves it (see below).
 
-## Vercel settings and deploy steps
+## Deployment on the VPS
 
-| Setting | Value |
-|---|---|
-| Root directory | `site` |
-| Build command | `ng build --configuration production` |
-| Output directory | `dist/site/browser` (from `angular.json`) |
-| Install command | default (`npm install`; `package-lock.json` is in the project) |
-| Node.js version | 22.x or 24.x (Angular 22 requirement) |
-| Base href | `/` (set in `src/index.html`) |
-
-Steps for the author (agents do not deploy): settle item 10 first; commit `site/` and `docs/`;
-import the repository in Vercel with the settings above; deploy; check a reload on `/chat` and
-`/practice`, a direct visit to `/architecture`, and that `/fonts/twins-sans-regular.woff2` loads.
+The author deploys (agents do not). `docker-compose.yml` runs Qdrant, Ollama, the FastAPI app and
+Caddy. The Dockerfile builds the Angular app (`ng build --configuration production`, Node 22) and
+copies `dist/site/browser` into the image. The FastAPI app serves those files, the prerendered
+`/architecture` page, and the app shell `index.csr.html` for client-rendered routes such as `/chat`
+(`src/modules/app/main.py`). Caddy gives HTTPS at `twinsforchange.com` and waits up to 420 seconds
+for an answer. After a deploy, check a reload on `/chat` and `/practice`, a direct visit to
+`/architecture`, and that `/fonts/twins-sans-regular.woff2` loads.
 
 ## Verification of this pass (2026-10-27)
 

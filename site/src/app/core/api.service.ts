@@ -5,7 +5,7 @@ import { AnswerKind, AskResult, CorpusSource, UploadResult } from './models';
 
 /** Client timeout for one answer. CLAUDE.md: never below 120 seconds (laptop CPUs are slow). */
 export const REQUEST_TIMEOUT_MS = 300_000;
-/** RunPod's HTTP proxy closes requests after about 100 seconds. */
+/** Proxies often close a long request after about 100 seconds. */
 const PROXY_LIMIT_MS = 90_000;
 const HEALTH_TIMEOUT_MS = 10_000;
 /** "A short delay" for demo answers, different per endpoint so each loading state shows. */
@@ -153,7 +153,7 @@ export class ApiService {
       if (!isLocalApi(this.config.apiBaseUrl) && Date.now() - started >= PROXY_LIMIT_MS) {
         return new ApiError(
           'proxy-timeout',
-          'The connection closed after about 100 seconds: the RunPod proxy ends long requests. The answer may still be generating on the server. Try again.',
+          'The connection closed before the answer arrived: a proxy may end long requests. The answer may still be generating on the server. Try again.',
         );
       }
       return new ApiError(
@@ -278,7 +278,7 @@ function errorForStatus(status: number): ApiError {
   if (status === 504 || status === 524) {
     return new ApiError(
       'proxy-timeout',
-      `The request timed out at the proxy (${status}). RunPod ends requests after about 100 seconds; the answer may still be generating on the server. Try again.`,
+      `The request timed out at the proxy (${status}). The answer may still be generating on the server. Try again.`,
       status,
     );
   }

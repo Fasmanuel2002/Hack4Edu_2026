@@ -928,3 +928,21 @@ tr.ours {
   .faq-list summary::after,
   .duel-track i { transition: none; }
 }
+
+@media (pointer: coarse) {
+  .seg button,
+  .legend button {
+    min-height: 2.5rem;
+  }
+  .faq-list summary {
+    min-height: 3rem;
+  }
+}
+
+/* Round logos (the BGE panda, the FastAPI circle) fill their tile. */
+.tile img.fill {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}

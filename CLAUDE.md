@@ -4,7 +4,7 @@
 - Twins for Change is an offline-first AI tutor for bilingual Yorùbá–English classrooms, built for Hack4Edu 2026: **Reto 06 (La escuela habla tu idioma)** and **Reto 02 (Aprender sin conexión)**.
 - The problem: Gemma 3 4B makes things up when it answers in Yorùbá. Twins for Change retrieves verified bilingual examples with hybrid RAG and gives them to Gemma, so it answers from real data. The demo compares plain Gemma with Gemma + RAG on the same question.
 - This file specifies the web frontend: a chat workspace in the style of ChatGPT and Gemini, connected to the FastAPI backend in this repository.
-- Architecture: the Angular frontend runs on Vercel and calls the FastAPI backend (REST API and RAG logic). The backend runs on a RunPod GPU pod together with Ollama (LLM inference) and Qdrant (vector database). The same backend can also run on one local machine with no internet, which is the offline mode for schools. See Deployment for the stages.
+- Architecture: one VPS runs everything with Docker Compose: Caddy (HTTPS), the FastAPI backend (REST API and RAG logic, which also serves the built Angular frontend), Ollama (LLM inference) and Qdrant (vector database). The same backend can also run on one local machine with no internet, which is the offline mode for schools. See Deployment for the stages.
 - Future versions will add more languages. This version supports only Yorùbá and English: the UI may say that more languages are coming, but must not present any other language as supported.
 
 ## Audience and tone
@@ -47,9 +47,9 @@ Section labels inside `pedagogical_answer` start a line and end with `]:`. Style
 - Search: Qdrant collection `hack4edu_collection` in hybrid mode. Dense vectors come from `bge-m3` through Ollama (1024 dimensions, cosine distance). Sparse vectors come from `Qdrant/bm25` through FastEmbed (IDF modifier). The two result lists are combined with Reciprocal Rank Fusion (RRF), and the top 3 documents are returned. `k=3` is the number of results, not an RRF parameter.
 - Search matches `search_context`. Gemma reads `pedagogical_answer`.
 - Generation: `gemma3:4b` through Ollama, with `temperature=0.1` and `num_ctx=8192`. The tutor prompt asks for the main explanation in Yorùbá, key terms and a summary in English, and step-by-step reasoning. When nothing relevant was retrieved, it asks Gemma to say that the topic is not in the database yet.
-- In local mode, everything runs on one machine, and internet is needed only once, to download the Ollama models, the Qdrant Docker image, and the BM25 model. In the cloud setup, the same backend runs on RunPod.
+- In local mode, everything runs on one machine, and internet is needed only once, to download the Ollama models, the Qdrant Docker image, and the BM25 model. In the cloud setup, the same backend runs on the VPS.
 
-### Backend API (FastAPI, `src/modules/app/`; base URL `http://localhost:8000` locally, the RunPod HTTPS URL in production)
+### Backend API (FastAPI, `src/modules/app/`; base URL `http://localhost:8000` locally, the site's own address in production)
 | Method | Path | Request body | Response | Use |
 |---|---|---|---|---|
 | POST | `/ask/rag` | `{"question": string}` | `{"answer": string, "sources": [{"source_dataset": string, "search_context": string, "pedagogical_answer": string}]}` | Twins for Change: Gemma + RAG. `sources` are the 3 retrieved documents, best first, with no scores |
@@ -72,7 +72,7 @@ For each item below, build the UI with a typed mock, label mock content as "Demo
 ### Mock mode
 - Two environment files in `site/src/environments/` define `apiBaseUrl` and `useMock`:
   - Development (`ng serve` and local testing): `apiBaseUrl` is `http://localhost:8000`.
-  - Production (the Vercel build): `apiBaseUrl` is the RunPod URL, `https://<pod-id>-8000.proxy.runpod.net`. Until that URL exists, use a clearly marked placeholder.
+  - Production (the VPS build): `apiBaseUrl` is an empty string, because the FastAPI backend serves the frontend and the API calls are same-origin.
   - `useMock` is `true` in both by default, because no backend runs on the development laptop. Switching to a real backend must only require changing these values.
 - With `useMock` on, both endpoints return typed mock answers after a short delay, with mock sources copied from real corpus rows. Mock answers are labelled "Demo data".
 
@@ -94,7 +94,7 @@ For each item below, build the UI with a typed mock, label mock content as "Demo
   - `LLM: gemma3:4b (Ollama)`
   - `Search: Qdrant hybrid (bge-m3 + BM25, RRF)`
   - `API: online / offline`, from polling `GET /health/health` every 30 seconds. In mock mode, show "Demo mode".
-  - `Backend: local, no internet needed after setup` when `apiBaseUrl` points to localhost, and `Backend: RunPod (cloud)` otherwise.
+  - `Backend: local, no internet needed after setup` when `apiBaseUrl` points to localhost, and `Backend: VPS (cloud)` otherwise.
 
 ### 2. Main chat area (`<main>`)
 - **Welcome screen** when the chat is empty: Twins for Change branding, the greeting "Báwo ni! How can we learn together today?", and 4 starter cards. Each card shows a Yorùbá question with its English translation underneath, and clicking it sends the Yorùbá question right away. These are real corpus questions. Use the verified answers only in mock data, not on the cards.
@@ -117,7 +117,7 @@ For each item below, build the UI with a typed mock, label mock content as "Demo
 ### 4. Routes
 - `/chat` (default): the chat workspace described above.
 - `/practice`: the Practice page described in feature 6, rendered in the browser like `/chat`.
-- `/architecture`: how Twins for Change works, as a diagram: question → hybrid search over the 15,791-row corpus (bge-m3 + BM25, RRF, top 3) → tutor prompt → gemma3:4b → bilingual answer. Also show the deployment: Vercel (Angular frontend) → RunPod (FastAPI, REST API, RAG logic) → Ollama (LLM inference) and Qdrant (vector database), and the local mode where all of it runs on one machine with no internet. Include the corpus table. This route is prerendered.
+- `/architecture`: how Twins for Change works, as a diagram: question → hybrid search over the 15,791-row corpus (bge-m3 + BM25, RRF, top 3) → tutor prompt → gemma3:4b → bilingual answer. Also show the deployment: Caddy (HTTPS) → FastAPI (serves the website, the REST API and the RAG logic) → Ollama (LLM inference) and Qdrant (vector database), all on one VPS, and the local mode where all of it runs on one machine with no internet. Include the corpus table. This route is prerendered.
 - The header links to all three routes (Chat, Practice, How it works) and has a light/dark theme toggle.
 
 ### 5. Theme
@@ -161,17 +161,15 @@ A plain quiz page. No gamification: no XP, levels, streaks, badges, daily challe
   - The first start embeds all 15,791 rows before it accepts requests. Later starts only connect.
 - Frontend: `cd site && ng serve` (http://localhost:4200). Production build: `ng build --configuration production`.
 
-## Deployment (Vercel and RunPod)
+## Deployment (VPS)
 - Stages:
   1. Now: the frontend only, in mock mode, on the development laptop.
   2. Next, done by the author on a work PC with an RTX 4090: everything local. The backend runs at `http://localhost:8000` with the commands above, and the frontend runs with `ng serve` and `useMock` set to `false`.
-  3. Then: the backend (FastAPI + Ollama + Qdrant) runs on a RunPod GPU pod, with port 8000 exposed through RunPod's HTTPS proxy (`https://<pod-id>-8000.proxy.runpod.net`). The frontend runs on Vercel, with the production `apiBaseUrl` set to that URL.
-- The author deploys. Agents never run the Vercel or RunPod CLIs, deploy, or change Vercel or RunPod settings. Packaging the backend for RunPod is backend work, outside the frontend agents' scope.
-- Never point the Vercel build at an `http://` backend address: browsers block HTTPS pages from calling HTTP addresses (mixed content). The RunPod proxy URL is HTTPS, so it works.
-- Until the RunPod URL exists, the production build uses mock mode, with every mock answer labelled "Demo data". List the missing RunPod URL under `needs_review`.
-- The backend can be unreachable: the pod may be stopped, or it may still be loading the 15,791 documents after a start. Then show "API: offline" and a clear message instead of a broken chat. RunPod's HTTP proxy also closes requests that take longer than about 100 seconds, so show a clear timeout message if that happens.
-- Vercel project settings: root directory `site/`, build command `ng build --configuration production`, output directory set to the browser folder defined in `angular.json` (for example `dist/site/browser`). Base href is `/`.
-- Client-rendered routes such as `/chat` must load on a direct visit or reload, which needs a fallback to the app shell (`index.csr.html` in static output mode). Add `site/vercel.json` only if Vercel needs it for that, and justify it in `docs/build-summary.md`.
+  3. Then: production on one VPS with Docker Compose (`docker-compose.yml`): Qdrant, Ollama, the FastAPI app and Caddy, which gives HTTPS at `twinsforchange.com`. The Dockerfile builds the Angular app (`ng build --configuration production`) and the FastAPI app serves it, so the frontend and the API share one origin and the production `apiBaseUrl` is empty.
+- The author deploys. Agents never deploy, run commands on the server, or change the VPS, Docker, Caddy or DNS settings. Packaging the backend is backend work, outside the frontend agents' scope.
+- Keep the production build calling its own origin over HTTPS: browsers block HTTPS pages from calling HTTP addresses (mixed content).
+- The backend can be unreachable: a container may be stopped, or it may still be loading the 15,791 documents after a start. Then show "API: offline" and a clear message instead of a broken chat. A proxy can also close a very long request (Caddy is set to wait up to 420 seconds), so show a clear timeout message if that happens.
+- Client-rendered routes such as `/chat` must load on a direct visit or reload: the FastAPI app returns the app shell (`index.csr.html` in static output mode) for them, and the prerendered page for `/architecture` (`src/modules/app/main.py`). Base href is `/`.
 
 ## Workflow rules
 - Only the developer agent edits files in `site/`.
@@ -192,7 +190,7 @@ A plain quiz page. No gamification: no XP, levels, streaks, badges, daily challe
 
 ## Deliverables
 - `site/`: the Angular project, buildable and runnable locally.
-- `docs/build-summary.md`: at the top, every external package or asset with its justification. Then `needs_review` (backend gaps and open decisions). Then what was built, key decisions, how to run it, how to switch from mock mode to the real backend, and the Vercel settings and deploy steps.
+- `docs/build-summary.md`: at the top, every external package or asset with its justification. Then `needs_review` (backend gaps and open decisions). Then what was built, key decisions, how to run it, how to switch from mock mode to the real backend, and how it is deployed on the VPS.
 - `docs/qa-report.md`: pass, fail, or skipped results for every check, with severity and location.
 
 ## Communication

@@ -330,3 +330,11 @@ h2 {
   .bar { animation: none; }
   .btn { transition: none; }
 }
+
+@media (pointer: coarse) {
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.5rem;
+  }
+}
