@@ -21,17 +21,9 @@
 
     <div id="landing-menu" class="menu" [class.open]="menuOpen()">
       <nav aria-label="Main">
-        <ul class="links">
-          <li><a href="#mision" (click)="closeMenu()">Mission</a></li>
-          <li><a href="#tutor" (click)="closeMenu()">Tutor</a></li>
-          <li><a href="#mapa" (click)="closeMenu()">Map</a></li>
-          <li><a href="#investigacion" (click)="closeMenu()">Research</a></li>
-          <li><a href="#colabora" (click)="closeMenu()">Collaborate</a></li>
-          <li><a href="#metodologia" (click)="closeMenu()">Method</a></li>
-        </ul>
         <ul class="links pages">
-          <li><a routerLink="/practice" (click)="closeMenu()">Practice</a></li>
           <li><a routerLink="/architecture" (click)="closeMenu()">How it works</a></li>
+          <li><a routerLink="/difference" (click)="closeMenu()">Why us</a></li>
           <li><a class="boxed" routerLink="/crm" (click)="closeMenu()">CRM</a></li>
         </ul>
       </nav>
@@ -425,6 +417,7 @@
         <li><a routerLink="/chat">Chat</a></li>
         <li><a routerLink="/practice">Practice</a></li>
         <li><a routerLink="/architecture">How it works</a></li>
+        <li><a routerLink="/difference">What sets us apart</a></li>
         <li><a routerLink="/mapa">Map</a></li>
         <li><a routerLink="/crm">CRM</a></li>
       </ul>

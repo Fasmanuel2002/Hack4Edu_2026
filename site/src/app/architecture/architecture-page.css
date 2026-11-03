@@ -302,3 +302,140 @@ td .dataset {
     padding-inline: 1rem;
   }
 }
+
+/* The engine: two product cards, each with its logo on a white tile (the marks are made for white). */
+.engine-lede {
+  margin: -0.25rem 0 1rem;
+  color: var(--text-muted);
+}
+
+.engine {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.product {
+  --brand: #052d4b;
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+  padding: 1.25rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--raised);
+  box-shadow: var(--shadow);
+  transition:
+    transform 0.25s var(--ease),
+    border-color 0.2s ease;
+}
+
+.product.qdrant {
+  --brand: #dc244c;
+}
+
+/* A soft glow in the product's colour behind the logo, and a thin top edge. */
+.product::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--brand);
+}
+
+.product::after {
+  content: '';
+  position: absolute;
+  top: -3rem;
+  left: -3rem;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--brand) 22%, transparent), transparent);
+  pointer-events: none;
+}
+
+.product:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand);
+}
+
+.product > * {
+  position: relative;
+  z-index: 1;
+}
+
+.product-head {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.product-logo {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgb(8 38 65 / 0.12),
+    0 8px 20px -8px rgb(8 38 65 / 0.35);
+}
+
+.product-logo img {
+  display: block;
+  width: auto;
+  height: 2.5rem;
+}
+
+.product h3 {
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.role {
+  margin: 0.125rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.product > p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chips li {
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--border-mid);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product {
+    transition: none;
+  }
+  .product:hover {
+    transform: none;
+  }
+}

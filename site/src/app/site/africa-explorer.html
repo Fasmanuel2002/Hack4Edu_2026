@@ -1,5 +1,16 @@
 <div class="workspace">
   <section class="area" aria-label="Map of Africa">
+    <div class="offline-stat">
+      <p class="big"><b>≈ {{ million(offline().people) }}</b> people not using the internet</p>
+      <p class="small">
+        In {{ offline().counted }} of {{ offline().shown }} countries on screen with a comparable 2024 figure
+        (population × share not using the internet). An orientative estimate, not a survey count.
+      </p>
+      @if (metric() !== 'internet') {
+        <button type="button" class="btn-show" (click)="showOnMap()">Show on the map</button>
+      }
+    </div>
+
     <div class="controls">
       <label class="search">
         <span class="visually-hidden">Search country or language</span>
@@ -23,6 +34,13 @@
     <div class="surface">
       <!-- Pins repeat the country picker for mouse users; the picker is the keyboard and screen-reader path. -->
       <img src="site/map-africa.webp" width="900" height="785" alt="Reference map of Africa" />
+      @if (metric() === 'internet') {
+        @for (c of filtered(); track c.name) {
+          @if (halo(c); as size) {
+            <span class="halo" aria-hidden="true" [style.left.%]="x(c.lon)" [style.top.%]="y(c.lat)" [style.width.rem]="size" [style.height.rem]="size"></span>
+          }
+        }
+      }
       @for (c of filtered(); track c.name) {
         <button
           type="button"
@@ -43,6 +61,9 @@
     <ul class="legend" aria-label="Pin legend">
       @for (item of legend(); track item.text) {
         <li><i class="key" [class]="'key ' + item.kind" aria-hidden="true"></i>{{ item.text }}</li>
+      }
+      @if (metric() === 'internet') {
+        <li><i class="halo-key" aria-hidden="true"></i>Red circle: its size shows how many people are not online</li>
       }
     </ul>
     <p class="caption">The image and pins are approximate. They are not official borders or precise geographic data.</p>
@@ -69,6 +90,7 @@
       <dl class="stats">
         <div><dt>Population ({{ c.year || 'year not available' }})</dt><dd>{{ people(c.population) }}</dd></div>
         <div><dt>Internet use ({{ c.internetYear || 'year not available' }})</dt><dd>{{ internet(c.internetPct) }}</dd></div>
+        <div><dt>Not using the internet (estimate)</dt><dd>{{ people(c.offlineEstimate ?? null) }}</dd></div>
         <div><dt>Languages selected in the review</dt><dd>{{ languages().length }}</dd></div>
         <div><dt>With no evidence in the sample</dt><dd>{{ c.unknownCount }}</dd></div>
       </dl>

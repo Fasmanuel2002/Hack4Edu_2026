@@ -32,6 +32,11 @@ export const routes: Routes = [
     loadComponent: () => import('./architecture/architecture-page').then((m) => m.ArchitecturePage),
   },
   {
+    path: 'difference',
+    title: 'What sets us apart · Twins for Change',
+    loadComponent: () => import('./difference/difference-page').then((m) => m.DifferencePage),
+  },
+  {
     path: 'crm',
     title: 'Partner CRM · Twins for Change',
     loadComponent: () => import('./crm/crm-page').then((m) => m.CrmPage),

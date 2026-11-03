@@ -127,6 +127,46 @@
     </p>
   </section>
 
+  <section aria-labelledby="engine-title">
+    <h2 id="engine-title">The engine</h2>
+    <p class="engine-lede">
+      Two open-source tools do the heavy lifting. Both run on the same machine as the API, so a classroom
+      needs no outside service.
+    </p>
+    <ul class="engine">
+      <li class="product ollama">
+        <div class="product-head">
+          <span class="product-logo"><img src="brand/ollama.png" width="181" height="256" alt="Ollama logo" decoding="async" /></span>
+          <div>
+            <h3>Ollama</h3>
+            <p class="role">LLM inference</p>
+          </div>
+        </div>
+        <p>Runs the language and embedding models locally, with no API key and no per-token fee.</p>
+        <ul class="chips">
+          <li><code>gemma3:4b</code> answers</li>
+          <li><code>bge-m3</code> embeddings</li>
+          <li>1024 dimensions</li>
+        </ul>
+      </li>
+      <li class="product qdrant">
+        <div class="product-head">
+          <span class="product-logo"><img src="brand/qdrant-mark.png" width="132" height="152" alt="Qdrant logo" decoding="async" /></span>
+          <div>
+            <h3>Qdrant</h3>
+            <p class="role">Vector database</p>
+          </div>
+        </div>
+        <p>Stores the 15,791 verified rows and finds the best 3 for each question with hybrid search.</p>
+        <ul class="chips">
+          <li>Dense + BM25</li>
+          <li>RRF fusion</li>
+          <li>Docker, port 6333</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
   <section aria-labelledby="deploy-title">
     <h2 id="deploy-title">Deployment</h2>
     <div class="deploy">

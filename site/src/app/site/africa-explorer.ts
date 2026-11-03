@@ -51,6 +51,15 @@ export class AfricaExplorer {
   protected readonly tags = computed(() =>
     (this.selected()?.languages ?? '').split(';').map((t) => t.trim()).filter(Boolean),
   );
+  /** People not using the internet, summed over the countries on screen that have a comparable figure. */
+  protected readonly offline = computed(() => {
+    const withData = this.filtered().filter((c) => c.offlineEstimate != null);
+    return {
+      people: withData.reduce((sum, c) => sum + (c.offlineEstimate ?? 0), 0),
+      counted: withData.length,
+      shown: this.filtered().length,
+    };
+  });
   protected readonly legend = computed(() =>
     this.metric() === 'internet'
       ? [
@@ -74,6 +83,10 @@ export class AfricaExplorer {
   protected readonly internet = (v: number | null) => (v === null ? 'No comparable figure' : `${v}%`);
   protected readonly modelLink = (l: { modelSource?: string; source?: string }) => l.modelSource || l.source;
 
+  protected readonly million = (v: number) => `${Math.round(v / 1e6).toLocaleString('en-US')} million`;
+  /** Halo diameter in rem: area grows with the number of people not online (Nigeria is about 6.5rem). */
+  protected halo = (c: Country) => (c.offlineEstimate ? 0.55 * Math.sqrt(c.offlineEstimate / 1e6) + 0.8 : 0);
+
   protected pinKind(c: Country): PinKind {
     if (this.metric() === 'internet') {
       return c.internetPct === null ? 'unknown' : c.internetPct < 40 ? 'open' : 'full';
@@ -94,6 +107,9 @@ export class AfricaExplorer {
   }
   protected onMetric(event: Event): void {
     this.metric.set((event.target as HTMLSelectElement).value as Metric);
+  }
+  protected showOnMap(): void {
+    this.metric.set('internet');
   }
   protected reset(): void {
     this.query.set('');

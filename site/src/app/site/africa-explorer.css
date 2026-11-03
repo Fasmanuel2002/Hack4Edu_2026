@@ -433,3 +433,78 @@ tbody th {
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1.2fr) auto;
   }
 }
+
+/* Offline total above the map. */
+.offline-stat {
+  display: grid;
+  gap: 0.25rem 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgb(214 69 65 / 0.09), transparent 70%);
+}
+
+.offline-stat .big {
+  margin: 0;
+  font-size: 1.0625rem;
+}
+
+.offline-stat .big b {
+  display: block;
+  color: #c0392b;
+  font-size: clamp(1.9rem, 1.4rem + 2vw, 2.6rem);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.offline-stat .small {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.btn-show {
+  justify-self: start;
+  margin-top: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--border-mid);
+  border-radius: 999px;
+  background: var(--raised);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-show:hover {
+  border-color: #c0392b;
+}
+
+.btn-show:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Where the people who are offline live: a red circle per country, area grows with the number. */
+.halo {
+  position: absolute;
+  z-index: 0;
+  border: 1.5px solid rgb(192 57 43 / 0.75);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(214 69 65 / 0.5), rgb(214 69 65 / 0.16));
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.pin {
+  z-index: 1;
+}
+
+.halo-key {
+  flex: none;
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 1.5px solid rgb(192 57 43 / 0.75);
+  border-radius: 50%;
+  background: rgb(214 69 65 / 0.35);
+}

@@ -1,0 +1,104 @@
+<app-top-bar />
+
+<main id="main" class="page" tabindex="-1">
+  <header class="hero">
+    <h1>What sets us apart</h1>
+    <p class="sub">
+      A school in rural Sub-Saharan Africa can't count on a satellite link or a per-token bill. Twins for
+      Change runs on one small computer in the classroom, so the cost stays flat while cloud AI keeps
+      charging.
+    </p>
+  </header>
+
+  <section aria-labelledby="chart-title">
+    <h2 id="chart-title">Total cost of ownership per school</h2>
+    <p class="lede">Hardware, solar kit, connectivity, tokens and upkeep, in US dollars. Shorter is cheaper.</p>
+
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Time horizon">
+        @for (h of horizons; track h; let i = $index) {
+          <button type="button" [attr.aria-pressed]="horizon() === i" (click)="horizon.set(i)">{{ h }}</button>
+        }
+      </div>
+      <p class="hint">Select a system below to isolate it.</p>
+    </div>
+
+    <figure class="chart" [attr.data-focus]="focus()">
+      <ul class="legend" aria-label="Systems compared">
+        @for (s of systems; track s.id) {
+          <li>
+            <button type="button" [attr.aria-pressed]="focus() === s.id" (click)="toggleFocus(s.id)">
+              <span class="swatch" [attr.data-sys]="s.id" aria-hidden="true"></span>{{ s.name }}
+              @if (s.ours) { <strong class="us">Ours</strong> }
+            </button>
+          </li>
+        }
+      </ul>
+
+      <div class="plot">
+        <div class="grid" aria-hidden="true">
+          @for (t of ticks; track t) {
+            <span class="tick" [style.left.%]="pct(t)"><span>{{ usd(t) }}</span></span>
+          }
+        </div>
+
+        @for (g of groups(); track g.label) {
+          <section class="group" [attr.aria-label]="g.label + ' total cost'">
+            <h3 class="year">{{ g.label }}</h3>
+            <ul class="bars">
+              @for (b of g.bars; track b.id) {
+                <li class="row" [class.ours]="b.ours" [attr.data-row]="b.id">
+                  <span class="bar" [attr.data-sys]="b.id" [style.width.%]="pct(b.value)"></span>
+                  <span class="val"><span class="visually-hidden">{{ b.name }}: </span>{{ usd(b.value) }}</span>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+      <figcaption>
+        Source: financial model <code>investigacion_financiera_deeplanguage_africa.xlsx</code>. Estimates for a
+        40-student classroom (400 questions a day), not measured results. TCO = initial hardware + n years of
+        running costs.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section aria-labelledby="facts-title">
+    <h2 id="facts-title">What the numbers say</h2>
+    <dl class="facts">
+      <div>
+        <dt>74.8% – 86.1%</dt>
+        <dd>lower five-year cost than the cloud setups with an API ($1,005 vs $3,996 – $7,222)</dd>
+      </div>
+      <div>
+        <dt>$0</dt>
+        <dd>a year for tokens and internet. Only maintenance remains ($35 a year)</dd>
+      </div>
+      <div>
+        <dt>4.8 months</dt>
+        <dd>to pay back the hardware against the satellite option</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="why-title">
+    <h2 id="why-title">Why it works offline</h2>
+    <p class="lede">
+      After a one-time setup, everything runs on the classroom machine: Gemma 3 4B for answers and hybrid
+      search over 15,791 verified Yorùbá–English rows, so answers come from real data.
+      <a routerLink="/architecture">See how it works</a>.
+    </p>
+  </section>
+
+  <section aria-labelledby="next-title">
+    <h2 id="next-title">Keep exploring</h2>
+    <ul class="cards">
+      @for (l of links; track l.to) {
+        <li>
+          <a [routerLink]="l.to"><strong>{{ l.title }}</strong><span>{{ l.text }}</span></a>
+        </li>
+      }
+    </ul>
+  </section>
+</main>
