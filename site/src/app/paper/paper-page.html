@@ -1,0 +1,132 @@
+<app-top-bar />
+
+<main id="main" tabindex="-1">
+  <header class="hero wrap">
+    <p class="eyebrow">Research</p>
+    <h1>The paper behind <em>the idea.</em></h1>
+    <p class="sub">
+      Twins for Change builds on <i>Where Are We? Evaluating LLM Performance on African Languages</i>
+      (ACL 2025), the study that introduced the SAHARA benchmark. Read it here or download it.
+    </p>
+    <div class="cta">
+      <a class="btn primary" [href]="pdf" download>Download the PDF <app-icon name="arrowDown" /></a>
+      <a class="btn" href="#read">Read it on this page</a>
+    </div>
+  </header>
+
+  <section class="wrap cite" aria-labelledby="cite-title" appReveal>
+    <div class="card">
+      <h2 id="cite-title">About the paper</h2>
+      <p class="title">Where Are We? Evaluating LLM Performance on African Languages</p>
+      <p class="authors">
+        Ife Adebara, Hawau Olamide Toyin, Nahom Tesfu Ghebremichael, AbdelRahim Elmadany and Muhammad
+        Abdul-Mageed
+      </p>
+      <p class="venue">
+        Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1:
+        Long Papers), pages 32704–32731, 2025.
+      </p>
+      <ul class="links">
+        <li>
+          <a href="https://aclanthology.org/2025.acl-long.1572/" target="_blank" rel="noopener noreferrer"
+            >ACL Anthology<span class="visually-hidden"> (opens in a new tab)</span></a
+          >
+        </li>
+        <li>
+          <a href="https://arxiv.org/abs/2502.19582" target="_blank" rel="noopener noreferrer"
+            >arXiv<span class="visually-hidden"> (opens in a new tab)</span></a
+          >
+        </li>
+        <li>
+          <a href="https://github.com/UBC-NLP/sahara" target="_blank" rel="noopener noreferrer"
+            >SAHARA code<span class="visually-hidden"> (opens in a new tab)</span></a
+          >
+        </li>
+      </ul>
+    </div>
+    <ul class="findings">
+      @for (f of findings; track f.title) {
+        <li>
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.text }}</p>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section class="band" aria-labelledby="why-title">
+    <div class="wrap">
+      <p class="eyebrow">Why it shaped this project</p>
+      <h2 id="why-title">A small model fails alone. Given the right text, it does not.</h2>
+      <p class="lede">
+        In the paper's results, Gemma 3 (4B), the model we use, scores close to zero when it must translate or
+        solve math in African languages by itself. But when it is handed a passage and asked a question about
+        it, it comes within about a point of GPT-4.1. Twins for Change is built on that gap: it retrieves
+        verified bilingual examples and gives them to Gemma, so it reads before it answers.
+      </p>
+
+      <figure class="chart" appReveal>
+        <figcaption class="legend">
+          <span><i class="sw gemma"></i>Gemma 3 (4B)</span>
+          <span><i class="sw gpt"></i>GPT-4.1</span>
+        </figcaption>
+        <ul class="rows">
+          @for (t of tasks; track t.name) {
+            <li [class.grounded]="t.grounded">
+              <p class="task">
+                {{ t.name }} <small>{{ t.metric }}, 0 to 100</small>
+              </p>
+              <div class="pair">
+                <div class="line">
+                  <span class="track"><i class="bar gemma" [style.width.%]="width(t.gemma)"></i></span>
+                  <b>{{ t.gemma }}</b>
+                </div>
+                <div class="line">
+                  <span class="track"><i class="bar gpt" [style.width.%]="width(t.gpt)"></i></span>
+                  <b>{{ t.gpt }}</b>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+        <p class="note">
+          Scores from Table E4 of the paper (page 28), on the SAHARA benchmark's African-language tests. The
+          tasks use different metrics. These are the paper's results for the base models, not measurements of
+          Twins for Change, which has not been evaluated yet.
+        </p>
+      </figure>
+    </div>
+  </section>
+
+  <section id="read" class="wrap viewer" aria-labelledby="read-title">
+    <p class="eyebrow">The full text</p>
+    <h2 id="read-title">Read the paper</h2>
+    <p class="lede">28 pages, 3.8 MB. Scroll in the reader below, or download it.</p>
+    <div class="frame">
+      @defer (on viewport) {
+        <object
+          class="pdf"
+          data="papers/where-are-we-african-languages.pdf#view=FitH"
+          type="application/pdf"
+          aria-label="Where Are We? Evaluating LLM Performance on African Languages, PDF"
+        >
+          <p class="fallback">
+            This browser can't show PDFs inside the page.
+            <a [href]="pdf" download>Download the paper</a> to read it.
+          </p>
+        </object>
+      } @placeholder {
+        <p class="fallback">The reader loads when you scroll here.</p>
+      }
+    </div>
+    <p class="note">
+      © 2025 Association for Computational Linguistics. Published under the
+      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer"
+        >Creative Commons Attribution 4.0 licence<span class="visually-hidden"> (opens in a new tab)</span></a
+      >. This is the unchanged published PDF from the ACL Anthology. Twins for Change is not affiliated with
+      the authors.
+    </p>
+  </section>
+</main>
+
+<app-footer />

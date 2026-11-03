@@ -31,7 +31,8 @@ export class Reveal {
             io.disconnect();
           }
         },
-        { threshold: 0.12 },
+        // Fires when the top edge enters the lower part of the screen, however tall the block is.
+        { threshold: 0, rootMargin: '0px 0px -8% 0px' },
       );
       io.observe(el);
       destroyRef.onDestroy(() => io.disconnect());

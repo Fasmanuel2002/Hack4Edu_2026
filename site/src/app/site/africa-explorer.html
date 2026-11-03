@@ -3,8 +3,8 @@
     <div class="offline-stat">
       <p class="big"><b>≈ {{ million(offline().people) }}</b> people not using the internet</p>
       <p class="small">
-        In {{ offline().counted }} of {{ offline().shown }} countries on screen with a comparable 2024 figure
-        (population × share not using the internet). An orientative estimate, not a survey count.
+        Across {{ offline().counted }} of {{ offline().shown }} countries on screen with a 2024 figure.
+        Population × share not online: an estimate, not a survey count.
       </p>
       @if (metric() !== 'internet') {
         <button type="button" class="btn-show" (click)="showOnMap()">Show on the map</button>
@@ -154,12 +154,3 @@
     }
   </section>
 </div>
-
-<section class="notes" aria-labelledby="read-title">
-  <h3 id="read-title">How to read this data</h3>
-  <ul>
-    @for (note of limitations; track note) {
-      <li>{{ note }}</li>
-    }
-  </ul>
-</section>

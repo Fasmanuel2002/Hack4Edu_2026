@@ -385,30 +385,8 @@ h3 {
   outline-color: #fff;
 }
 
-.kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.625rem 0.95rem;
-  border: 1px solid rgb(255 255 255 / 0.31);
-  border-radius: 999px;
-  background: rgb(255 255 255 / 0.12);
-  color: #e3f0fd;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
-.kicker-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #9ef4df;
-}
-
 .hero h1 {
-  margin: 1.75rem 0 1.4rem;
+  margin: 0 0 1.4rem;
   font-size: clamp(2.6rem, 1.3rem + 5vw, 5.25rem);
   line-height: 1.04;
   letter-spacing: -0.05em;
@@ -427,10 +405,6 @@ h3 {
   text-wrap: pretty;
 }
 
-.hero-side {
-  display: none;
-}
-
 .hero-foot {
   position: relative;
   z-index: 2;
@@ -444,27 +418,6 @@ h3 {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-}
-
-.hero-foot a {
-  color: #dcebf5;
-  text-decoration: none;
-}
-
-.hero-foot a::after {
-  content: '  ↓';
-  font-size: 1rem;
-  letter-spacing: 0;
-}
-
-.hero-foot a:hover {
-  text-decoration: underline;
-}
-
-.hero-foot .line {
-  width: 2.5rem;
-  height: 1px;
-  background: #84b6c8;
 }
 
 .credit {
@@ -539,9 +492,11 @@ h3 {
 .visual img {
   display: block;
   width: 100%;
-  height: 22rem;
+  height: auto;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
-  object-position: 70% center;
+  /* Keeps the teacher, the blackboard map and the students; trims the empty wall on the left. */
+  object-position: 100% center;
   border-radius: 22px;
   background: var(--raised-2);
   box-shadow: 0 23px 55px rgb(11 52 80 / 0.11);
@@ -708,11 +663,6 @@ h3 {
   background: #f4d18b;
 }
 
-.demo-status {
-  color: #17735f; /* 5.6:1 on #F0F7FB */
-  font-size: 0.6875rem;
-}
-
 .demo-body {
   padding: 1.5rem 1.25rem;
 }
@@ -815,20 +765,6 @@ h3 {
   border-radius: 7px;
   background: var(--blue);
   color: #fff;
-}
-
-.floating-caption {
-  position: absolute;
-  right: 0.5rem;
-  bottom: 1.25rem;
-  padding: 0.7rem 0.95rem;
-  border-radius: 8px;
-  background: #39cdd9;
-  color: #063852; /* 7.0:1 */
-  font-size: 0.75rem;
-  font-weight: 700;
-  box-shadow: 0 13px 25px rgb(0 24 38 / 0.48);
-  transform: rotate(-3deg);
 }
 
 /* ---------- Map and research ---------- */
@@ -1037,11 +973,6 @@ h3 {
   box-shadow: 0 0 0 3px rgb(49 179 191 / 0.15);
 }
 
-.shell-note {
-  color: #5b7483;
-  font-size: 0.75rem;
-}
-
 .holder {
   overflow-x: auto;
   /* Contains the visually hidden link text, so it cannot widen the page. */
@@ -1112,15 +1043,6 @@ tbody tr:last-child > * {
 
 .foot strong {
   color: #fff;
-}
-
-.under-link {
-  --icon-size: 0.875rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  color: #8ce6ff;
-  font-size: 0.8125rem;
 }
 
 /* ---------- Method ---------- */
@@ -1257,9 +1179,6 @@ tbody tr:last-child > * {
   .foot-in {
     grid-template-columns: 1.4fr 1fr 1fr;
   }
-  .visual img {
-    height: 26rem;
-  }
 }
 
 @media (min-width: 64rem) {
@@ -1282,53 +1201,6 @@ tbody tr:last-child > * {
   .hero-in {
     padding: 5.4rem 0 3rem;
   }
-  .hero-side {
-    position: relative;
-    display: flex;
-    align-self: stretch;
-    align-items: flex-end;
-    justify-content: flex-end;
-    width: 11rem;
-  }
-  .hero-float {
-    position: absolute;
-    top: 30%;
-    right: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    padding: 0.875rem 1rem;
-    border-radius: 13px;
-    background: #fff;
-    color: #145173;
-    box-shadow: 0 8px 32px rgb(0 0 0 / 0.2);
-    white-space: nowrap;
-  }
-  .hero-float b,
-  .hero-float small {
-    display: block;
-  }
-  .hero-float small {
-    color: #5f7a8a;
-    font-size: 0.6875rem;
-  }
-  .hero-float-icon {
-    --icon-size: 1.6rem;
-    color: #13aad0;
-  }
-  .vertical-label {
-    color: #d5eefa;
-    font-size: 0.625rem;
-    font-weight: 700;
-    letter-spacing: 0.27em;
-    text-transform: uppercase;
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    opacity: 0.8;
-  }
-  .visual img {
-    height: 33rem;
-  }
   .bubble {
     position: absolute;
     bottom: 0.5rem;
@@ -1337,9 +1209,6 @@ tbody tr:last-child > * {
   }
   .try {
     transform: rotate(1deg);
-  }
-  .floating-caption {
-    right: -0.625rem;
   }
 }
 
@@ -1368,15 +1237,11 @@ tbody tr:last-child > * {
     min-width: 0;
     padding-left: 0.625rem;
   }
-  .shell-note {
-    display: none;
-  }
 }
 
 /* Staggered reveal of the hero copy; nothing moves with reduced motion. */
 @media (prefers-reduced-motion: no-preference) {
-  .hero-text > *,
-  .hero-side {
+  .hero-text > * {
     animation: rise 0.6s var(--ease) both;
   }
   .hero-text > :nth-child(2) {
@@ -1387,9 +1252,6 @@ tbody tr:last-child > * {
   }
   .hero-text > :nth-child(4) {
     animation-delay: 0.24s;
-  }
-  .hero-side {
-    animation-delay: 0.32s;
   }
   @keyframes rise {
     from {

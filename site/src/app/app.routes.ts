@@ -37,6 +37,11 @@ export const routes: Routes = [
     loadComponent: () => import('./difference/difference-page').then((m) => m.DifferencePage),
   },
   {
+    path: 'paper',
+    title: 'The research behind it · Twins for Change',
+    loadComponent: () => import('./paper/paper-page').then((m) => m.PaperPage),
+  },
+  {
     path: 'crm',
     title: 'Partner CRM · Twins for Change',
     loadComponent: () => import('./crm/crm-page').then((m) => m.CrmPage),

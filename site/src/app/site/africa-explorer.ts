@@ -3,7 +3,6 @@ import { RouterLink } from '@angular/router';
 import {
   COUNTRIES,
   Country,
-  LIMITATIONS,
   RESULT_EN,
   isHttps,
   languagesFor,
@@ -24,7 +23,6 @@ type PinKind = 'full' | 'open' | 'unknown';
   styleUrl: './africa-explorer.css',
 })
 export class AfricaExplorer {
-  protected readonly limitations = LIMITATIONS;
   protected readonly regions = [...new Set(COUNTRIES.map((c) => c.region))].sort();
   protected readonly query = signal('');
   protected readonly region = signal('');

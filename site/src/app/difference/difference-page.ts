@@ -111,10 +111,6 @@ export class DifferencePage {
       a: 'Yes, once it is set up. Internet is needed one time, to download the Ollama models, the Qdrant image and the BM25 model. After that the tutor, the search and the model all run on one computer in the classroom. The online demo exists so you can try it without installing anything.',
     },
     {
-      q: 'What does it cost a school?',
-      a: "In the cost study's estimates, the Ryzen setup costs $865 in the first year and $1,005 over five years, with no token fees and no internet bill. A cloud setup with GPT-4o mini and Starlink costs $1,711 in the first year and $3,996 over five. These are modelled estimates, not measured results.",
-    },
-    {
       q: 'Which languages does it support?',
       a: 'Yorùbá and English. The language map shows research on other African languages, but a language listed there is not a language the tutor supports yet. More languages are planned.',
     },
@@ -125,10 +121,6 @@ export class DifferencePage {
     {
       q: 'Where are chats stored?',
       a: "Your chat history is saved only in your browser. The backend keeps no conversation memory: each request is a single question. In local mode nothing leaves the school's computer.",
-    },
-    {
-      q: 'Who is it for?',
-      a: 'Teachers and students in bilingual Yorùbá–English classrooms, and researchers working on retrieval for low-resource languages.',
     },
   ] as const;
 
@@ -151,7 +143,6 @@ export class DifferencePage {
     { value: '400', label: 'questions a day in one classroom of 40 students' },
     { value: '13.64M', label: 'tokens a month: 10.56M in, 3.08M out' },
     { value: '1,200 + 350', label: 'tokens in and out for each question' },
-    { value: '163.68M', label: 'tokens a year, for a single school' },
   ] as const;
   /** Bars show one school or a network of 500. */
   protected readonly scale = signal<1 | 500>(1);

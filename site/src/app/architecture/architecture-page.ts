@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CORPUS_TABLE } from '../core/corpus';
+import { RouterLink } from '@angular/router';
 import { Footer } from '../shared/footer';
 import { Icon } from '../shared/icon';
 import { Reveal } from '../shared/reveal';
@@ -9,7 +10,7 @@ import { TopBar } from '../shared/top-bar';
 @Component({
   selector: 'app-architecture-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TopBar, Icon, Footer, Reveal],
+  imports: [TopBar, Icon, Footer, Reveal, RouterLink],
   templateUrl: './architecture-page.html',
   styleUrl: './architecture-page.css',
 })

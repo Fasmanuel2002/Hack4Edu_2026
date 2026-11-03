@@ -5,7 +5,7 @@
 .page {
   max-width: 64rem;
   margin: 0 auto;
-  padding: 2.75rem 1.5rem 3rem;
+  padding: 3.5rem 1.5rem 0;
 }
 
 .page:focus-visible {
@@ -37,17 +37,26 @@ h1 {
 }
 
 section {
-  margin-top: 2.75rem;
+  padding-block: 3.5rem;
 }
 
 section section {
-  margin-top: 0;
+  padding-block: 0;
+}
+
+/* Alternate sections sit on a tinted band that runs edge to edge. */
+.band {
+  background: var(--section-alt);
+  box-shadow: 0 0 0 100vmax var(--section-alt);
+  clip-path: inset(0 -100vmax);
 }
 
 h2 {
-  margin-bottom: 0.875rem;
-  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  font-size: clamp(1.625rem, 1.3rem + 1.2vw, 2.25rem);
   font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
 }
 
 h3 {
@@ -502,4 +511,19 @@ td .dataset {
     color: var(--action-fg);
     font-size: 0.75rem;
   }
+}
+
+/* The deployment cards are nested sections: give them their own padding back. */
+.deploy > .panel {
+  padding: 1.25rem 1.375rem;
+}
+
+.based {
+  margin: 1rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.based a {
+  font-weight: 700;
 }
